@@ -15,12 +15,23 @@ public class CartItem {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="cart_id")
+    private Cart cart;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+        if (!cart.getCartItems().contains(this)) {
+            cart.getCartItems().add(this);
+        }
     }
 
     public Integer getQuantity() {
@@ -31,4 +42,7 @@ public class CartItem {
         this.quantity = quantity;
     }
 
+    public Cart getCart() {
+        return cart;
+    }
 }

@@ -19,12 +19,23 @@ public class ProductImage {
     @Column(name = "display_order")
     private Integer displayOrder;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="product_id")
+    private Product product;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+        if (!product.getProductImages().contains(this)) {
+            product.getProductImages().add(this);
+        }
     }
 
     public String getUrl() {
@@ -51,4 +62,7 @@ public class ProductImage {
         this.displayOrder = displayOrder;
     }
 
+    public Product getProduct() {
+        return product;
+    }
 }

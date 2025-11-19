@@ -1,3 +1,5 @@
+# drop database `e-commerce`;
+
 create database if not exists `e-commerce`;
 
 use `e-commerce`;
@@ -11,7 +13,6 @@ create table user(
                      first_name varchar(100),
                      last_name varchar(100),
                      phone varchar(20),
-                     is_seller boolean default false,
                      password varchar(255),
                      created_at timestamp default current_timestamp,
                      last_login timestamp null
@@ -63,7 +64,6 @@ create table product(
                         description text ,
                         base_price decimal(10,2) not null,
                         active boolean default true,
-                        has_variants boolean default false,
                         attributes json,
                         created_at timestamp default current_timestamp,
                         foreign key (seller_id) references sellers(id) on delete cascade ,

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "brand")
@@ -26,6 +27,9 @@ public class Brand {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "created_at")
     private Instant createdAt;
+
+    @OneToMany(mappedBy = "brand")
+    private List<Product> products;
 
     public Long getId() {
         return id;

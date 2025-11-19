@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "category")
 public class Category {
@@ -14,6 +17,17 @@ public class Category {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_category_id")
+    private Category parent;
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    protected List<Category> children;
+
+    @ManyToMany(mappedBy = "categories")
+    private List<Product> products;
+
 
     public Long getId() {
         return id;
@@ -31,4 +45,44 @@ public class Category {
         this.name = name;
     }
 
+    public void setParent(Category parent) {
+        this.parent = parent;
+        if (!parent.getChildren().contains(this)) {
+            parent.getChildren().add(this);
+        }
+    }
+
+    public void addChild(Category child) {
+        if (children == null) children = new ArrayList<>();
+        children.add(child);
+        child.setParent(this);
+    }
+
+    public void addProduct(Product product) {
+        if (products == null) products = new ArrayList<>();
+        if (!products.contains(product)) {
+            products.add(product);
+            product.getCategories().add(this);
+        }
+    }
+
+    public Category getParent() {
+        return parent;
+    }
+
+    public List<Category> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Category> children) {
+        this.children = children;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 }

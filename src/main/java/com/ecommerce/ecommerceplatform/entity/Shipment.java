@@ -29,6 +29,10 @@ public class Shipment {
     @Column(name = "delivered_at")
     private Instant deliveredAt;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="order_id")
+    private Order  order;
+
     public Long getId() {
         return id;
     }
@@ -77,4 +81,14 @@ public class Shipment {
         this.deliveredAt = deliveredAt;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+        if (order.getShipment() != this) {
+            order.setShipment(this);
+        }
+    }
 }

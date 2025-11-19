@@ -5,6 +5,8 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "`order`")
@@ -27,12 +29,32 @@ public class Order {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
+    @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Shipment shipment;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Payment> payments;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        if (!user.getOrders().contains(this)) {
+            user.getOrders().add(this);
+        }
     }
 
     public String getStatus() {
@@ -67,4 +89,43 @@ public class Order {
         this.createdAt = createdAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    public Shipment getShipment() {
+        return shipment;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
+    public void addOrderItem(OrderItem item) {
+        if (orderItems == null) orderItems = new ArrayList<>();
+        orderItems.add(item);
+        item.setOrder(this);
+    }
+
+    public void setPayment(Payment payment) {
+        this.payments.add(payment);
+        payment.setOrder(this);
+    }
+
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
+        shipment.setOrder(this);
+    }
 }

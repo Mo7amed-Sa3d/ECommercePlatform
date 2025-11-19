@@ -6,6 +6,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "cart")
@@ -20,12 +22,39 @@ public class Cart {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    private List<CartItem> cartItems;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        if (user.getCart() != this) {
+            user.setCart(this);
+        }
+    }
+
+    public void addCartItem(CartItem item) {
+        if (cartItems == null) cartItems = new ArrayList<>();
+        cartItems.add(item);
+        item.setCart(this);
+    }
+
+    public void removeCartItem(CartItem item) {
+        if (cartItems != null) {
+            cartItems.remove(item);
+            item.setCart(null);
+        }
     }
 
     public Instant getUpdatedAt() {
@@ -36,4 +65,15 @@ public class Cart {
         this.updatedAt = updatedAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public List<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
 }

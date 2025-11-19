@@ -29,6 +29,14 @@ public class Review {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="product_id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id")
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -67,6 +75,28 @@ public class Review {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+        if (!product.getReviews().contains(this)) {
+            product.getReviews().add(this);
+        }
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        if (!user.getReviews().contains(this)) {
+            user.getReviews().add(this);
+        }
     }
 
 }

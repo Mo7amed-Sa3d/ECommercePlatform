@@ -30,6 +30,10 @@ public class Payment {
     @Column(name = "paid_at")
     private Instant paidAt;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="order_id")
+    private Order order;
+
     public Long getId() {
         return id;
     }
@@ -78,4 +82,14 @@ public class Payment {
         this.paidAt = paidAt;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+        if (order.getPayments().contains(this)) {
+            order.setPayment(this);
+        }
+    }
 }

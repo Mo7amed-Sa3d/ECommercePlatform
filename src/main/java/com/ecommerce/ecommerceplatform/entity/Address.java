@@ -12,7 +12,6 @@ public class Address {
     @Column(name = "id", nullable = false)
     private Long id;
 
-
     @Column(name = "full_name")
     private String fullName;
 
@@ -37,6 +36,10 @@ public class Address {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id")
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -45,6 +48,12 @@ public class Address {
         this.id = id;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+        if (!user.getAddresses().contains(this)) {
+            user.getAddresses().add(this);
+        }
+    }
 
     public String getFullName() {
         return fullName;
@@ -110,4 +119,7 @@ public class Address {
         this.phone = phone;
     }
 
+    public User getUser() {
+        return user;
+    }
 }

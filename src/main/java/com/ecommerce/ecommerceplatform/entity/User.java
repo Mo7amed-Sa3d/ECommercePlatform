@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -25,10 +27,6 @@ public class User {
     @Column(name = "phone", length = 20)
     private String phone;
 
-    @ColumnDefault("0")
-    @Column(name = "is_seller")
-    private Boolean isSeller;
-
     @Column(name = "password")
     private String password;
 
@@ -38,6 +36,21 @@ public class User {
 
     @Column(name = "last_login")
     private Instant lastLogin;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Seller seller;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Address> addresses;
+
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     public Long getId() {
         return id;
@@ -79,14 +92,6 @@ public class User {
         this.phone = phone;
     }
 
-    public Boolean getIsSeller() {
-        return isSeller;
-    }
-
-    public void setIsSeller(Boolean isSeller) {
-        this.isSeller = isSeller;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -109,6 +114,91 @@ public class User {
 
     public void setLastLogin(Instant lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void addAddress(Address address) {
+        if (addresses == null) addresses = new ArrayList<>();
+        addresses.add(address);
+        address.setUser(this);
+    }
+
+    public void removeAddress(Address address) {
+        if (addresses != null) {
+            addresses.remove(address);
+            address.setUser(null);
+        }
+    }
+
+    public void addReview(Review review) {
+        if (reviews == null) reviews = new ArrayList<>();
+        reviews.add(review);
+        review.setUser(this);
+    }
+
+    public void removeReview(Review review) {
+        if (reviews != null) {
+            reviews.remove(review);
+            review.setUser(null);
+        }
+    }
+
+    public void addOrder(Order order) {
+        if (orders == null) orders = new ArrayList<>();
+        orders.add(order);
+        order.setUser(this);
+    }
+
+    public void removeOrder(Order order) {
+        if (orders != null) {
+            orders.remove(order);
+            order.setUser(null);
+        }
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+        if (cart.getUser() != this) {
+            cart.setUser(this);
+        }
+    }
+
+    public void setSeller(Seller seller) {
+        this.seller = seller;
+        if (seller.getUser() != this) {
+            seller.setUser(this);
+        }
     }
 
 }

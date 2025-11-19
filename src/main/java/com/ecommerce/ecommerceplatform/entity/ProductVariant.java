@@ -7,6 +7,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -33,12 +35,25 @@ public class ProductVariant {
     @Column(name = "stock_size")
     private Integer stockSize;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="product_id")
+    private Product product;
+
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        if (orderItems == null) orderItems = new ArrayList<>();
+        orderItems.add(orderItem);
+        orderItem.setProductVariant(this);
     }
 
     public String getSku() {
@@ -81,4 +96,19 @@ public class ProductVariant {
         this.stockSize = stockSize;
     }
 
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 }
