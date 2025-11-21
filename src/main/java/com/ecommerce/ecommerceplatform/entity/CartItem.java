@@ -1,8 +1,6 @@
 package com.ecommerce.ecommerceplatform.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "cart_item")
@@ -29,9 +27,6 @@ public class CartItem {
 
     public void setCart(Cart cart) {
         this.cart = cart;
-        if (!cart.getCartItems().contains(this)) {
-            cart.getCartItems().add(this);
-        }
     }
 
     public Integer getQuantity() {

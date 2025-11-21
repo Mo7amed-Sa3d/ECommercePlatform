@@ -26,7 +26,7 @@ public class Cart {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER,orphanRemoval = true)
     private List<CartItem> cartItems;
 
     public Long getId() {
@@ -39,13 +39,12 @@ public class Cart {
 
     public void setUser(User user) {
         this.user = user;
-        if (user.getCart() != this) {
-            user.setCart(this);
-        }
+        user.setCart(this);
     }
 
     public void addCartItem(CartItem item) {
-        if (cartItems == null) cartItems = new ArrayList<>();
+        if (cartItems == null)
+            cartItems = new ArrayList<>();
         cartItems.add(item);
         item.setCart(this);
     }

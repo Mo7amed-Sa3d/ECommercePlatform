@@ -50,9 +50,6 @@ public class Address {
 
     public void setUser(User user) {
         this.user = user;
-        if (!user.getAddresses().contains(this)) {
-            user.getAddresses().add(this);
-        }
     }
 
     public String getFullName() {

@@ -47,23 +47,28 @@ public class Category {
 
     public void setParent(Category parent) {
         this.parent = parent;
-        if (!parent.getChildren().contains(this)) {
-            parent.getChildren().add(this);
-        }
     }
 
     public void addChild(Category child) {
-        if (children == null) children = new ArrayList<>();
+        if (children == null)
+            children = new ArrayList<>();
         children.add(child);
         child.setParent(this);
     }
 
+    public void removeChild(Category child) {
+        children.remove(child);
+        child.setParent(null);
+    }
     public void addProduct(Product product) {
         if (products == null) products = new ArrayList<>();
-        if (!products.contains(product)) {
-            products.add(product);
-            product.getCategories().add(this);
-        }
+        products.add(product);
+        product.getCategories().add(this);
+    }
+
+    public void removeProduct(Product product) {
+        products.remove(product);
+        product.getCategories().remove(this);
     }
 
     public Category getParent() {

@@ -33,14 +33,14 @@ public class Order {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
     @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Shipment shipment;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Payment> payments;
+    @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Payment payment;
 
     public Long getId() {
         return id;
@@ -52,9 +52,6 @@ public class Order {
 
     public void setUser(User user) {
         this.user = user;
-        if (!user.getOrders().contains(this)) {
-            user.getOrders().add(this);
-        }
     }
 
     public String getStatus() {
@@ -105,22 +102,24 @@ public class Order {
         return shipment;
     }
 
-    public List<Payment> getPayments() {
-        return payments;
-    }
-
-    public void setPayments(List<Payment> payments) {
-        this.payments = payments;
+    public Payment getPayment() {
+        return payment;
     }
 
     public void addOrderItem(OrderItem item) {
-        if (orderItems == null) orderItems = new ArrayList<>();
+        if (orderItems == null)
+            orderItems = new ArrayList<>();
         orderItems.add(item);
         item.setOrder(this);
     }
 
+    public void removeOrderItem(OrderItem item) {
+        orderItems.remove(item);
+        item.setOrder(null);
+    }
+
     public void setPayment(Payment payment) {
-        this.payments.add(payment);
+        this.payment = payment;
         payment.setOrder(this);
     }
 

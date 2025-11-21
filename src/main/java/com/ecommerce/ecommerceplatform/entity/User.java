@@ -46,7 +46,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
 
     @OneToOne(mappedBy = "user")
@@ -189,9 +189,7 @@ public class User {
 
     public void setCart(Cart cart) {
         this.cart = cart;
-        if (cart.getUser() != this) {
-            cart.setUser(this);
-        }
+        cart.setUser(this);
     }
 
     public void setSeller(Seller seller) {

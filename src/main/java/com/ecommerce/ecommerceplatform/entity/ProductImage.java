@@ -33,9 +33,6 @@ public class ProductImage {
 
     public void setProduct(Product product) {
         this.product = product;
-        if (!product.getProductImages().contains(this)) {
-            product.getProductImages().add(this);
-        }
     }
 
     public String getUrl() {

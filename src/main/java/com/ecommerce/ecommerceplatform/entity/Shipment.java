@@ -87,8 +87,6 @@ public class Shipment {
 
     public void setOrder(Order order) {
         this.order = order;
-        if (order.getShipment() != this) {
-            order.setShipment(this);
-        }
+        order.setShipment(this);
     }
 }

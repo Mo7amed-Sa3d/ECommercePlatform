@@ -50,12 +50,6 @@ public class ProductVariant {
         this.id = id;
     }
 
-    public void addOrderItem(OrderItem orderItem) {
-        if (orderItems == null) orderItems = new ArrayList<>();
-        orderItems.add(orderItem);
-        orderItem.setProductVariant(this);
-    }
-
     public String getSku() {
         return sku;
     }
@@ -111,4 +105,5 @@ public class ProductVariant {
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
+
 }

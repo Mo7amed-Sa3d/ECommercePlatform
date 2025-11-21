@@ -1,8 +1,6 @@
 package com.ecommerce.ecommerceplatform.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -30,7 +28,7 @@ public class Payment {
     @Column(name = "paid_at")
     private Instant paidAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="order_id")
     private Order order;
 
@@ -88,8 +86,6 @@ public class Payment {
 
     public void setOrder(Order order) {
         this.order = order;
-        if (order.getPayments().contains(this)) {
-            order.setPayment(this);
-        }
+        order.setPayment(this);
     }
 }

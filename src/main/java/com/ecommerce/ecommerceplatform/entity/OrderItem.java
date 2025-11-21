@@ -1,11 +1,8 @@
 package com.ecommerce.ecommerceplatform.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import java.math.BigDecimal;
-import java.util.List;
+
 
 @Entity
 @Table(name = "order_item")
@@ -82,23 +79,14 @@ public class OrderItem {
 
     public void setOrder(Order order) {
         this.order = order;
-        if (!order.getOrderItems().contains(this)) {
-            order.getOrderItems().add(this);
-        }
     }
 
     public void setProduct(Product product) {
         this.product = product;
-        if (!product.getOrderItems().contains(this)) {
-            product.getOrderItems().add(this);
-        }
     }
 
     public void setProductVariant(ProductVariant variant) {
         this.productVariant = variant;
-        if (!variant.getOrderItems().contains(this)) {
-            variant.getOrderItems().add(this);
-        }
     }
 
 }

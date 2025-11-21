@@ -93,11 +93,19 @@ public class Product {
         productVariants.add(variant);
         variant.setProduct(this);
     }
+    public void removeVariant(ProductVariant variant) {
+        productVariants.remove(variant);
+        variant.setProduct(null);
+    }
 
     public void addImage(ProductImage image) {
         if (productImages == null) productImages = new ArrayList<>();
         productImages.add(image);
         image.setProduct(this);
+    }
+    public void removeImage(ProductImage image) {
+        productImages.remove(image);
+        image.setProduct(null);
     }
 
     public void addReview(Review review) {
@@ -106,18 +114,30 @@ public class Product {
         review.setProduct(this);
     }
 
-    public void addCategory(Category category) {
-        if (categories == null) categories = new ArrayList<>();
-        if (!categories.contains(category)) {
-            categories.add(category);
-            category.getProducts().add(this);
-        }
+    public void removeReview(Review review) {
+        reviews.remove(review);
+        review.setProduct(null);
     }
 
+    public void addCategory(Category category) {
+        if (categories == null)
+            categories = new ArrayList<>();
+        categories.add(category);
+        category.getProducts().add(this);
+    }
+
+    public void removeCategory(Category category) {
+        categories.remove(category);
+        category.getProducts().remove(this);
+    }
     public void addOrderItem(OrderItem orderItem) {
         if (orderItems == null) orderItems = new ArrayList<>();
         orderItems.add(orderItem);
         orderItem.setProduct(this);
+    }
+    public void removeOrderItem(OrderItem orderItem) {
+        orderItems.remove(orderItem);
+        orderItem.setProduct(null);
     }
 
     public String getSku() {

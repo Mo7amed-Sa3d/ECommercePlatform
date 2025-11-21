@@ -87,16 +87,10 @@ public class Review {
 
     public void setProduct(Product product) {
         this.product = product;
-        if (!product.getReviews().contains(this)) {
-            product.getReviews().add(this);
-        }
     }
 
     public void setUser(User user) {
         this.user = user;
-        if (!user.getReviews().contains(this)) {
-            user.getReviews().add(this);
-        }
     }
 
 }
