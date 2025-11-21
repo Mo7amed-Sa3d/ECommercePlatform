@@ -1,4 +1,4 @@
-# drop database `e-commerce`;
+drop database `e-commerce`;
 
 create database if not exists `e-commerce`;
 
@@ -14,6 +14,7 @@ create table user(
                      last_name varchar(100),
                      phone varchar(20),
                      password varchar(255),
+                     role varchar(255),
                      created_at timestamp default current_timestamp,
                      last_login timestamp null
 #    INDEX(email)

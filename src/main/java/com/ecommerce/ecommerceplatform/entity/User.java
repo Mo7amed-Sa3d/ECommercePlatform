@@ -37,6 +37,9 @@ public class User {
     @Column(name = "last_login")
     private Instant lastLogin;
 
+    @Column(name = "role")
+    private String role;
+
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Seller seller;
 
@@ -138,6 +141,14 @@ public class User {
 
     public List<Address> getAddresses() {
         return addresses;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setAddresses(List<Address> addresses) {

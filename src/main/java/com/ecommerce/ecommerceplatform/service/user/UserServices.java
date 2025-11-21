@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserServices {
+    User registerUser(User user);
     User createUser(User user);
     User updateUser(User user);
     void deleteUser(Long userId);

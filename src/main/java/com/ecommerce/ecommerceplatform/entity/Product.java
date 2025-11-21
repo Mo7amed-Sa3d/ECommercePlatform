@@ -38,10 +38,6 @@ public class Product {
     @Column(name = "active")
     private Boolean active;
 
-    @ColumnDefault("0")
-    @Column(name = "has_variants")
-    private Boolean hasVariants;
-
     @Column(name = "attributes")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> attributes;
@@ -178,14 +174,6 @@ public class Product {
 
     public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    public Boolean getHasVariants() {
-        return hasVariants;
-    }
-
-    public void setHasVariants(Boolean hasVariants) {
-        this.hasVariants = hasVariants;
     }
 
     public Map<String, Object> getAttributes() {
