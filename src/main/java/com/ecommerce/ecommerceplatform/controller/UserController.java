@@ -1,47 +1,48 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.entity.Address;
 import com.ecommerce.ecommerceplatform.entity.User;
-import com.ecommerce.ecommerceplatform.repository.UserRepository;
+import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@Controller
-@RequestMapping("/user")
+@RestController
+@RequestMapping("/api/users")
 public class UserController {
 
-    private UserRepository userRepository;
+    private final UserServices userServices;
 
     @Autowired
-    public UserController(UserRepository userRepository){
-        this.userRepository = userRepository;
+    public UserController(UserServices userServices) {
+        this.userServices = userServices;
     }
 
-    @GetMapping("/profile")
-    public String profile(Authentication authentication, Model model) {
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
-            model.addAttribute("user", user.get());
-            return "user/profile";
-        }else
-            return "login";
+        Optional<User> user = userServices.getUserByEmail(email);
+        return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/profile")
-    @ResponseBody
-    public User updateProfile(Authentication authentication, @RequestBody User updatedUser) {
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
-        if(updatedUser.getFirstName() != null)
-            user.setFirstName(updatedUser.getFirstName());
-        if(updatedUser.getLastName() != null)
-            user.setLastName(updatedUser.getLastName());
-        user.setPhone(updatedUser.getPhone());
-        return userRepository.save(user);
+    @PostMapping("{userId}/addresses")
+    public ResponseEntity<?> addAddress(@PathVariable Long userId, @RequestBody Address address) {
+        Address savedAddress = userServices.addAddressToUser(userId, address);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
     }
 
+    @GetMapping("{userId}/addresses")
+    public ResponseEntity<?> getAddresses(@PathVariable Long userId) {
+        return ResponseEntity.ok(userServices.getAddresses(userId));
+    }
+
+    @DeleteMapping("/{userId}/addresses/{addressId}")
+    public ResponseEntity<?> deleteAddress(@PathVariable Long userId, @PathVariable Long addressId){
+        userServices.deleteAddressFromUser(userId,addressId);
+        return ResponseEntity.ok().body("Done Deleting Address with id " + addressId + "From User" + userId);
+    }
 }

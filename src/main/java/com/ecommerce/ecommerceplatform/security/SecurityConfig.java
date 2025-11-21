@@ -1,24 +1,30 @@
 package com.ecommerce.ecommerceplatform.security;
 
 import com.ecommerce.ecommerceplatform.service.user.UserDetailsServiceImplementation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UserDetailsServiceImplementation userDetailsService;
 
-    public SecurityConfig(UserDetailsServiceImplementation userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 //    @Bean
 //    public UserDetailsManager userDetailsManager(DataSource dataSource) {
 //        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
@@ -34,18 +40,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // Disable CSRF (since we are using REST API)
+                .csrf(AbstractHttpConfigurer::disable)
+                // Enable CORS for React frontend
+                .cors(Customizer.withDefaults())
+                // Authorize requests
                 .authorizeHttpRequests(auth -> auth
-                        // Permit login page, login POST, and CSS
-                        .requestMatchers("/**").permitAll()
-                        // Role-based access
-                        .anyRequest().authenticated()
-                ).formLogin(form ->
-                        form.loginPage("/login")
-                                .defaultSuccessUrl("/login?success=true")
-                                .permitAll()
+                        .requestMatchers("/auth/**").permitAll()  // login/register endpoints
+                        .requestMatchers("/api/users/**").hasRole("USER")
+                        .anyRequest().authenticated()                // all other endpoints require auth
                 )
-                .logout(LogoutConfigurer::permitAll);
-        http.csrf(AbstractHttpConfigurer::disable);
+                // Use Basic Authentication
+                .httpBasic(Customizer.withDefaults());
+
         return http.build();
     }
     @Bean
@@ -59,5 +66,31 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // React dev server
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
+
+/*
+const username = "user@example.com";
+const password = "Password123!";
+const token = btoa(`${username}:${password}`);
+
+fetch("http://localhost:8080/api/products", {
+  headers: {
+    "Authorization": `Basic ${token}`
+  }
+})
+.then(res => res.json())
+.then(data => console.log(data));
+
+
+ */
