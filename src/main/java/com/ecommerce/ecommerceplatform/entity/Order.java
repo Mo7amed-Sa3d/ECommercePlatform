@@ -20,9 +20,11 @@ public class Order {
     private String status;
 
     @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    @ColumnDefault("0")
     private BigDecimal totalAmount;
 
     @Column(name = "currency", nullable = false, length = 3)
+    @ColumnDefault("EGP")
     private String currency;
 
     @ColumnDefault("CURRENT_TIMESTAMP")

@@ -6,6 +6,7 @@ import com.ecommerce.ecommerceplatform.repository.OrderRepository;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,15 +25,18 @@ public class OrderServiceImplementation implements OrderService {
             throw new IllegalStateException("Cart is Empty");
         Order order = new Order();
 
+        order.setCurrency("EGP");
         //Map cart items to order items
         List<CartItem> cartItems = cart.getCartItems();
         for(CartItem cartItem : cartItems){
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(cartItem.getProduct());
+            orderItem.setUnitPrice(cartItem.getProduct().getBasePrice());
             orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setTaxAmount(BigDecimal.ZERO);
             order.addOrderItem(orderItem);
         }
-
+        order.setTotalAmount(order.getTotalAmount());
         //process payment
 
         user.addOrder(order);

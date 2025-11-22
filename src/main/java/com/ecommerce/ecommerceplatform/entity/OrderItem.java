@@ -15,10 +15,10 @@ public class OrderItem {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "unit_price", precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
-    @Column(name = "tax_amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "tax_amount", precision = 10, scale = 2)
     private BigDecimal taxAmount;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -6,6 +6,6 @@ import com.ecommerce.ecommerceplatform.entity.CartItem;
 import java.util.List;
 
 public interface CartService {
-    Cart addItemToCartByUserID(Long userId, CartItem item);
+    Cart addItemToCartByUserID(Long userId, Long productId, int quantity);
     Cart RemoveItemFromCart(Long userId, CartItem item);
 }

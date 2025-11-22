@@ -32,7 +32,7 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "base_price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "base_price", precision = 10, scale = 2)
     private BigDecimal basePrice;
 
     @ColumnDefault("1")
@@ -65,7 +65,7 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<CartItem> cartItems;
 
     @ManyToMany

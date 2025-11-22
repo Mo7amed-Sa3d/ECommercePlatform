@@ -49,12 +49,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
-                        .requestMatchers("/api/users/**").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST,"api/users/*/orders/checkout").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST,"api/users/*/orders/checkout").hasRole("SELLER")
-                        .requestMatchers("/api/orders/**").hasRole("SELLER")
+
+                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAnyRole("USER","SELLER")
+
+                        .requestMatchers(HttpMethod.POST,"/api/users/orders/checkout").hasAnyRole("USER","SELLER")
+
+                        .requestMatchers(HttpMethod.POST,"/api/users/cart").hasAnyRole("USER","SELLER")
+
+                        .requestMatchers("/api/orders/**").hasAnyRole("SELLER","USER")
+
                         .requestMatchers(HttpMethod.POST,"/api/products").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE,"/api/products").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST,"/api/categories").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.GET,"/api/categories").hasAnyRole("USER","SELLER")
                         .anyRequest().authenticated()                // all other endpoints require auth
                 )
                 // Use Basic Authentication

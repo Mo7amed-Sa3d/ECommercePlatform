@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
@@ -24,9 +25,11 @@ public class Cart {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER,orphanRemoval = true)
+    @JsonIgnore
     private List<CartItem> cartItems;
 
     public Long getId() {
@@ -45,7 +48,8 @@ public class Cart {
     public void addCartItem(CartItem item) {
         if (cartItems == null)
             cartItems = new ArrayList<>();
-        cartItems.add(item);
+        if(!cartItems.contains(item))
+            cartItems.add(item);
         item.setCart(this);
     }
 
