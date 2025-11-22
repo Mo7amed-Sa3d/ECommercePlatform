@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 // Authorize requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()  // login/register endpoints
+                        .requestMatchers("/api/auth/**").permitAll()  // login/register endpoints
                         .requestMatchers("/api/users/**").hasRole("USER")
                         .anyRequest().authenticated()                // all other endpoints require auth
                 )
