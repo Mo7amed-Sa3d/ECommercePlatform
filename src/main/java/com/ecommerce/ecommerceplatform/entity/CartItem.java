@@ -17,6 +17,10 @@ public class CartItem {
     @JoinColumn(name="cart_id")
     private Cart cart;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name="product_id")
+    private Product product;
+
     public Long getId() {
         return id;
     }
@@ -39,5 +43,14 @@ public class CartItem {
 
     public Cart getCart() {
         return cart;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+        product.addCartItem(this);
     }
 }

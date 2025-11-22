@@ -36,11 +36,13 @@ public class Order {
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
+
     @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Shipment shipment;
 
     @OneToOne(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Payment payment;
+
 
     public Long getId() {
         return id;
@@ -63,7 +65,11 @@ public class Order {
     }
 
     public BigDecimal getTotalAmount() {
-        return totalAmount;
+        double totalAmount = 0;
+        for(OrderItem orderItem : orderItems) {
+            totalAmount += orderItem.getUnitPrice().doubleValue() * orderItem.getQuantity();
+        }
+        return new BigDecimal(totalAmount);
     }
 
     public void setTotalAmount(BigDecimal totalAmount) {

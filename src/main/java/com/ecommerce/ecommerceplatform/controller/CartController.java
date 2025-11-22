@@ -2,7 +2,6 @@ package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
-import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;

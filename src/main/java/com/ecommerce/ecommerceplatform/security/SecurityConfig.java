@@ -50,7 +50,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
                         .requestMatchers("/api/users/**").hasRole("USER")
-                        .requestMatchers("/api/users/**").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.POST,"api/users/*/orders/checkout").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"api/users/*/orders/checkout").hasRole("SELLER")
+                        .requestMatchers("/api/orders/**").hasRole("SELLER")
                         .requestMatchers(HttpMethod.POST,"/api/products").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE,"/api/products").hasRole("SELLER")
                         .anyRequest().authenticated()                // all other endpoints require auth

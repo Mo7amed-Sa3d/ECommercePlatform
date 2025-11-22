@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface CartService {
     Cart addItemToCartByUserID(Long userId, CartItem item);
-
     Cart RemoveItemFromCart(Long userId, CartItem item);
 }

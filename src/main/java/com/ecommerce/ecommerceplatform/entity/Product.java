@@ -65,7 +65,8 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<CartItem> cartItems;
 
     @ManyToMany
     @JoinTable(
@@ -248,5 +249,19 @@ public class Product {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public List<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+    public void addCartItem(CartItem cartItem) {
+        if (cartItems == null)
+            cartItems = new ArrayList<>();
+        if(!cartItems.contains(cartItem))
+            cartItems.add(cartItem);
     }
 }
