@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerceplatform.service.user;
 
 import com.ecommerce.ecommerceplatform.entity.Address;
+import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.User;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface UserServices {
     Address addAddressToUser(Long userId,Address address);
     List<Address> getAddresses(Long userId);
     void deleteAddressFromUser(Long userId,Long addressId);
+    User getUserByID(Long userId);
+    Cart getCartByUserID(Long userId);
 }

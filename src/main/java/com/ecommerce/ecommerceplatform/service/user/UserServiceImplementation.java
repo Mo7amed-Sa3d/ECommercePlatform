@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerceplatform.service.user;
 
 import com.ecommerce.ecommerceplatform.entity.Address;
+import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
@@ -62,5 +63,16 @@ public class UserServiceImplementation implements UserServices {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new RuntimeException("Address Not Found"));
         user.removeAddress(address);
+    }
+
+    @Override
+    public User getUserByID(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+    }
+
+    @Override
+    public Cart getCartByUserID(Long userId) {
+        User user = getUserByID(userId);
+        return user.getCart();
     }
 }
