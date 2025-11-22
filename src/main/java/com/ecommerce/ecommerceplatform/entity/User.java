@@ -205,9 +205,7 @@ public class User {
 
     public void setSeller(Seller seller) {
         this.seller = seller;
-        if (seller.getUser() != this) {
-            seller.setUser(this);
-        }
+        seller.setUser(this);
     }
 
 }

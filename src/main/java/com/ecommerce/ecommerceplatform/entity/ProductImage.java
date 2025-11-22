@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,7 +22,22 @@ public class ProductImage {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="product_id")
+    @JsonIgnore
     private Product product;
+
+    public ProductImage() {}
+
+    public ProductImage(Product product, String url) {
+        this.product = product;
+        this.url = url;
+    }
+
+    public ProductImage(Product product, String url, String altText, Integer displayOrder) {
+        this.product = product;
+        this.url = url;
+        this.altText = altText;
+        this.displayOrder = displayOrder;
+    }
 
     public Long getId() {
         return id;

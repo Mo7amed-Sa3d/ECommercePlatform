@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerceplatform.service.user;
 
 import com.ecommerce.ecommerceplatform.entity.Address;
+import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.UserRepository;
@@ -35,6 +36,12 @@ public class UserServiceImplementation implements UserServices {
             throw new IllegalArgumentException("Email Already Exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if(user.getRole().equals("ROLE_SELLER")){
+            Seller seller = user.getSeller();
+            System.out.println(seller);
+            user.setSeller(seller);
+            System.out.println("seller saved");
+        }
         return userRepository.save(user);
     }
     @Override
