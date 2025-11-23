@@ -6,6 +6,9 @@ import com.ecommerce.ecommerceplatform.entity.OrderItem;
 import com.ecommerce.ecommerceplatform.entity.Product;
 import com.ecommerce.ecommerceplatform.entity.ProductVariant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OrderItemMapper {
 
     public static OrderItem toEntity(OrderItemDTO orderItemDTO){
@@ -24,5 +27,13 @@ public class OrderItemMapper {
         orderItemDTO.setUnitPrice(orderItem.getUnitPrice());
         orderItemDTO.setTaxAmount(orderItem.getTaxAmount());
         return orderItemDTO;
+    }
+
+    public static List<OrderItemDTO> toDtoList(List<OrderItem> orderItems) {
+        List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
+        for (OrderItem orderItem : orderItems) {
+            orderItemDTOList.add(toDTO(orderItem));
+        }
+        return orderItemDTOList;
     }
 }

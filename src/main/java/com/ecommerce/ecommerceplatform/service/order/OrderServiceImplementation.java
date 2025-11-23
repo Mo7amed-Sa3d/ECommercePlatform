@@ -5,6 +5,7 @@ import com.ecommerce.ecommerceplatform.entity.*;
 import com.ecommerce.ecommerceplatform.repository.OrderRepository;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,6 +20,7 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order createOrder(User user) {
         Cart cart = user.getCart();
         if(cart == null)
@@ -44,6 +46,7 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderSummaryDTO checkout(Long userId) {
         User user = userServices.getUserByID(userId);
         Order order = createOrder(user);

@@ -31,7 +31,6 @@ public class Seller {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="user_id")
-    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

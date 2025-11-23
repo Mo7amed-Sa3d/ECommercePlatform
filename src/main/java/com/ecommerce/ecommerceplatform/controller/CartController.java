@@ -1,8 +1,10 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.CartDTO;
 import com.ecommerce.ecommerceplatform.dto.CartItemDTO;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
+import com.ecommerce.ecommerceplatform.mapper.CartMapper;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,34 +26,34 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<Cart> getCart(Authentication authentication) {
+    public ResponseEntity<CartDTO> getCart(Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
-        return ResponseEntity.ok(userServices.getCartByUserID(user.getId()));
+        return ResponseEntity.ok(CartMapper.toDTO(userServices.getCartByUserID(user.getId())));
     }
 
     @PostMapping
-    public ResponseEntity<Cart> addItemToCart(@RequestBody CartItemDTO cartItemDTO, Authentication authentication) {
+    public ResponseEntity<CartDTO> addItemToCart(@RequestBody CartItemDTO cartItemDTO, Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
-        return ResponseEntity.ok(cartService.addItemToCartByUserID(user.getId()
+        return ResponseEntity.ok(CartMapper.toDTO(cartService.addItemToCartByUserID(user.getId()
                                                                     , cartItemDTO.getProductId()
-                                                                    , cartItemDTO.getQuantity()));
+                                                                    , cartItemDTO.getQuantity())));
     }
 
     @DeleteMapping
-    public ResponseEntity<Cart> removeItemFromCart(@RequestBody CartItem item,Authentication authentication) {
+    public ResponseEntity<CartDTO> removeItemFromCart(@RequestBody CartItem item,Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
-        return ResponseEntity.ok(cartService.RemoveItemFromCart(user.getId(),item));
+        return ResponseEntity.ok(CartMapper.toDTO(cartService.RemoveItemFromCart(user.getId(),item)));
     }
 }

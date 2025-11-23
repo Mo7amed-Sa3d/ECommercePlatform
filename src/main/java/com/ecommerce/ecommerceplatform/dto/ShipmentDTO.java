@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.time.Instant;
 
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class ShipmentDTO {

@@ -20,4 +20,29 @@ public class OrderMapper {
         order.setOrderItems(orderItemList);
         return order;
     }
+
+    public static OrderDTO toDTO(Order order) {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(order.getId());
+        orderDTO.setStatus(order.getStatus());
+        orderDTO.setTotalAmount(order.getTotalAmount());
+        orderDTO.setCurrency(order.getCurrency());
+        orderDTO.setCreatedAt(order.getCreatedAt());
+
+        List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
+        for (OrderItem orderItem : order.getOrderItems()) {
+            orderItemDTOList.add(OrderItemMapper.toDTO(orderItem));
+        }
+        orderDTO.setOrderItemDTOList(orderItemDTOList);
+
+        return orderDTO;
+    }
+
+    public static List<OrderDTO> toDtoList(List<Order> orders) {
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+        for(Order order : orders) {
+            orderDTOList.add(OrderMapper.toDTO(order));
+        }
+        return orderDTOList;
+    }
 }

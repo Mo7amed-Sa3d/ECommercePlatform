@@ -1,7 +1,11 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.AddressDTO;
+import com.ecommerce.ecommerceplatform.dto.UserDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
 import com.ecommerce.ecommerceplatform.entity.User;
+import com.ecommerce.ecommerceplatform.mapper.AddressMapper;
+import com.ecommerce.ecommerceplatform.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,25 +28,27 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Optional<User> user = userServices.getUserByEmail(email);
-        return ResponseEntity.ok(user);
+        if (user.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(UserMapper.toDto(user.get()));
     }
 
     @PostMapping("{userId}/addresses")
-    public ResponseEntity<?> addAddress(@PathVariable Long userId, @RequestBody Address address) {
+    public ResponseEntity<AddressDTO> addAddress(@PathVariable Long userId, @RequestBody Address address) {
         Address savedAddress = userServices.addAddressToUser(userId, address);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
+        return ResponseEntity.status(HttpStatus.CREATED).body(AddressMapper.toDto(savedAddress));
     }
 
     @GetMapping("{userId}/addresses")
-    public ResponseEntity<?> getAddresses(@PathVariable Long userId) {
-        return ResponseEntity.ok(userServices.getAddresses(userId));
+    public ResponseEntity<List<AddressDTO>> getAddresses(@PathVariable Long userId) {
+        return ResponseEntity.ok(AddressMapper.toDtoList(userServices.getAddresses(userId)));
     }
 
     @DeleteMapping("/{userId}/addresses/{addressId}")
-    public ResponseEntity<?> deleteAddress(@PathVariable Long userId, @PathVariable Long addressId){
+    public ResponseEntity<String> deleteAddress(@PathVariable Long userId, @PathVariable Long addressId){
         userServices.deleteAddressFromUser(userId,addressId);
         return ResponseEntity.ok().body("Done Deleting Address with id " + addressId + "From User" + userId);
     }

@@ -25,11 +25,9 @@ public class Cart {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
-    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER,orphanRemoval = true)
-    @JsonIgnore
     private List<CartItem> cartItems;
 
     public Long getId() {

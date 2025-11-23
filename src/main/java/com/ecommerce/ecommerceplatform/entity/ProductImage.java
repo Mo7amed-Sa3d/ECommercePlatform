@@ -22,7 +22,6 @@ public class ProductImage {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="product_id")
-    @JsonIgnore
     private Product product;
 
     public ProductImage() {}

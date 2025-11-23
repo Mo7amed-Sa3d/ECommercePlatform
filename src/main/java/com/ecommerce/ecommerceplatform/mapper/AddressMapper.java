@@ -3,6 +3,9 @@ package com.ecommerce.ecommerceplatform.mapper;
 import com.ecommerce.ecommerceplatform.dto.AddressDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddressMapper {
     public static Address toEntity(AddressDTO addressDTO) {
         Address address = new Address();
@@ -29,5 +32,13 @@ public class AddressMapper {
         addressDTO.setCountry(address.getCountry());
         addressDTO.setPhone(address.getPhone());
         return addressDTO;
+    }
+
+    public static List<AddressDTO> toDtoList(List<Address> addresses) {
+        List<AddressDTO> list = new ArrayList<>();
+        for (Address address : addresses) {
+            list.add(toDto(address));
+        }
+        return list;
     }
 }

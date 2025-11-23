@@ -1,10 +1,13 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.OrderDTO;
 import com.ecommerce.ecommerceplatform.dto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.entity.Order;
+import com.ecommerce.ecommerceplatform.mapper.OrderMapper;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -24,23 +27,23 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getOrders(Authentication authentication) {
+    public ResponseEntity<List<OrderDTO>> getOrders(Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
-        return orderService.getAllOrders(user.getId());
+        return ResponseEntity.ok(OrderMapper.toDtoList(orderService.getAllOrders(user.getId())));
     }
 
     @PostMapping("/checkout")
-    public OrderSummaryDTO checkout(Authentication authentication) {
+    public ResponseEntity<OrderSummaryDTO> checkout(Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
-        return orderService.checkout(user.getId());
+        return ResponseEntity.ok(orderService.checkout(user.getId()));
     }
 
 }

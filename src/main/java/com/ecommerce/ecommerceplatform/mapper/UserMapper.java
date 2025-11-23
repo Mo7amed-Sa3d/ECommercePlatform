@@ -14,7 +14,7 @@ public class UserMapper {
         userDTO.setPhone(user.getPhone());
         userDTO.setCreatedAt(user.getCreatedAt());
         userDTO.setLastLogin(user.getLastLogin());
-        user.setRole(user.getRole());
+        userDTO.setRole(user.getRole());
         return userDTO;
     }
 }

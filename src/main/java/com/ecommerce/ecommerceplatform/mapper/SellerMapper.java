@@ -5,7 +5,7 @@ import com.ecommerce.ecommerceplatform.entity.Seller;
 
 public class SellerMapper {
 
-    public static SellerDTO mapSellerToSellerDTO(Seller seller) {
+    public static SellerDTO toDto(Seller seller) {
         SellerDTO sellerDTO = new SellerDTO();
         sellerDTO.setId(seller.getId());
         sellerDTO.setSellerName(seller.getSellerName());

@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 
