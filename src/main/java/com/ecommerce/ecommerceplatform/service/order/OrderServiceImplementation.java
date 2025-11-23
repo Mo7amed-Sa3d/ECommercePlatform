@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.order;
 
-import com.ecommerce.ecommerceplatform.dto.OrderSummary;
+import com.ecommerce.ecommerceplatform.dto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.entity.*;
 import com.ecommerce.ecommerceplatform.repository.OrderRepository;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
@@ -44,10 +44,10 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public OrderSummary checkout(Long userId) {
+    public OrderSummaryDTO checkout(Long userId) {
         User user = userServices.getUserByID(userId);
         Order order = createOrder(user);
-        return new OrderSummary(order);
+        return new OrderSummaryDTO(order);
     }
 
     @Override

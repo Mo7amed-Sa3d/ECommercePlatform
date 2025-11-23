@@ -12,11 +12,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderSummary {
+public class OrderSummaryDTO {
     private Long orderId;
     List<OrderItem> orderItemList;
     private BigDecimal finalTotal;
-    public OrderSummary(Order order){
+    public OrderSummaryDTO(Order order){
         orderId = order.getId();
         finalTotal = order.getTotalAmount();
         orderItemList = order.getOrderItems();

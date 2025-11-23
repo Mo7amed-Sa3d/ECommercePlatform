@@ -1,13 +1,12 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.OrderSummary;
+import com.ecommerce.ecommerceplatform.dto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class OrderController {
     }
 
     @PostMapping("/checkout")
-    public OrderSummary checkout(Authentication authentication) {
+    public OrderSummaryDTO checkout(Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())

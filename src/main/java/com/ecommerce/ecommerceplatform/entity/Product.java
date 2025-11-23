@@ -66,6 +66,7 @@ public class Product {
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore     // <-- prevents infinite recursion
     List<CartItem> cartItems;
 
     @ManyToMany
@@ -73,9 +74,11 @@ public class Product {
             name = "product_category",
             joinColumns = @JoinColumn(name="product_id"),
             inverseJoinColumns = @JoinColumn(name="category_id"))
+    @JsonIgnore     // <-- prevents infinite recursion
     private List<Category> categories;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore     // <-- prevents infinite recursion
     private List<OrderItem> orderItems;
 
 
