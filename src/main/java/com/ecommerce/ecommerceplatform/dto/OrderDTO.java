@@ -20,8 +20,5 @@ public class OrderDTO {
     private BigDecimal totalAmount;
     private String currency;
     private Instant createdAt;
-    private Long userId;
     private List<OrderItemDTO> orderItemDTOList;
-    private Long shipmentID;
-    private Long paymentID;
 }

@@ -20,6 +20,5 @@ public class ProductVariantDTO {
     private BigDecimal price;
     private Integer weightGrams;
     private Integer stockSize;
-    private Long productId;
 
 }

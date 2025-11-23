@@ -1,8 +1,18 @@
 package com.ecommerce.ecommerceplatform.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
+
+@RequiredArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 
 public class ProductDTO {
     private Long id;
@@ -13,7 +23,4 @@ public class ProductDTO {
     private Boolean active;
     private Map<String,Object> attributes;
     private Instant createdAt;
-    private Long sellerId;
-    private Long brandId;
-    
 }

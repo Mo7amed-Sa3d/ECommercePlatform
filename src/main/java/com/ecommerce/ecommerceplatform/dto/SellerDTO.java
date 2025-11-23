@@ -17,5 +17,4 @@ public class SellerDTO {
     private String sellerName;
     private boolean verified;
     private Instant createdAt;
-    private Long userId;
 }

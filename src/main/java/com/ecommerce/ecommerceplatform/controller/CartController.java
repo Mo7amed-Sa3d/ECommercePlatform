@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.CartItemBody;
+import com.ecommerce.ecommerceplatform.dto.CartItemDTO;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
@@ -34,15 +34,15 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<Cart> addItemToCart(@RequestBody CartItemBody cartItemBody, Authentication authentication) {
+    public ResponseEntity<Cart> addItemToCart(@RequestBody CartItemDTO cartItemDTO, Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
         return ResponseEntity.ok(cartService.addItemToCartByUserID(user.getId()
-                                                                    ,cartItemBody.getProductId()
-                                                                    ,cartItemBody.getQuantity()));
+                                                                    , cartItemDTO.getProductId()
+                                                                    , cartItemDTO.getQuantity()));
     }
 
     @DeleteMapping

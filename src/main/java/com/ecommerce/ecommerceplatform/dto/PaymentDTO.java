@@ -21,5 +21,4 @@ PaymentDTO {
     private String status;
     private BigDecimal amount;
     private Instant paidAt;
-    private Long orderId;
 }

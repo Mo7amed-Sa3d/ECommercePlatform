@@ -15,6 +15,4 @@ public class ProductImageDTO {
     private String url;
     private String altText;
     private Integer displayOrder;
-    private Long productId;
-
 }

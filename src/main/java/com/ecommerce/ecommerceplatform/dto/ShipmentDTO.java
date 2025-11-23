@@ -18,6 +18,5 @@ public class ShipmentDTO {
     private String status;
     private Instant shoppedAt;
     private Instant deliveryAt;
-    private Long orderId;
 
 }

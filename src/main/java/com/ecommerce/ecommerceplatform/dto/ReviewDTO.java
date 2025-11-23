@@ -18,6 +18,4 @@ public class ReviewDTO {
     private String title;
     private String body;
     private Instant createdAt;
-    private Long productId;
-    private Long userId;
 }
