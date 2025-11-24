@@ -11,4 +11,8 @@ public interface CategoryService {
     List<Category> getAllCategories();
 
     Category createCategory(String categoryName,Long parentId);
+
+    List<Product> getAllProducts(Long categoryId);
+
+    Category findById(Long categoryId);
 }

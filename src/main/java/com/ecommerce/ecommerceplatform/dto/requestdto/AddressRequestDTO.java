@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 
 public class AddressRequestDTO {
-    private Long id;
     private String fullName;
     private String line1;
     private String line2;
@@ -18,4 +17,5 @@ public class AddressRequestDTO {
     private String postalCode;
     private String country;
     private String phone;
+    private Long userId;
 }

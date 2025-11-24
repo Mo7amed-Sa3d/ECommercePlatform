@@ -11,8 +11,10 @@ import java.math.BigDecimal;
 @Setter
 
 public class OrderItemRequestDTO {
-    private Long id;
+    private Long userId;
+    private Long orderId;
     private Integer quantity;
+    private Long productId;
     private BigDecimal unitPrice;
     private BigDecimal taxAmount;
 

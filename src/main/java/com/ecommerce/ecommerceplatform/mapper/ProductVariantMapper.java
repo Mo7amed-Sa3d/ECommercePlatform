@@ -15,14 +15,4 @@ public class ProductVariantMapper {
         return productVariantResponseDTO;
     }
 
-    public static ProductVariant toEntity(ProductVariantResponseDTO productVariantResponseDTO) {
-        ProductVariant productVariant = new ProductVariant();
-        productVariant.setId(productVariantResponseDTO.getId());
-        productVariant.setSku(productVariantResponseDTO.getSku());
-        productVariant.setPrice(productVariantResponseDTO.getPrice());
-        productVariant.setAttributes(productVariantResponseDTO.getAttributes());
-        productVariant.setWeightGrams(productVariantResponseDTO.getWeightGrams());
-        productVariant.setStockSize(productVariantResponseDTO.getStockSize());
-        return productVariant;
-    }
 }

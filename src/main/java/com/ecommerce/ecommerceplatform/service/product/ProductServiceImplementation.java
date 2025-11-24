@@ -1,8 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
-import com.ecommerce.ecommerceplatform.entity.Product;
-import com.ecommerce.ecommerceplatform.entity.ProductImage;
-import com.ecommerce.ecommerceplatform.entity.Seller;
+import com.ecommerce.ecommerceplatform.entity.*;
 import com.ecommerce.ecommerceplatform.repository.ProductImageRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,6 +22,8 @@ import java.util.UUID;
 @Service
 public class ProductServiceImplementation implements ProductService {
 
+    private final BrandService brandService;
+    private final CategoryService categoryService;
     ProductRepository productRepository;
     ProductImageRepository productImageRepository;
 
@@ -30,9 +31,11 @@ public class ProductServiceImplementation implements ProductService {
     private String productImagesUploadDirectory;
 
     @Autowired
-    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository) {
+    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository, BrandService brandService, CategoryService categoryService) {
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
+        this.brandService = brandService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -79,5 +82,20 @@ public class ProductServiceImplementation implements ProductService {
         productImageRepository.save(productImage);
 
         return productImage;
+    }
+
+    @Override
+    public Product saveProduct(Product product, Long brandId, Long categoryId, Seller seller) {
+        Brand brand = brandService.findById(brandId);
+        Category category = categoryService.findById(categoryId);
+        brand.addProduct(product);
+        category.addProduct(product);
+        seller.addProduct(product);
+        return productRepository.save(product);
+    }
+
+    @Override
+    public List<Product> findAllByCategoryId(Long categoryId) {
+        return productRepository.findAllProductsByCategory(categoryId);
     }
 }

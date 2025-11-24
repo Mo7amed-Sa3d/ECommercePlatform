@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 
 public class OrderRequestDTO {
-    private Long id;
     private String status;
     private BigDecimal totalAmount;
     private String currency;

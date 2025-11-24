@@ -1,25 +1,15 @@
 package com.ecommerce.ecommerceplatform.mapper;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.ProductRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Product;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductMapper {
 
-    public static Product toEntity(ProductResponseDTO productResponseDTO) {
-        Product product = new Product();
-        product.setId(productResponseDTO.getId());
-        product.setSku(productResponseDTO.getSku());
-        product.setTitle(productResponseDTO.getTitle());
-        product.setDescription(productResponseDTO.getDescription());
-        product.setBasePrice(productResponseDTO.getBasePrice());
-        product.setActive(productResponseDTO.getActive());
-        product.setAttributes(productResponseDTO.getAttributes());
-        product.setCreatedAt(productResponseDTO.getCreatedAt());
-        return product;
-    }
 
     public static ProductResponseDTO toDTO(Product product) {
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
@@ -40,5 +30,17 @@ public class ProductMapper {
             productResponseDTOList.add(toDTO(product));
         }
         return productResponseDTOList;
+    }
+
+    public static Product toEntity(ProductRequestDTO productRequestDTO) {
+        Product product = new Product();
+        product.setSku(productRequestDTO.getSku());
+        product.setTitle(productRequestDTO.getTitle());
+        product.setDescription(productRequestDTO.getDescription());
+        product.setBasePrice(productRequestDTO.getBasePrice());
+        product.setActive(productRequestDTO.getActive());
+        product.setAttributes(productRequestDTO.getAttributes());
+        product.setCreatedAt(Instant.now());
+        return product;
     }
 }

@@ -61,7 +61,8 @@ public class Category {
         child.setParent(null);
     }
     public void addProduct(Product product) {
-        if (products == null) products = new ArrayList<>();
+        if (products == null)
+            products = new ArrayList<>();
         products.add(product);
         product.getCategories().add(this);
     }

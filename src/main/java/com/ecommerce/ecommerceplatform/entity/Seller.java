@@ -109,4 +109,5 @@ public class Seller {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
+
 }

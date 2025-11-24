@@ -5,10 +5,10 @@ import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.mapper.OrderMapper;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,29 +19,25 @@ public class OrderController {
 
     OrderService orderService;
     UserServices userServices;
+    UserUtility userUtility;
     @Autowired
-    public OrderController(OrderService orderService, UserServices userServices) {
+    public OrderController(OrderService orderService,
+                           UserServices userServices,
+                           UserUtility userUtility) {
         this.orderService = orderService;
         this.userServices = userServices;
+        this.userUtility = userUtility;
     }
 
     @GetMapping
     public ResponseEntity<List<OrderResponseDTO>> getOrders(Authentication authentication) {
-        String userEmail = authentication.getName();
-        var user_op = userServices.getUserByEmail(userEmail);
-        if(user_op.isEmpty())
-            throw new UsernameNotFoundException("Username not found");
-        var user = user_op.get();
-        return ResponseEntity.ok(OrderMapper.toDtoList(orderService.getAllOrders(user.getId())));
+        var user = userUtility.getCurrentUser(authentication);
+        return ResponseEntity.ok(OrderMapper.toDtoList(orderService.getAllOrdersById(user.getId())));
     }
 
     @PostMapping("/checkout")
     public ResponseEntity<OrderSummaryDTO> checkout(Authentication authentication) {
-        String userEmail = authentication.getName();
-        var user_op = userServices.getUserByEmail(userEmail);
-        if(user_op.isEmpty())
-            throw new UsernameNotFoundException("Username not found");
-        var user = user_op.get();
+        var user = userUtility.getCurrentUser(authentication);
         return ResponseEntity.ok(orderService.checkout(user.getId()));
     }
 

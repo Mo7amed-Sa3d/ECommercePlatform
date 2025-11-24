@@ -10,17 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartMapper {
-    public static Cart toEntity(CartResponseDTO cartResponseDTO,
-                                User user,
-                                List<CartItem> cartItems
-                                 ) {
-        Cart cart = new Cart();
-        cart.setId(cartResponseDTO.getId());
-        cart.setUpdatedAt(cartResponseDTO.getUpdatedAt());
-        cart.setUser(user);
-        cart.setCartItems(cartItems);
-        return cart;
-    }
 
     public static CartResponseDTO toDTO(Cart cart) {
         CartResponseDTO cartResponseDTO = new CartResponseDTO();

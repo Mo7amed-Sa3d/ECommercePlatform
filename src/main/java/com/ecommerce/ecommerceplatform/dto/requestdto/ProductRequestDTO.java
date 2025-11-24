@@ -13,7 +13,6 @@ import java.util.Map;
 @Setter
 
 public class ProductRequestDTO {
-    private Long id;
     private String sku;
     private String title;
     private String description;
@@ -21,4 +20,6 @@ public class ProductRequestDTO {
     private Boolean active;
     private Map<String,Object> attributes;
     private Instant createdAt;
+    private Long brandId;
+    private Long categoryId;
 }

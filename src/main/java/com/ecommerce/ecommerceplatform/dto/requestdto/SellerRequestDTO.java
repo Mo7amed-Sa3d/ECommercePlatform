@@ -10,8 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 
-public class SellerRequestDTO {
-    private Long id;
+public class SellerRequestDTO extends UserRequestDTO {
     private String sellerName;
     private boolean verified;
     private Instant createdAt;

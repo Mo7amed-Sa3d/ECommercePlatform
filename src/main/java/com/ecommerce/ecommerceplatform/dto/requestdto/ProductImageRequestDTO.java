@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 
 public class ProductImageRequestDTO {
-    private Long id;
     private String url;
     private String altText;
     private Integer displayOrder;
+    private Long productId;
 }

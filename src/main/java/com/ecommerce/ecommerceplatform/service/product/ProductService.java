@@ -14,5 +14,7 @@ public interface ProductService {
     Product saveProduct(Product product, Seller seller);
     void removeProduct(Long productId);
     ProductImage saveProductImage(MultipartFile file, Long productId) throws IOException;
+    Product saveProduct(Product entity, Long brandId, Long categoryId, Seller seller);
 
+    List<Product> findAllByCategoryId(Long categoryId);
 }

@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 
 public class CategoryRequestDTO {
-    private Long id;
     private String name;
     private Long parentId;
 }

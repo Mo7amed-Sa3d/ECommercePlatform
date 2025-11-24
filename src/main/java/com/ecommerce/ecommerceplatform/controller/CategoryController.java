@@ -1,7 +1,10 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.CategoryRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.CategoryResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.mapper.CategoryMapper;
+import com.ecommerce.ecommerceplatform.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.service.product.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +28,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody String categoryName, Long parentId){
-        return ResponseEntity.ok(CategoryMapper.toDTO(categoryService.createCategory(categoryName,parentId)));
+    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO){
+        return ResponseEntity.ok(CategoryMapper.toDTO(categoryService.createCategory(categoryRequestDTO.getName(),
+                                                         categoryRequestDTO.getParentId())));
     }
 
+    @GetMapping("/{categoryId}/products")
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts(@PathVariable Long categoryId){
+        return ResponseEntity.ok(ProductMapper.toDTOList(categoryService.getAllProducts(categoryId)));
+    }
 }

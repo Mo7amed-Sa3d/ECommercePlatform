@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.ProductRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductImageResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Product;
@@ -8,6 +9,7 @@ import com.ecommerce.ecommerceplatform.mapper.ProductImageMapper;
 import com.ecommerce.ecommerceplatform.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.service.product.ProductService;
 import com.ecommerce.ecommerceplatform.service.seller.SellerService;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,11 +24,13 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final UserUtility userUtility;
     SellerService sellerService;
     @Autowired
-    public ProductController(ProductService productService, SellerService sellerService) {
+    public ProductController(ProductService productService, SellerService sellerService, UserUtility userUtility) {
         this.productService = productService;
         this.sellerService = sellerService;
+        this.userUtility = userUtility;
     }
 
     /*
@@ -47,10 +51,13 @@ public class ProductController {
      */
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody Product product, Authentication authentication) {
-        String sellerEmail = authentication.getName();
-        Seller seller = sellerService.findSellerByEmail(sellerEmail);
-        return ResponseEntity.ok().body(ProductMapper.toDTO(productService.saveProduct(product,seller)));
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO, Authentication authentication) {
+        Seller seller = userUtility.getCurrentUser(authentication).getSeller();
+
+        return ResponseEntity.ok().body(ProductMapper.toDTO(productService.saveProduct(ProductMapper.toEntity(productRequestDTO),
+                                                                                        productRequestDTO.getBrandId(),
+                                                                                        productRequestDTO.getCategoryId()
+                                                                                        ,seller)));
     }
 
     @PostMapping("/{productId}/images")

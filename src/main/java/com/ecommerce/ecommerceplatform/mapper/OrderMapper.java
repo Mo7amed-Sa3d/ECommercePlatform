@@ -10,16 +10,7 @@ import java.util.List;
 
 public class OrderMapper {
 
-    public static Order toEntity(OrderResponseDTO orderResponseDTO, List<OrderItem> orderItemList) {
-        Order order = new Order();
-        order.setId(orderResponseDTO.getId());
-        order.setStatus(orderResponseDTO.getStatus());
-        order.setTotalAmount(orderResponseDTO.getTotalAmount());
-        order.setCurrency(orderResponseDTO.getCurrency());
-        order.setCreatedAt(orderResponseDTO.getCreatedAt());
-        order.setOrderItems(orderItemList);
-        return order;
-    }
+
 
     public static OrderResponseDTO toDTO(Order order) {
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO();

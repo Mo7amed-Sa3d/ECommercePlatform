@@ -9,5 +9,5 @@ import java.util.List;
 public interface OrderService {
     Order createOrder(User user);
     OrderSummaryDTO checkout(Long userId);
-    List<Order> getAllOrders(Long userId);
+    List<Order> getAllOrdersById(Long userId);
 }

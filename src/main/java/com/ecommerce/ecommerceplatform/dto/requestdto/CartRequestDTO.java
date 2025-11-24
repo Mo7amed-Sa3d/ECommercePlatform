@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 
 public class CartRequestDTO {
-    private Long id;
     private Instant updatedAt;
     private Long userID;
     private List<CartItemRequestDTO> cartItemResponseDTOList;

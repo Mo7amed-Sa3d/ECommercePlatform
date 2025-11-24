@@ -77,6 +77,9 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
 
+    public Product(){
+        categories = new ArrayList<>();
+    }
 
     public Long getId() {
         return id;
@@ -118,8 +121,6 @@ public class Product {
     }
 
     public void addCategory(Category category) {
-        if (categories == null)
-            categories = new ArrayList<>();
         categories.add(category);
         category.getProducts().add(this);
     }

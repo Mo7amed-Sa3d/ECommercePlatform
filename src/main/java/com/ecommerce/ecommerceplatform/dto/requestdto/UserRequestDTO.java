@@ -10,12 +10,11 @@ import java.time.Instant;
 @Getter
 @Setter
 public class UserRequestDTO {
-    private Long id;
     private String email;
+    private String password;
     private String firstName;
     private String lastName;
     private String phone;
-    private Instant createdAt;
-    private Instant lastLogin;
     private String role;
+
 }

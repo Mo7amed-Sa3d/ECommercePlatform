@@ -39,9 +39,7 @@ public class UserServiceImplementation implements UserServices {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if(user.getRole().equals("ROLE_SELLER")){
             Seller seller = user.getSeller();
-            System.out.println(seller);
             user.setSeller(seller);
-            System.out.println("seller saved");
         }
         return userRepository.save(user);
     }

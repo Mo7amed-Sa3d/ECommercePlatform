@@ -38,10 +38,12 @@ public class CartServiceImplementation implements CartService {
     public Cart addItemToCartByUserID(Long userId, Long productId, int quantity) {
         Cart cart = userServices.getCartByUserID(userId);
         if(cart == null) {
+            //TODO: Make this throw exception
             cart = new Cart();
             User user = userServices.getUserByID(userId);
             cart.setUser(user);
         }
+        cart.setUpdatedAt(Instant.now());
         CartItem item = new CartItem();
         item.setProduct(productService.getProductById(productId));
         item.setQuantity(quantity);
@@ -75,5 +77,10 @@ public class CartServiceImplementation implements CartService {
 
         return cartRepository.save(cart);
 
+    }
+
+    @Override
+    public CartItem gatCartItem(Long itemId) {
+        return cartItemRepository.findById(itemId).orElse(null);
     }
 }

@@ -11,9 +11,9 @@ import java.time.Instant;
 @Setter
 
 public class BrandRequestDTO {
-    private Long id;
     private String name;
     private String description;
     private String country;
     private Instant createdAt;
+    
 }

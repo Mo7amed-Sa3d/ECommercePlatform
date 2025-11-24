@@ -8,14 +8,6 @@ import java.util.List;
 
 public class OrderItemMapper {
 
-    public static OrderItem toEntity(OrderItemResponseDTO orderItemResponseDTO){
-        OrderItem orderItem = new OrderItem();
-        orderItem.setId(orderItemResponseDTO.getId());
-        orderItem.setQuantity(orderItemResponseDTO.getQuantity());
-        orderItem.setUnitPrice(orderItemResponseDTO.getUnitPrice());
-        orderItem.setTaxAmount(orderItemResponseDTO.getTaxAmount());
-        return orderItem;
-    }
 
     public static OrderItemResponseDTO toDTO(OrderItem orderItem) {
         OrderItemResponseDTO orderItemResponseDTO = new OrderItemResponseDTO();

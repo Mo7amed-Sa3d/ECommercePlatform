@@ -8,19 +8,14 @@ import java.util.List;
 
 public class CategoryMapper {
 
-    public static Category toEntity(CategoryResponseDTO categoryResponseDTO, Category parent) {
-        Category category = new Category();
-        category.setId(categoryResponseDTO.getId());
-        category.setName(categoryResponseDTO.getName());
-        category.setParent(parent);
-        return category;
-    }
-
     public static CategoryResponseDTO toDTO(Category category) {
         CategoryResponseDTO categoryResponseDTO = new CategoryResponseDTO();
         categoryResponseDTO.setId(category.getId());
         categoryResponseDTO.setName(category.getName());
-        categoryResponseDTO.setParentId(category.getParent().getId());
+        if(category.getParent() != null)
+            categoryResponseDTO.setParentId(category.getParent().getId());
+        else
+            category.setParent(null);
         return categoryResponseDTO;
     }
 

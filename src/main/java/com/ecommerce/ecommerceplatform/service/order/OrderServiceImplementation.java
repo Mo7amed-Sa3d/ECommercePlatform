@@ -59,8 +59,8 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public List<Order> getAllOrders(Long userId) {
-        return orderRepository.findAll();
+    public List<Order> getAllOrdersById(Long userId) {
+        return orderRepository.findAllByUserId(userId);
     }
 
 }

@@ -1,7 +1,10 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.SellerRequestDTO;
+import com.ecommerce.ecommerceplatform.dto.requestdto.UserRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.User;
+import com.ecommerce.ecommerceplatform.mapper.SellerMapper;
 import com.ecommerce.ecommerceplatform.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +26,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody User user) {
-        User savedUser = userServices.registerUser(user);
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userData) {
+        User newUser = UserMapper.toEntity(userData);
+        User savedUser = userServices.registerUser(newUser);
         return ResponseEntity.ok(UserMapper.toDto(savedUser));
+    }
+    @PostMapping("/registerSeller")
+    public ResponseEntity<UserResponseDTO> registerSeller(@RequestBody SellerRequestDTO userData) {
+        User newUser = SellerMapper.toEntity(userData);
+        newUser = userServices.registerUser(newUser);
+        return ResponseEntity.ok(UserMapper.toDto(newUser));
     }
 
 }

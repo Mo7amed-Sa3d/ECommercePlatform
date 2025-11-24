@@ -11,9 +11,9 @@ import java.time.Instant;
 @Setter
 
 public class ReviewRequestDTO {
-    private Long id;
     private Integer rating;
     private String title;
     private String body;
     private Instant createdAt;
+    private Long productId;
 }

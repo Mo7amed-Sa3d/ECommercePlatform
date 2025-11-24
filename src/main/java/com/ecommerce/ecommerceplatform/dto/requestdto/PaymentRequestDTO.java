@@ -13,10 +13,10 @@ import java.time.Instant;
 
 public class
 PaymentRequestDTO {
-    private Long id;
     private String provider;
     private String providerTxnId;
     private String status;
     private BigDecimal amount;
     private Instant paidAt;
+    private Long orderId;
 }

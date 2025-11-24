@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.mapper;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.AddressRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.AddressResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
 
@@ -7,19 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressMapper {
-    public static Address toEntity(AddressResponseDTO addressResponseDTO) {
-        Address address = new Address();
-        address.setId(addressResponseDTO.getId());
-        address.setFullName(addressResponseDTO.getFullName());
-        address.setLine1(addressResponseDTO.getLine1());
-        address.setLine2(addressResponseDTO.getLine2());
-        address.setCity(addressResponseDTO.getCity());
-        address.setRegion(addressResponseDTO.getRegion());
-        address.setPostalCode(addressResponseDTO.getPostalCode());
-        address.setCountry(addressResponseDTO.getCountry());
-        address.setPhone(addressResponseDTO.getPhone());
-        return address;
-    }
     public static AddressResponseDTO toDto(Address address) {
         AddressResponseDTO addressResponseDTO = new AddressResponseDTO();
         addressResponseDTO.setId(address.getId());
@@ -40,5 +28,18 @@ public class AddressMapper {
             list.add(toDto(address));
         }
         return list;
+    }
+
+    public static Address toEntity(AddressRequestDTO addressRequestDTO) {
+        Address address = new Address();
+        address.setFullName(addressRequestDTO.getFullName());
+        address.setLine1(addressRequestDTO.getLine1());
+        address.setLine2(addressRequestDTO.getLine2());
+        address.setCity(addressRequestDTO.getCity());
+        address.setRegion(addressRequestDTO.getRegion());
+        address.setPostalCode(addressRequestDTO.getPostalCode());
+        address.setCountry(addressRequestDTO.getCountry());
+        address.setPhone(addressRequestDTO.getPhone());
+        return address;
     }
 }

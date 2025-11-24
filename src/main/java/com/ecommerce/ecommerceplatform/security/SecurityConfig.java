@@ -44,10 +44,12 @@ public class SecurityConfig {
                 // Disable CSRF (since we are using REST API)
                 .csrf(AbstractHttpConfigurer::disable)
                 // Enable CORS for React frontend
-                .cors(Customizer.withDefaults())
+//                .cors(Customizer.withDefaults())
                 // Authorize requests
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/brand/**").permitAll()
+                        .requestMatchers("/api/categories").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET,"/api/users/**").hasAnyRole("USER","SELLER")

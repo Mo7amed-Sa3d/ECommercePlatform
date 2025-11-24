@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.controller;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.AddressRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.AddressResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
@@ -37,8 +38,8 @@ public class UserController {
     }
 
     @PostMapping("{userId}/addresses")
-    public ResponseEntity<AddressResponseDTO> addAddress(@PathVariable Long userId, @RequestBody Address address) {
-        Address savedAddress = userServices.addAddressToUser(userId, address);
+    public ResponseEntity<AddressResponseDTO> addAddress(@PathVariable Long userId, @RequestBody AddressRequestDTO addressRequestDTO) {
+        Address savedAddress = userServices.addAddressToUser(userId, AddressMapper.toEntity(addressRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(AddressMapper.toDto(savedAddress));
     }
 

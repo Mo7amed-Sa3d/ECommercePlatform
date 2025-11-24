@@ -12,11 +12,10 @@ import java.util.Map;
 @Setter
 
 public class ProductVariantRequestDTO {
-    private Long id;
     private String sku;
     private Map<String,Object> attributes;
     private BigDecimal price;
     private Integer weightGrams;
     private Integer stockSize;
-
+    private Long productId;
 }

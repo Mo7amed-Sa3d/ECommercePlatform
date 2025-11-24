@@ -4,14 +4,6 @@ import com.ecommerce.ecommerceplatform.dto.responsedto.ProductImageResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.ProductImage;
 
 public class ProductImageMapper {
-    public static ProductImage toEntity(ProductImageResponseDTO productImageResponseDTO) {
-        ProductImage productImage = new ProductImage();
-        productImage.setId(productImageResponseDTO.getId());
-        productImage.setUrl(productImageResponseDTO.getUrl());
-        productImage.setAltText(productImageResponseDTO.getAltText());
-        productImage.setDisplayOrder(productImageResponseDTO.getDisplayOrder());
-        return productImage;
-    }
 
     public static ProductImageResponseDTO toDTO(ProductImage productImage) {
         ProductImageResponseDTO productImageResponseDTO = new ProductImageResponseDTO();
