@@ -1,8 +1,7 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.OrderDTO;
-import com.ecommerce.ecommerceplatform.dto.OrderSummaryDTO;
-import com.ecommerce.ecommerceplatform.entity.Order;
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.mapper.OrderMapper;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
@@ -27,7 +26,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getOrders(Authentication authentication) {
+    public ResponseEntity<List<OrderResponseDTO>> getOrders(Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())

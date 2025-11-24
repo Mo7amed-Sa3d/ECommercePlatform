@@ -1,28 +1,28 @@
 package com.ecommerce.ecommerceplatform.mapper;
 
-import com.ecommerce.ecommerceplatform.dto.ProductVariantDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductVariantResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.ProductVariant;
 
 public class ProductVariantMapper {
-    public static ProductVariantDTO toDTO(ProductVariant productVariant) {
-        ProductVariantDTO productVariantDTO = new ProductVariantDTO();
-        productVariantDTO.setId(productVariant.getId());
-        productVariantDTO.setSku(productVariant.getSku());
-        productVariantDTO.setPrice(productVariant.getPrice());
-        productVariantDTO.setAttributes(productVariant.getAttributes());
-        productVariantDTO.setWeightGrams(productVariant.getWeightGrams());
-        productVariantDTO.setStockSize(productVariant.getStockSize());
-        return productVariantDTO;
+    public static ProductVariantResponseDTO toDTO(ProductVariant productVariant) {
+        ProductVariantResponseDTO productVariantResponseDTO = new ProductVariantResponseDTO();
+        productVariantResponseDTO.setId(productVariant.getId());
+        productVariantResponseDTO.setSku(productVariant.getSku());
+        productVariantResponseDTO.setPrice(productVariant.getPrice());
+        productVariantResponseDTO.setAttributes(productVariant.getAttributes());
+        productVariantResponseDTO.setWeightGrams(productVariant.getWeightGrams());
+        productVariantResponseDTO.setStockSize(productVariant.getStockSize());
+        return productVariantResponseDTO;
     }
 
-    public static ProductVariant toEntity(ProductVariantDTO productVariantDTO) {
+    public static ProductVariant toEntity(ProductVariantResponseDTO productVariantResponseDTO) {
         ProductVariant productVariant = new ProductVariant();
-        productVariant.setId(productVariantDTO.getId());
-        productVariant.setSku(productVariantDTO.getSku());
-        productVariant.setPrice(productVariantDTO.getPrice());
-        productVariant.setAttributes(productVariantDTO.getAttributes());
-        productVariant.setWeightGrams(productVariantDTO.getWeightGrams());
-        productVariant.setStockSize(productVariantDTO.getStockSize());
+        productVariant.setId(productVariantResponseDTO.getId());
+        productVariant.setSku(productVariantResponseDTO.getSku());
+        productVariant.setPrice(productVariantResponseDTO.getPrice());
+        productVariant.setAttributes(productVariantResponseDTO.getAttributes());
+        productVariant.setWeightGrams(productVariantResponseDTO.getWeightGrams());
+        productVariant.setStockSize(productVariantResponseDTO.getStockSize());
         return productVariant;
     }
 }

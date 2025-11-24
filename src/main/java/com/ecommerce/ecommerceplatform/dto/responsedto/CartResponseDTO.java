@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.responsedto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -12,9 +11,9 @@ import java.util.List;
 @Getter
 @Setter
 
-public class CartDTO {
+public class CartResponseDTO {
     private Long id;
     private Instant updatedAt;
     private Long userID;
-    private List<CartItemDTO> cartItemDTOList;
+    private List<CartItemResponseDTO> cartItemResponseDTOList;
 }

@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -10,7 +9,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class ShipmentDTO {
+public class ShipmentRequestDTO {
     private Long id;
     private String carrier;
     private String trackingNumber;

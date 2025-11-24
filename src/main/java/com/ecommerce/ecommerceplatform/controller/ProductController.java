@@ -1,15 +1,13 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.ProductDTO;
-import com.ecommerce.ecommerceplatform.dto.ProductImageDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductImageResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Product;
-import com.ecommerce.ecommerceplatform.entity.ProductImage;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.mapper.ProductImageMapper;
 import com.ecommerce.ecommerceplatform.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.service.product.ProductService;
 import com.ecommerce.ecommerceplatform.service.seller.SellerService;
-import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -35,12 +33,12 @@ public class ProductController {
         Non-Authenticated end points
      */
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
         return ResponseEntity.ok(ProductMapper.toDTOList(productService.getAllProducts()));
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable("productId") Long productId) {
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable("productId") Long productId) {
         return ResponseEntity.ok(ProductMapper.toDTO(productService.getProductById(productId)));
     }
 
@@ -49,15 +47,15 @@ public class ProductController {
      */
 
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody Product product, Authentication authentication) {
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody Product product, Authentication authentication) {
         String sellerEmail = authentication.getName();
         Seller seller = sellerService.findSellerByEmail(sellerEmail);
         return ResponseEntity.ok().body(ProductMapper.toDTO(productService.saveProduct(product,seller)));
     }
 
     @PostMapping("/{productId}/images")
-    public ResponseEntity<ProductImageDTO> uploadProductImage(@PathVariable("productId") Long productId,
-                                                              @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<ProductImageResponseDTO> uploadProductImage(@PathVariable("productId") Long productId,
+                                                                      @RequestParam("file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(ProductImageMapper.toDTO(productService.saveProductImage(file,productId)));
     }
 

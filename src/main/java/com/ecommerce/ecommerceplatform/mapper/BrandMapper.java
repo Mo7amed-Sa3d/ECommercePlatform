@@ -1,27 +1,27 @@
 package com.ecommerce.ecommerceplatform.mapper;
 
-import com.ecommerce.ecommerceplatform.dto.BrandDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Brand;
 
 public class BrandMapper {
 
-    public static Brand toEntity(BrandDTO brandDTO) {
+    public static Brand toEntity(BrandResponseDTO brandResponseDTO) {
         Brand brand = new Brand();
-        brand.setId(brandDTO.getId());
-        brand.setName(brandDTO.getName());
-        brand.setDescription(brandDTO.getDescription());
-        brand.setCountry(brandDTO.getCountry());
-        brand.setCreatedAt(brandDTO.getCreatedAt());
+        brand.setId(brandResponseDTO.getId());
+        brand.setName(brandResponseDTO.getName());
+        brand.setDescription(brandResponseDTO.getDescription());
+        brand.setCountry(brandResponseDTO.getCountry());
+        brand.setCreatedAt(brandResponseDTO.getCreatedAt());
         return brand;
     }
 
-    public static BrandDTO toDTO(Brand brand) {
-        BrandDTO brandDTO = new BrandDTO();
-        brandDTO.setId(brand.getId());
-        brandDTO.setName(brand.getName());
-        brandDTO.setDescription(brand.getDescription());
-        brandDTO.setCountry(brand.getCountry());
-        brandDTO.setCreatedAt(brand.getCreatedAt());
-        return brandDTO;
+    public static BrandResponseDTO toDTO(Brand brand) {
+        BrandResponseDTO brandResponseDTO = new BrandResponseDTO();
+        brandResponseDTO.setId(brand.getId());
+        brandResponseDTO.setName(brand.getName());
+        brandResponseDTO.setDescription(brand.getDescription());
+        brandResponseDTO.setCountry(brand.getCountry());
+        brandResponseDTO.setCreatedAt(brand.getCreatedAt());
+        return brandResponseDTO;
     }
 }

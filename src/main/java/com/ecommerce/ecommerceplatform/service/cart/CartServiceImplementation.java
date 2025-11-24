@@ -3,11 +3,18 @@ package com.ecommerce.ecommerceplatform.service.cart;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.entity.User;
+import com.ecommerce.ecommerceplatform.repository.CartItemRepository;
 import com.ecommerce.ecommerceplatform.repository.CartRepository;
 import com.ecommerce.ecommerceplatform.service.product.ProductService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class CartServiceImplementation implements CartService {
@@ -15,14 +22,16 @@ public class CartServiceImplementation implements CartService {
     CartRepository cartRepository;
     ProductService productService;
     UserServices userServices;
+    CartItemRepository cartItemRepository;
     @Autowired
     public CartServiceImplementation(CartRepository cartRepository,
                                      UserServices userServices,
-                                     ProductService productService
-                                     ) {
+                                     ProductService productService,
+                                     CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.userServices = userServices;
         this.productService = productService;
+        this.cartItemRepository = cartItemRepository;
     }
 
     @Override
@@ -47,4 +56,24 @@ public class CartServiceImplementation implements CartService {
         return cartRepository.save(cart);
     }
 
+
+    //TODO: Delete the cart_item from the database not only breaking the link
+
+    @Override
+    @Transactional
+    public Cart clearCart(Cart cart) {
+        Iterator<CartItem> iterator = cart.getCartItems().iterator();
+//        List<CartItem> cartItems = new ArrayList<>(cart.getCartItems());
+        while (iterator.hasNext()) {
+            CartItem item = iterator.next();
+            item.setCart(null);   // break the child relationship
+            iterator.remove();
+        }
+//        Cart updatedCart = cartRepository.save(cart);
+//        System.out.println(cartItems);
+//        cartItemRepository.deleteAll(cartItems);
+
+        return cartRepository.save(cart);
+
+    }
 }

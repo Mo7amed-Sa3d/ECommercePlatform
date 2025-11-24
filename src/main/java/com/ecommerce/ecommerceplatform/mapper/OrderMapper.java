@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerceplatform.mapper;
 
-import com.ecommerce.ecommerceplatform.dto.OrderDTO;
-import com.ecommerce.ecommerceplatform.dto.OrderItemDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderItemResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.entity.OrderItem;
 
@@ -10,39 +10,39 @@ import java.util.List;
 
 public class OrderMapper {
 
-    public static Order toEntity(OrderDTO orderDTO,List<OrderItem> orderItemList) {
+    public static Order toEntity(OrderResponseDTO orderResponseDTO, List<OrderItem> orderItemList) {
         Order order = new Order();
-        order.setId(orderDTO.getId());
-        order.setStatus(orderDTO.getStatus());
-        order.setTotalAmount(orderDTO.getTotalAmount());
-        order.setCurrency(orderDTO.getCurrency());
-        order.setCreatedAt(orderDTO.getCreatedAt());
+        order.setId(orderResponseDTO.getId());
+        order.setStatus(orderResponseDTO.getStatus());
+        order.setTotalAmount(orderResponseDTO.getTotalAmount());
+        order.setCurrency(orderResponseDTO.getCurrency());
+        order.setCreatedAt(orderResponseDTO.getCreatedAt());
         order.setOrderItems(orderItemList);
         return order;
     }
 
-    public static OrderDTO toDTO(Order order) {
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setId(order.getId());
-        orderDTO.setStatus(order.getStatus());
-        orderDTO.setTotalAmount(order.getTotalAmount());
-        orderDTO.setCurrency(order.getCurrency());
-        orderDTO.setCreatedAt(order.getCreatedAt());
+    public static OrderResponseDTO toDTO(Order order) {
+        OrderResponseDTO orderResponseDTO = new OrderResponseDTO();
+        orderResponseDTO.setId(order.getId());
+        orderResponseDTO.setStatus(order.getStatus());
+        orderResponseDTO.setTotalAmount(order.getTotalAmount());
+        orderResponseDTO.setCurrency(order.getCurrency());
+        orderResponseDTO.setCreatedAt(order.getCreatedAt());
 
-        List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
+        List<OrderItemResponseDTO> orderItemResponseDTOList = new ArrayList<>();
         for (OrderItem orderItem : order.getOrderItems()) {
-            orderItemDTOList.add(OrderItemMapper.toDTO(orderItem));
+            orderItemResponseDTOList.add(OrderItemMapper.toDTO(orderItem));
         }
-        orderDTO.setOrderItemDTOList(orderItemDTOList);
+        orderResponseDTO.setOrderItemResponseDTOList(orderItemResponseDTOList);
 
-        return orderDTO;
+        return orderResponseDTO;
     }
 
-    public static List<OrderDTO> toDtoList(List<Order> orders) {
-        List<OrderDTO> orderDTOList = new ArrayList<>();
+    public static List<OrderResponseDTO> toDtoList(List<Order> orders) {
+        List<OrderResponseDTO> orderResponseDTOList = new ArrayList<>();
         for(Order order : orders) {
-            orderDTOList.add(OrderMapper.toDTO(order));
+            orderResponseDTOList.add(OrderMapper.toDTO(order));
         }
-        return orderDTOList;
+        return orderResponseDTOList;
     }
 }

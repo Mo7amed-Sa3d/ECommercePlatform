@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -11,7 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 
-public class OrderItemDTO {
+public class OrderItemRequestDTO {
     private Long id;
     private Integer quantity;
     private BigDecimal unitPrice;

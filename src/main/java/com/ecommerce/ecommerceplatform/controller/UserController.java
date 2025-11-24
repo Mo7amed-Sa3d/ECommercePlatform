@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.AddressDTO;
-import com.ecommerce.ecommerceplatform.dto.UserDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.AddressResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.mapper.AddressMapper;
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
         Optional<User> user = userServices.getUserByEmail(email);
         if (user.isEmpty())
@@ -37,13 +37,13 @@ public class UserController {
     }
 
     @PostMapping("{userId}/addresses")
-    public ResponseEntity<AddressDTO> addAddress(@PathVariable Long userId, @RequestBody Address address) {
+    public ResponseEntity<AddressResponseDTO> addAddress(@PathVariable Long userId, @RequestBody Address address) {
         Address savedAddress = userServices.addAddressToUser(userId, address);
         return ResponseEntity.status(HttpStatus.CREATED).body(AddressMapper.toDto(savedAddress));
     }
 
     @GetMapping("{userId}/addresses")
-    public ResponseEntity<List<AddressDTO>> getAddresses(@PathVariable Long userId) {
+    public ResponseEntity<List<AddressResponseDTO>> getAddresses(@PathVariable Long userId) {
         return ResponseEntity.ok(AddressMapper.toDtoList(userServices.getAddresses(userId)));
     }
 

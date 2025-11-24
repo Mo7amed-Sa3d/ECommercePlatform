@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -11,10 +10,10 @@ import java.time.Instant;
 @Getter
 @Setter
 
-public class BrandDTO {
+public class ReviewRequestDTO {
     private Long id;
-    private String name;
-    private String description;
-    private String country;
+    private Integer rating;
+    private String title;
+    private String body;
     private Instant createdAt;
 }

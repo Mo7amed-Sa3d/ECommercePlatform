@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.order;
 
-import com.ecommerce.ecommerceplatform.dto.OrderSummaryDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.entity.User;
 

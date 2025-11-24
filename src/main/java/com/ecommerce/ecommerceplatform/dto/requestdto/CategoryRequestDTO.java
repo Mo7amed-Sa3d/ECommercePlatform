@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class CategoryDTO {
+public class CategoryRequestDTO {
     private Long id;
     private String name;
     private Long parentId;

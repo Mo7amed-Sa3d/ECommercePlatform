@@ -1,12 +1,9 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.responsedto;
 
 import com.ecommerce.ecommerceplatform.entity.Order;
-import com.ecommerce.ecommerceplatform.entity.OrderItem;
 import com.ecommerce.ecommerceplatform.mapper.OrderItemMapper;
-import com.ecommerce.ecommerceplatform.mapper.OrderMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderSummaryDTO {
     private Long orderId;
-    private List<OrderItemDTO> orderItemList;
+    private List<OrderItemResponseDTO> orderItemList;
     private BigDecimal finalTotal;
     public OrderSummaryDTO(Order order){
         orderId = order.getId();

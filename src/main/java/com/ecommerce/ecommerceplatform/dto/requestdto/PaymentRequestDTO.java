@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -13,7 +12,7 @@ import java.time.Instant;
 @Setter
 
 public class
-PaymentDTO {
+PaymentRequestDTO {
     private Long id;
     private String provider;
     private String providerTxnId;

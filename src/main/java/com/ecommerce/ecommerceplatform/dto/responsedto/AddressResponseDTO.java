@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.responsedto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class AddressDTO {
+public class AddressResponseDTO {
     private Long id;
     private String fullName;
     private String line1;

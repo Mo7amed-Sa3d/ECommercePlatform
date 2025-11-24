@@ -1,8 +1,7 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.CartDTO;
-import com.ecommerce.ecommerceplatform.dto.CartItemDTO;
-import com.ecommerce.ecommerceplatform.entity.Cart;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartItemResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.mapper.CartMapper;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
@@ -26,7 +25,7 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<CartDTO> getCart(Authentication authentication) {
+    public ResponseEntity<CartResponseDTO> getCart(Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
@@ -36,19 +35,19 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartDTO> addItemToCart(@RequestBody CartItemDTO cartItemDTO, Authentication authentication) {
+    public ResponseEntity<CartResponseDTO> addItemToCart(@RequestBody CartItemResponseDTO cartItemResponseDTO, Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())
             throw new UsernameNotFoundException("Username not found");
         var user = user_op.get();
         return ResponseEntity.ok(CartMapper.toDTO(cartService.addItemToCartByUserID(user.getId()
-                                                                    , cartItemDTO.getProductId()
-                                                                    , cartItemDTO.getQuantity())));
+                                                                    , cartItemResponseDTO.getProductId()
+                                                                    , cartItemResponseDTO.getQuantity())));
     }
 
     @DeleteMapping
-    public ResponseEntity<CartDTO> removeItemFromCart(@RequestBody CartItem item,Authentication authentication) {
+    public ResponseEntity<CartResponseDTO> removeItemFromCart(@RequestBody CartItem item, Authentication authentication) {
         String userEmail = authentication.getName();
         var user_op = userServices.getUserByEmail(userEmail);
         if(user_op.isEmpty())

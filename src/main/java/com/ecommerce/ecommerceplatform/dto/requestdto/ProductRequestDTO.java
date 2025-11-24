@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -13,7 +12,7 @@ import java.util.Map;
 @Getter
 @Setter
 
-public class ProductDTO {
+public class ProductRequestDTO {
     private Long id;
     private String sku;
     private String title;

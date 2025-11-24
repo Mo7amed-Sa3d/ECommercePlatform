@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -13,11 +12,11 @@ import java.util.List;
 @Getter
 @Setter
 
-public class OrderDTO {
+public class OrderRequestDTO {
     private Long id;
     private String status;
     private BigDecimal totalAmount;
     private String currency;
     private Instant createdAt;
-    private List<OrderItemDTO> orderItemDTOList;
+    private List<OrderItemRequestDTO> orderItemResponseDTOList;
 }

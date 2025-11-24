@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.responsedto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class CartItemDTO {
+public class CartItemResponseDTO {
     private Long id;
     private Long cartId;
     private Long productId;

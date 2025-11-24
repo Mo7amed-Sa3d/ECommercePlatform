@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -11,7 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 
-public class SellerDTO {
+public class SellerRequestDTO {
     private Long id;
     private String sellerName;
     private boolean verified;

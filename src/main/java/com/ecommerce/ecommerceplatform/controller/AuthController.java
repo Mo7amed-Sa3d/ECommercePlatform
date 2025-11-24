@@ -1,6 +1,6 @@
 package com.ecommerce.ecommerceplatform.controller;
 
-import com.ecommerce.ecommerceplatform.dto.UserDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
@@ -23,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody User user) {
         User savedUser = userServices.registerUser(user);
         return ResponseEntity.ok(UserMapper.toDto(savedUser));
     }

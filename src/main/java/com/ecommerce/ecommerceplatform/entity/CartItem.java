@@ -18,7 +18,7 @@ public class CartItem {
     @JoinColumn(name="cart_id")
     private Cart cart;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="product_id")
     private Product product;
 
@@ -54,7 +54,9 @@ public class CartItem {
         this.product = product;
         product.addCartItem(this);
     }
-
+    public void makeProductNull(){
+        this.product = null;
+    }
     @Override
     public String toString() {
         return "CartItem{" +

@@ -1,24 +1,24 @@
 package com.ecommerce.ecommerceplatform.mapper;
 
-import com.ecommerce.ecommerceplatform.dto.ProductImageDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductImageResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.ProductImage;
 
 public class ProductImageMapper {
-    public static ProductImage toEntity(ProductImageDTO productImageDTO) {
+    public static ProductImage toEntity(ProductImageResponseDTO productImageResponseDTO) {
         ProductImage productImage = new ProductImage();
-        productImage.setId(productImageDTO.getId());
-        productImage.setUrl(productImageDTO.getUrl());
-        productImage.setAltText(productImageDTO.getAltText());
-        productImage.setDisplayOrder(productImageDTO.getDisplayOrder());
+        productImage.setId(productImageResponseDTO.getId());
+        productImage.setUrl(productImageResponseDTO.getUrl());
+        productImage.setAltText(productImageResponseDTO.getAltText());
+        productImage.setDisplayOrder(productImageResponseDTO.getDisplayOrder());
         return productImage;
     }
 
-    public static ProductImageDTO toDTO(ProductImage productImage) {
-        ProductImageDTO productImageDTO = new ProductImageDTO();
-        productImageDTO.setId(productImage.getId());
-        productImageDTO.setUrl(productImage.getUrl());
-        productImageDTO.setAltText(productImage.getAltText());
-        productImageDTO.setDisplayOrder(productImage.getDisplayOrder());
-        return productImageDTO;
+    public static ProductImageResponseDTO toDTO(ProductImage productImage) {
+        ProductImageResponseDTO productImageResponseDTO = new ProductImageResponseDTO();
+        productImageResponseDTO.setId(productImage.getId());
+        productImageResponseDTO.setUrl(productImage.getUrl());
+        productImageResponseDTO.setAltText(productImage.getAltText());
+        productImageResponseDTO.setDisplayOrder(productImage.getDisplayOrder());
+        return productImageResponseDTO;
     }
 }

@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.dto;
+package com.ecommerce.ecommerceplatform.dto.requestdto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class ProductImageDTO {
+public class ProductImageRequestDTO {
     private Long id;
     private String url;
     private String altText;
