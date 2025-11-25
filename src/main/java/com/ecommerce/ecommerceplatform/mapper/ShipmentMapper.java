@@ -12,6 +12,7 @@ public class ShipmentMapper {
         shipmentResponseDTO.setStatus(shipment.getStatus());
         shipmentResponseDTO.setShoppedAt(shipment.getShippedAt());
         shipmentResponseDTO.setDeliveryAt(shipment.getDeliveredAt());
+        shipmentResponseDTO.setAddressId(shipment.getAddress().getId());
         return shipmentResponseDTO;
 
     }

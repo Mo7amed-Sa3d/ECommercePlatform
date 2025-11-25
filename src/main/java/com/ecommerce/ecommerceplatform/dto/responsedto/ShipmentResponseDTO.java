@@ -16,5 +16,5 @@ public class ShipmentResponseDTO {
     private String status;
     private Instant shoppedAt;
     private Instant deliveryAt;
-
+    private Long addressId;
 }

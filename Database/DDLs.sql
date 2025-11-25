@@ -145,7 +145,7 @@ CREATE TABLE order_item (
                             id bigint PRIMARY KEY auto_increment,
                             order_id bigint not null ,
                             product_id bigint not null,
-                            variant_id bigint not null , #has at least one variant that mirrors the original product
+                            variant_id bigint , #has at least one variant that mirrors the original product
                             quantity INT NOT NULL,
                             unit_price DECIMAL(10,2) NOT NULL,
                             tax_amount DECIMAL(10,2) NOT NULL,
@@ -179,7 +179,9 @@ CREATE TABLE shipment (
                           status VARCHAR(50),
                           shipped_at TIMESTAMP NULL,
                           delivered_at TIMESTAMP NULL,
-                          FOREIGN KEY (order_id) REFERENCES `order`(id) ON DELETE CASCADE
+                          address_id bigint,
+                          FOREIGN KEY (order_id) REFERENCES `order`(id) ON DELETE CASCADE,
+                          FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE SET NULL ON UPDATE CASCADE
 )ENGINE=InnoDB;
 
 -- ======================================================
@@ -211,9 +213,9 @@ CREATE TABLE cart (
 -- ======================================================
 CREATE TABLE cart_item (
                            id bigint PRIMARY KEY auto_increment,
-                           cart_id bigint NOT NULL,
-                           product_id bigint NOT NULL,
-                           variant_id bigint NOT NULL,
+                           cart_id bigint NULL,
+                           product_id bigint ,
+                           variant_id bigint,
                            quantity INT NOT NULL,
                            FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
                            FOREIGN KEY (product_id) REFERENCES product(id),

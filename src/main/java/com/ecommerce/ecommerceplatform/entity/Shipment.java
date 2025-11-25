@@ -33,6 +33,10 @@ public class Shipment {
     @JoinColumn(name="order_id")
     private Order  order;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "address_id")
+    private Address address;
+
     public Long getId() {
         return id;
     }
@@ -88,5 +92,14 @@ public class Shipment {
     public void setOrder(Order order) {
         this.order = order;
         order.setShipment(this);
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+        address.getShipments().add(this);
     }
 }

@@ -18,4 +18,5 @@ public class OrderRequestDTO {
     private String currency;
     private Instant createdAt;
     private List<OrderItemRequestDTO> orderItemResponseDTOList;
+    private Long addressId;
 }

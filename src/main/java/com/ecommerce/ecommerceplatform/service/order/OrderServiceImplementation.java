@@ -10,16 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImplementation implements OrderService {
     private final CartService cartService;
+    private final AddressRepository addressRepository;
     UserServices userServices;
     OrderRepository orderRepository;
-    public OrderServiceImplementation(UserServices userServices, OrderRepository orderRepository, CartService cartService) {
+    public OrderServiceImplementation(UserServices userServices, OrderRepository orderRepository, CartService cartService, AddressRepository addressRepository) {
         this.userServices = userServices;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
+        this.addressRepository = addressRepository;
     }
 
     @Override
@@ -52,15 +55,40 @@ public class OrderServiceImplementation implements OrderService {
 
     @Override
     @Transactional
-    public OrderSummaryDTO checkout(Long userId) {
+    public OrderSummaryDTO checkout(Long userId,Long addressId) {
         User user = userServices.getUserByID(userId);
         Order order = createOrder(user);
+        createShipment(addressId, order);
         return new OrderSummaryDTO(order);
     }
 
     @Override
     public List<Order> getAllOrdersById(Long userId) {
         return orderRepository.findAllByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    public Shipment createShipment(Long addressId,Order order) {
+        Shipment shipment = new Shipment();
+        shipment.setOrder(order);
+        Optional<Address> optional = addressRepository.findById(addressId);
+        if(optional.isEmpty())
+            throw new IllegalStateException("Address Not Found");
+        Address address = optional.get();
+        shipment.setAddress(address);
+        order.setShipment(shipment);
+        shipment.setTrackingNumber("123456");
+        shipment.setCarrier("Ahmed");
+        return shipment;
+    }
+
+    @Override
+    public Order findById(Long orderId) {
+        var order = orderRepository.findById(orderId);
+        if(order.isEmpty())
+            throw new IllegalStateException("Order Not Found");
+        return order.get();
     }
 
 }

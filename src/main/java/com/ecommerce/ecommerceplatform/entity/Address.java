@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.List;
+
 @Entity
 @Table(name = "address")
 public class Address {
@@ -39,6 +41,9 @@ public class Address {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private User user;
+
+    @OneToMany(mappedBy = "address")
+    private List<Shipment> shipments;
 
     public Long getId() {
         return id;
@@ -118,5 +123,13 @@ public class Address {
 
     public User getUser() {
         return user;
+    }
+
+    public List<Shipment> getShipments() {
+        return shipments;
+    }
+
+    public void setShipments(List<Shipment> shipments) {
+        this.shipments = shipments;
     }
 }

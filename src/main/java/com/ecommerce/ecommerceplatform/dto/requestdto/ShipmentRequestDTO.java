@@ -16,4 +16,5 @@ public class ShipmentRequestDTO {
     private Instant shoppedAt;
     private Instant deliveryAt;
     private Long orderId;
+    private Long addressId;
 }

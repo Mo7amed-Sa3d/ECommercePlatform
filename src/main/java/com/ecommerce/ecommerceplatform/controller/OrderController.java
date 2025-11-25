@@ -2,7 +2,10 @@ package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ShipmentResponseDTO;
+import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.mapper.OrderMapper;
+import com.ecommerce.ecommerceplatform.mapper.ShipmentMapper;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
@@ -17,15 +20,12 @@ import java.util.List;
 @RequestMapping("api/users/orders")
 public class OrderController {
 
-    OrderService orderService;
-    UserServices userServices;
-    UserUtility userUtility;
+    private final OrderService orderService;
+    private final UserUtility userUtility;
     @Autowired
     public OrderController(OrderService orderService,
-                           UserServices userServices,
                            UserUtility userUtility) {
         this.orderService = orderService;
-        this.userServices = userServices;
         this.userUtility = userUtility;
     }
 
@@ -36,9 +36,14 @@ public class OrderController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<OrderSummaryDTO> checkout(Authentication authentication) {
+    public ResponseEntity<OrderSummaryDTO> checkout(Authentication authentication,@RequestBody Long addressId) {
         var user = userUtility.getCurrentUser(authentication);
-        return ResponseEntity.ok(orderService.checkout(user.getId()));
+        return ResponseEntity.ok(orderService.checkout(user.getId(),addressId));
     }
 
+    @GetMapping("/shipment/{orderId}")
+    public ResponseEntity<ShipmentResponseDTO> getShipment(@PathVariable Long orderId) {
+        Order order = orderService.findById(orderId);
+        return ResponseEntity.ok(ShipmentMapper.toDto(order.getShipment()));
+    }
 }
