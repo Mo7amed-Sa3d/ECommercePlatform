@@ -48,6 +48,7 @@ public class SecurityConfig {
                 // Authorize requests
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/registerAdmin").hasRole("ADMIN")
                         .requestMatchers("/api/brand/**").permitAll()
                         .requestMatchers("/api/categories").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
@@ -62,6 +63,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST,"/api/products").hasRole("SELLER")
                         .requestMatchers(HttpMethod.DELETE,"/api/products").hasRole("SELLER")
+                        .requestMatchers(HttpMethod.PUT,"/api/products").hasRole("SELLER")
                         .requestMatchers(HttpMethod.POST,"/api/categories").hasRole("SELLER")
                         .requestMatchers(HttpMethod.GET,"/api/categories").hasAnyRole("USER","SELLER")
                         .anyRequest().authenticated()                // all other endpoints require auth

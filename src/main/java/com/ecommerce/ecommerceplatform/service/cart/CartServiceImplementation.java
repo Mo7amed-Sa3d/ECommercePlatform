@@ -34,7 +34,9 @@ public class CartServiceImplementation implements CartService {
         this.cartItemRepository = cartItemRepository;
     }
 
+
     @Override
+    @Transactional
     public Cart addItemToCartByUserID(Long userId, Long productId, int quantity) {
         Cart cart = userServices.getCartByUserID(userId);
         if(cart == null) {
@@ -44,14 +46,25 @@ public class CartServiceImplementation implements CartService {
             cart.setUser(user);
         }
         cart.setUpdatedAt(Instant.now());
-        CartItem item = new CartItem();
-        item.setProduct(productService.getProductById(productId));
-        item.setQuantity(quantity);
-        cart.addCartItem(item);
-        return cartRepository.save(cart);
+        boolean itemExists = false;
+        for(CartItem cartItem : cart.getCartItems()) {
+            if(cartItem.getProduct().getId().equals(productId)) {
+                itemExists = true;
+                cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                break;
+            }
+        }
+        if(!itemExists) {
+            CartItem item = new CartItem();
+            item.setProduct(productService.getProductById(productId));
+            item.setQuantity(quantity);
+            cart.addCartItem(item);
+        }
+        return cart;
     }
 
     @Override
+    @Transactional
     public Cart RemoveItemFromCart(Long userId, CartItem item) {
         Cart cart = userServices.getCartByUserID(userId);
         cart.removeCartItem(item);
@@ -65,16 +78,11 @@ public class CartServiceImplementation implements CartService {
     @Transactional
     public Cart clearCart(Cart cart) {
         Iterator<CartItem> iterator = cart.getCartItems().iterator();
-//        List<CartItem> cartItems = new ArrayList<>(cart.getCartItems());
         while (iterator.hasNext()) {
             CartItem item = iterator.next();
             item.setCart(null);   // break the child relationship
             iterator.remove();
         }
-//        Cart updatedCart = cartRepository.save(cart);
-//        System.out.println(cartItems);
-//        cartItemRepository.deleteAll(cartItems);
-
         return cartRepository.save(cart);
 
     }

@@ -2,6 +2,7 @@ package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.CartItemRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
+import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.mapper.CartMapper;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
@@ -29,25 +30,23 @@ public class CartController {
 
     @GetMapping
     public ResponseEntity<CartResponseDTO> getCart(Authentication authentication) {
-        String userEmail = authentication.getName();
-        var user_op = userServices.getUserByEmail(userEmail);
-        if(user_op.isEmpty())
-            throw new UsernameNotFoundException("Username not found");
-        var user = user_op.get();
-        return ResponseEntity.ok(CartMapper.toDTO(userServices.getCartByUserID(user.getId())));
+        var user = userUtility.getCurrentUser(authentication);
+        return ResponseEntity.ok(CartMapper.toDTO(user.getCart()));
     }
 
     @PostMapping
     public ResponseEntity<CartResponseDTO> addItemToCart(@RequestBody CartItemRequestDTO cartItemRequestDTO, Authentication authentication) {
+
         var user = userUtility.getCurrentUser(authentication);
         return ResponseEntity.ok(CartMapper.toDTO(cartService.addItemToCartByUserID(user.getId()
                                                                     , cartItemRequestDTO.getProductId()
                                                                     , cartItemRequestDTO.getQuantity())));
     }
 
-    @DeleteMapping
-    public ResponseEntity<CartResponseDTO> removeItemFromCart(@RequestBody Long itemId, Authentication authentication) {
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<CartResponseDTO> removeItemFromCart(@PathVariable Long itemId, Authentication authentication) {
         var user = userUtility.getCurrentUser(authentication);
+        //TODO: improve: move getCartItem inside the service layer and throw exception if not found
         CartItem item = cartService.gatCartItem(itemId);
         return ResponseEntity.ok(CartMapper.toDTO(cartService.RemoveItemFromCart(user.getId(),item)));
     }

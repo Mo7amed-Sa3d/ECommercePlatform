@@ -5,18 +5,23 @@ import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Brand;
 import com.ecommerce.ecommerceplatform.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.service.product.BrandService;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/brand")
 public class BrandController {
 
+    private final UserUtility userUtility;
     BrandService brandService;
-    public BrandController(BrandService brandService) {
+    public BrandController(BrandService brandService, UserUtility userUtility) {
         this.brandService = brandService;
+        this.userUtility = userUtility;
     }
 
     @GetMapping
@@ -30,9 +35,9 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<BrandResponseDTO> addBrand(@RequestBody BrandRequestDTO brandRequestDTO) {
-        Brand createdBrand = brandService.createBrand(brandRequestDTO);
-        return ResponseEntity.ok(BrandMapper.toDTO(createdBrand));
+    public ResponseEntity<BrandResponseDTO> addBrand(@RequestBody BrandRequestDTO brandRequestDTO, Authentication authentication) throws AccessDeniedException {
+        var user = userUtility.getCurrentUser(authentication);
+        return ResponseEntity.ok(BrandMapper.toDTO(brandService.createBrand(brandRequestDTO,user)));
     }
 
 }

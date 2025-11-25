@@ -46,8 +46,7 @@ public class Cart {
     public void addCartItem(CartItem item) {
         if (cartItems == null)
             cartItems = new ArrayList<>();
-        if(!cartItems.contains(item))
-            cartItems.add(item);
+        cartItems.add(item);
         item.setCart(this);
     }
 

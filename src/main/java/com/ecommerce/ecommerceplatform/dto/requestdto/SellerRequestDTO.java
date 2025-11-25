@@ -11,6 +11,7 @@ import java.time.Instant;
 @Setter
 
 public class SellerRequestDTO extends UserRequestDTO {
+    private Long userId;
     private String sellerName;
     private boolean verified;
     private Instant createdAt;
