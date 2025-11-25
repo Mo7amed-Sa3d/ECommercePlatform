@@ -26,46 +26,41 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImplementation userDetailsService;
 
-//    @Bean
-//    public UserDetailsManager userDetailsManager(DataSource dataSource) {
-//        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-//        jdbcUserDetailsManager.setUsersByUsernameQuery(
-//                "SELECT email, password, true as enabled FROM user WHERE email = ?"
-//        );
-//        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-//                "SELECT email, 'ROLE_USER' FROM user WHERE email = ?"
-//        );
-//        return jdbcUserDetailsManager;
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // Disable CSRF (since we are using REST API)
                 .csrf(AbstractHttpConfigurer::disable)
                 // Enable CORS for React frontend
-//                .cors(Customizer.withDefaults())
-                // Authorize requests
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        //Auth endpoints
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/registerSeller").hasRole("ADMIN")
                         .requestMatchers("/api/auth/registerAdmin").hasRole("ADMIN")
-                        .requestMatchers("/api/brand/**").permitAll()
-                        .requestMatchers("/api/categories").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
-
-                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAnyRole("USER","SELLER")
-
-                        .requestMatchers(HttpMethod.POST,"/api/users/orders/checkout").hasAnyRole("USER","SELLER")
-
-                        .requestMatchers(HttpMethod.POST,"/api/users/cart").hasAnyRole("USER","SELLER")
-
-                        .requestMatchers("/api/orders/**").hasAnyRole("SELLER","USER")
-
-                        .requestMatchers(HttpMethod.POST,"/api/products").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/products").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.PUT,"/api/products").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.POST,"/api/categories").hasRole("SELLER")
-                        .requestMatchers(HttpMethod.GET,"/api/categories").hasAnyRole("USER","SELLER")
+                        //Brand endpoints
+                        .requestMatchers(HttpMethod.GET,"/api/brand/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/brand").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/brand").hasRole("ADMIN")
+                        //Category endpoints
+                        .requestMatchers(HttpMethod.GET,"/api/categories").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/categories/*/products").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/categories").hasRole("ADMIN")
+                        //User endpoints
+                        .requestMatchers(HttpMethod.GET,"/api/users/").hasAnyRole("ADMIN","USER","SELLER")
+                        .requestMatchers(HttpMethod.POST,"/api/users/addresses").hasAnyRole("ADMIN","USER","SELLER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/users/addresses/*").hasAnyRole("ADMIN","USER","SELLER")
+                        //Cart endpoints
+                        .requestMatchers("/api/users/cart").hasAnyRole("ADMIN","USER","SELLER")
+                        //Order endpoints
+                        .requestMatchers("/api/users/orders").hasAnyRole("ADMIN","USER","SELLER")
+                        //Product endpoints
+                        .requestMatchers(HttpMethod.GET,"/api/products").hasAnyRole("ADMIN","USER","SELLER")
+                        .requestMatchers(HttpMethod.GET,"/api/products/**").hasAnyRole("ADMIN","USER","SELLER")
+                        .requestMatchers(HttpMethod.POST,"/api/products").hasAnyRole("ADMIN","SELLER")
+                        .requestMatchers(HttpMethod.POST,"/api/products/*/images").hasAnyRole("ADMIN","SELLER")
+                        .requestMatchers(HttpMethod.PUT,"/api/products/*").hasAnyRole("ADMIN","SELLER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/products/*").hasAnyRole("ADMIN","SELLER")
                         .anyRequest().authenticated()                // all other endpoints require auth
                 )
                 // Use Basic Authentication
