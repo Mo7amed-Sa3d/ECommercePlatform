@@ -19,4 +19,5 @@ public class OrderResponseDTO {
     private String currency;
     private Instant createdAt;
     private List<OrderItemResponseDTO> orderItemResponseDTOList;
+    private Long shipmentId;
 }

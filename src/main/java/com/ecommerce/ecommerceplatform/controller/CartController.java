@@ -8,11 +8,13 @@ import com.ecommerce.ecommerceplatform.mapper.CartMapper;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/users/cart")
@@ -29,8 +31,11 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<CartResponseDTO> getCart(Authentication authentication) {
+    public ResponseEntity<CartResponseDTO> getCart(Authentication authentication) throws ResponseStatusException {
         var user = userUtility.getCurrentUser(authentication);
+        if (user.getCart() == null || user.getCart().getCartItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
+        }
         return ResponseEntity.ok(CartMapper.toDTO(user.getCart()));
     }
 

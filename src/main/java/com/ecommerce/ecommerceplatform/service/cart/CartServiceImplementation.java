@@ -8,8 +8,10 @@ import com.ecommerce.ecommerceplatform.repository.CartRepository;
 import com.ecommerce.ecommerceplatform.service.product.ProductService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class CartServiceImplementation implements CartService {
         if(cart == null) {
             //TODO: Make this throw exception
             cart = new Cart();
+            cart.setCartItems(new ArrayList<>());
             User user = userServices.getUserByID(userId);
             cart.setUser(user);
         }
@@ -51,6 +54,9 @@ public class CartServiceImplementation implements CartService {
             if(cartItem.getProduct().getId().equals(productId)) {
                 itemExists = true;
                 cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                if(cartItem.getQuantity() <= 0) {
+                    RemoveItemFromCart(userId,cartItem);
+                }
                 break;
             }
         }
@@ -67,6 +73,9 @@ public class CartServiceImplementation implements CartService {
     @Transactional
     public Cart RemoveItemFromCart(Long userId, CartItem item) {
         Cart cart = userServices.getCartByUserID(userId);
+        if(cart == null || cart.getCartItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
+        }
         cart.removeCartItem(item);
         return cartRepository.save(cart);
     }

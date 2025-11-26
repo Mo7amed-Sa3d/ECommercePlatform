@@ -55,8 +55,8 @@ public class SecurityConfig {
                         //Order endpoints
                         .requestMatchers("/api/users/orders").hasAnyRole("ADMIN","USER","SELLER")
                         //Product endpoints
-                        .requestMatchers(HttpMethod.GET,"/api/products").hasAnyRole("ADMIN","USER","SELLER")
-                        .requestMatchers(HttpMethod.GET,"/api/products/**").hasAnyRole("ADMIN","USER","SELLER")
+                        .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/products").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.POST,"/api/products/*/images").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.PUT,"/api/products/*").hasAnyRole("ADMIN","SELLER")

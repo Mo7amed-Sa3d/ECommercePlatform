@@ -25,7 +25,7 @@ public class OrderMapper {
             orderItemResponseDTOList.add(OrderItemMapper.toDTO(orderItem));
         }
         orderResponseDTO.setOrderItemResponseDTOList(orderItemResponseDTOList);
-
+        orderResponseDTO.setShipmentId(order.getShipment().getId());
         return orderResponseDTO;
     }
 

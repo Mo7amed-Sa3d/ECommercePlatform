@@ -6,6 +6,7 @@ import com.ecommerce.ecommerceplatform.entity.Address;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.entity.User;
+import com.ecommerce.ecommerceplatform.mapper.SellerMapper;
 import com.ecommerce.ecommerceplatform.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.UserRepository;
@@ -57,20 +58,19 @@ public class UserServiceImplementation implements UserServices {
     @Override
     @Transactional
     public User registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException {
-        if(!adminUser.getRole().equals("ROLE_Admin"))
+        if(!adminUser.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access Denied!");
 
-        User user =  UserMapper.toEntity(sellerRequestDTO);
+        User user =  SellerMapper.toEntity(sellerRequestDTO);
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             throw new IllegalArgumentException("Email Already Exists");
         }
 
-        if(!user.getRole().equals("ROLE_USER"))
+        if(!user.getRole().equals("ROLE_SELLER"))
             throw new InvalidAttributesException("role must be 'ROLE_SELLER'");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Seller seller = user.getSeller();
-        user.setSeller(seller);
+
         return userRepository.save(user);
     }
 
@@ -97,7 +97,6 @@ public class UserServiceImplementation implements UserServices {
     public Address addAddressToUser(Long userId,Address address) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
         user.addAddress(address);
-        userRepository.save(user);
         return address;
     }
 

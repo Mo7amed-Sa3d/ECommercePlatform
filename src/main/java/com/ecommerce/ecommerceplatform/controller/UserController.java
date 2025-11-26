@@ -40,14 +40,14 @@ public class UserController {
         return ResponseEntity.ok(UserMapper.toDto(user.get()));
     }
 
-    @PostMapping("addresses")
+    @PostMapping("/addresses")
     public ResponseEntity<AddressResponseDTO> addAddress(Authentication authentication, @RequestBody AddressRequestDTO addressRequestDTO) {
         User user = userUtility.getCurrentUser(authentication);
         Address savedAddress = userServices.addAddressToUser(user.getId(), AddressMapper.toEntity(addressRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(AddressMapper.toDto(savedAddress));
     }
 
-    @GetMapping("addresses")
+    @GetMapping("/addresses")
     public ResponseEntity<List<AddressResponseDTO>> getAddresses(Authentication authentication) {
         User user = userUtility.getCurrentUser(authentication);
         return ResponseEntity.ok(AddressMapper.toDtoList(userServices.getAddresses(user.getId())));
