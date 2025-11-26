@@ -26,11 +26,9 @@ public class ProductController {
 
     private final ProductService productService;
     private final UserUtility userUtility;
-    private final SellerService sellerService;
     @Autowired
-    public ProductController(ProductService productService, SellerService sellerService, UserUtility userUtility) {
+    public ProductController(ProductService productService, UserUtility userUtility) {
         this.productService = productService;
-        this.sellerService = sellerService;
         this.userUtility = userUtility;
     }
 
@@ -52,8 +50,8 @@ public class ProductController {
      */
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO, Authentication authentication) {
-        Seller seller = userUtility.getCurrentUser(authentication).getSeller();
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+        Seller seller = userUtility.getCurrentUser().getSeller();
         return ResponseEntity.ok().body(ProductMapper.toDTO(productService.saveProduct(ProductMapper.toEntity(productRequestDTO),
                                                                                         productRequestDTO.getBrandId(),
                                                                                         productRequestDTO.getCategoryId()
@@ -66,24 +64,22 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductResponseDTO> updateProduct(Authentication authentication,
-                                                            @PathVariable Long productId,
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long productId,
                                                             @RequestBody ProductRequestDTO productRequestDTO){
-        User user = userUtility.getCurrentUser(authentication);
+        User user = userUtility.getCurrentUser();
         return ResponseEntity.ok(ProductMapper.toDTO(productService.updateProduct(user,productId, productRequestDTO)));
     }
 
     @PostMapping("/{productId}/images")
-    public ResponseEntity<ProductImageResponseDTO> uploadProductImage(Authentication authentication
-                                                                     ,@PathVariable("productId") Long productId
+    public ResponseEntity<ProductImageResponseDTO> uploadProductImage(@PathVariable("productId") Long productId
                                                                      ,@RequestParam("file") MultipartFile file) throws IOException {
-        User user = userUtility.getCurrentUser(authentication);
+        User user = userUtility.getCurrentUser();
         return ResponseEntity.ok(ProductImageMapper.toDTO(productService.saveProductImage(file,user,productId)));
     }
 
     @DeleteMapping("{productId}")
-    public ResponseEntity<String> deleteProductById(@PathVariable("productId") Long productId,Authentication authentication) {
-        User  user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<String> deleteProductById(@PathVariable("productId") Long productId) {
+        User  user = userUtility.getCurrentUser();
         productService.removeProduct(productId,user);
         return ResponseEntity.ok("Deleted product with id " + productId);
     }

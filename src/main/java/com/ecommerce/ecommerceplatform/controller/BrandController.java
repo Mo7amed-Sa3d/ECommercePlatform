@@ -35,8 +35,8 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<BrandResponseDTO> addBrand(@RequestBody BrandRequestDTO brandRequestDTO, Authentication authentication) throws AccessDeniedException {
-        var user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<BrandResponseDTO> addBrand(@RequestBody BrandRequestDTO brandRequestDTO) throws AccessDeniedException {
+        var user = userUtility.getCurrentUser();
         return ResponseEntity.ok(BrandMapper.toDTO(brandService.createBrand(brandRequestDTO,user)));
     }
 

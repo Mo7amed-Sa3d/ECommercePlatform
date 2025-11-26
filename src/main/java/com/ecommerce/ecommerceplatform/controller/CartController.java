@@ -21,18 +21,16 @@ import org.springframework.web.server.ResponseStatusException;
 public class CartController {
 
     private final CartService cartService;
-    private final UserServices userServices;
     private final UserUtility userUtility;
     @Autowired
-    CartController(CartService cartService, UserServices userServices, UserUtility userUtility) {
+    CartController(CartService cartService, UserUtility userUtility) {
         this.cartService = cartService;
-        this.userServices = userServices;
         this.userUtility = userUtility;
     }
 
     @GetMapping
-    public ResponseEntity<CartResponseDTO> getCart(Authentication authentication) throws ResponseStatusException {
-        var user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<CartResponseDTO> getCart() throws ResponseStatusException {
+        var user = userUtility.getCurrentUser();
         if (user.getCart() == null || user.getCart().getCartItems().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
@@ -40,17 +38,17 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartResponseDTO> addItemToCart(@RequestBody CartItemRequestDTO cartItemRequestDTO, Authentication authentication) {
+    public ResponseEntity<CartResponseDTO> addItemToCart(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
 
-        var user = userUtility.getCurrentUser(authentication);
+        var user = userUtility.getCurrentUser();
         return ResponseEntity.ok(CartMapper.toDTO(cartService.addItemToCartByUserID(user.getId()
                                                                     , cartItemRequestDTO.getProductId()
                                                                     , cartItemRequestDTO.getQuantity())));
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<CartResponseDTO> removeItemFromCart(@PathVariable Long itemId, Authentication authentication) {
-        var user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<CartResponseDTO> removeItemFromCart(@PathVariable Long itemId) {
+        var user = userUtility.getCurrentUser();
         //TODO: improve: move getCartItem inside the service layer and throw exception if not found
         CartItem item = cartService.gatCartItem(itemId);
         return ResponseEntity.ok(CartMapper.toDTO(cartService.RemoveItemFromCart(user.getId(),item)));

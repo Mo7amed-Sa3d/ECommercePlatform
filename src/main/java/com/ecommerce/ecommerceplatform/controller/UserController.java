@@ -41,21 +41,21 @@ public class UserController {
     }
 
     @PostMapping("/addresses")
-    public ResponseEntity<AddressResponseDTO> addAddress(Authentication authentication, @RequestBody AddressRequestDTO addressRequestDTO) {
-        User user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<AddressResponseDTO> addAddress(@RequestBody AddressRequestDTO addressRequestDTO) {
+        User user = userUtility.getCurrentUser();
         Address savedAddress = userServices.addAddressToUser(user.getId(), AddressMapper.toEntity(addressRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(AddressMapper.toDto(savedAddress));
     }
 
     @GetMapping("/addresses")
-    public ResponseEntity<List<AddressResponseDTO>> getAddresses(Authentication authentication) {
-        User user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<List<AddressResponseDTO>> getAddresses() {
+        User user = userUtility.getCurrentUser();
         return ResponseEntity.ok(AddressMapper.toDtoList(userServices.getAddresses(user.getId())));
     }
 
     @DeleteMapping("/addresses/{addressId}")
-    public ResponseEntity<String> deleteAddress(Authentication authentication,@PathVariable Long addressId){
-        User user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<String> deleteAddress(@PathVariable Long addressId){
+        User user = userUtility.getCurrentUser();
         userServices.deleteAddressFromUser(user.getId(),addressId);
         return ResponseEntity.ok().body("Done Deleting Address with id " + addressId + "From User" + user.getId());
     }

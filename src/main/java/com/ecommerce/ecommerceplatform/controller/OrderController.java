@@ -30,14 +30,14 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> getOrders(Authentication authentication) {
-        var user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<List<OrderResponseDTO>> getOrders() {
+        var user = userUtility.getCurrentUser();
         return ResponseEntity.ok(OrderMapper.toDtoList(orderService.getAllOrdersById(user.getId())));
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<OrderSummaryDTO> checkout(Authentication authentication,@RequestBody Long addressId) {
-        var user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<OrderSummaryDTO> checkout(@RequestBody Long addressId) {
+        var user = userUtility.getCurrentUser();
         return ResponseEntity.ok(orderService.checkout(user.getId(),addressId));
     }
 

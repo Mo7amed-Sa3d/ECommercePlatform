@@ -34,8 +34,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, Authentication authentication) throws AccessDeniedException {
-        var user = userUtility.getCurrentUser(authentication);
+    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) throws AccessDeniedException {
+        var user = userUtility.getCurrentUser();
         return ResponseEntity.ok(CategoryMapper.toDTO(categoryService.createCategory(user,
                                                         categoryRequestDTO.getName(),
                                                          categoryRequestDTO.getParentId())));

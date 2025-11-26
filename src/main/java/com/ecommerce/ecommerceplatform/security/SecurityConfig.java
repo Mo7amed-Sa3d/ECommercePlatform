@@ -1,18 +1,23 @@
 package com.ecommerce.ecommerceplatform.security;
 
+import com.ecommerce.ecommerceplatform.security.jwt.JwtFilter;
 import com.ecommerce.ecommerceplatform.service.user.UserDetailsServiceImplementation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,6 +30,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final UserDetailsServiceImplementation userDetailsService;
+    private final JwtFilter jwtFilter; // Add this
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         //Auth endpoints
                         .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/registerSeller").hasRole("ADMIN")
                         .requestMatchers("/api/auth/registerAdmin").hasRole("ADMIN")
                         //Brand endpoints
@@ -64,7 +71,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()                // all other endpoints require auth
                 )
                 // Use Basic Authentication
-                .httpBasic(Customizer.withDefaults());
+                //.httpBasic(Customizer.withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // JWT is stateless
+                // Add JWT filter before UsernamePasswordAuthenticationFilter
+            http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
@@ -78,6 +89,10 @@ public class SecurityConfig {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
