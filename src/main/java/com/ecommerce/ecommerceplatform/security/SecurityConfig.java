@@ -43,6 +43,7 @@ public class SecurityConfig {
                         //Auth endpoints
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/logout").authenticated()
                         .requestMatchers("/api/auth/registerSeller").hasRole("ADMIN")
                         .requestMatchers("/api/auth/registerAdmin").hasRole("ADMIN")
                         //Brand endpoints

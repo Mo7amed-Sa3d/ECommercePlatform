@@ -21,11 +21,13 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     private final UserDetailsServiceImplementation userDetailsService;
+    private final BlacklistService blacklistService;
 
     @Autowired
-    public JwtFilter(JwtService jwtService, UserDetailsServiceImplementation userDetailsService) {
+    public JwtFilter(JwtService jwtService, UserDetailsServiceImplementation userDetailsService, BlacklistService blacklistService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.blacklistService = blacklistService;
     }
 
     @Override
@@ -44,6 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
             email = jwtService.extractUsername(jwtToken);
         }
 
+        if(blacklistService.isBlackListed(jwtToken)) {
+            throw new RuntimeException("Blacklisted Token");
+        }
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
