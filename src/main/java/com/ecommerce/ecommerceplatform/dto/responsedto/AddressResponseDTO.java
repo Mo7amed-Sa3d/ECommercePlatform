@@ -18,4 +18,6 @@ public class AddressResponseDTO {
     private String postalCode;
     private String country;
     private String phone;
+    private Double longitude;
+    private Double latitude;
 }

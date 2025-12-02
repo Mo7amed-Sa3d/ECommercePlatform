@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -21,4 +22,6 @@ public class ProductResponseDTO {
     private Boolean active;
     private Map<String,Object> attributes;
     private Instant createdAt;
+    List<ProductImageResponseDTO> images;
+
 }

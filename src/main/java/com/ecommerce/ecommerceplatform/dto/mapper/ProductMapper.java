@@ -11,6 +11,7 @@ import java.util.List;
 public class ProductMapper {
 
 
+
     public static ProductResponseDTO toDTO(Product product) {
         ProductResponseDTO productResponseDTO = new ProductResponseDTO();
         productResponseDTO.setId(product.getId());
@@ -21,6 +22,7 @@ public class ProductMapper {
         productResponseDTO.setActive(product.getActive());
         productResponseDTO.setAttributes(product.getAttributes());
         productResponseDTO.setCreatedAt(product.getCreatedAt());
+        productResponseDTO.setImages(ProductImageMapper.toDTOLList(product.getProductImages()));
         return productResponseDTO;
     }
 

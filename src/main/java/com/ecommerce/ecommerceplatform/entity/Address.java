@@ -38,6 +38,12 @@ public class Address {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @Column(name="latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private User user;
@@ -131,5 +137,21 @@ public class Address {
 
     public void setShipments(List<Shipment> shipments) {
         this.shipments = shipments;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

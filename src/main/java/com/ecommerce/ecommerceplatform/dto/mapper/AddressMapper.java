@@ -19,6 +19,8 @@ public class AddressMapper {
         addressResponseDTO.setPostalCode(address.getPostalCode());
         addressResponseDTO.setCountry(address.getCountry());
         addressResponseDTO.setPhone(address.getPhone());
+        addressResponseDTO.setLatitude(address.getLatitude());
+        addressResponseDTO.setLongitude(address.getLongitude());
         return addressResponseDTO;
     }
 
@@ -40,6 +42,8 @@ public class AddressMapper {
         address.setPostalCode(addressRequestDTO.getPostalCode());
         address.setCountry(addressRequestDTO.getCountry());
         address.setPhone(addressRequestDTO.getPhone());
+        address.setLatitude(addressRequestDTO.getLatitude());
+        address.setLongitude(addressRequestDTO.getLongitude());
         return address;
     }
 }

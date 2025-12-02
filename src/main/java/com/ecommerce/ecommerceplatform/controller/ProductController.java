@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController()
@@ -68,12 +69,18 @@ public class ProductController {
     }
 
     @PostMapping("/{productId}/images")
-    public ResponseEntity<ProductImageResponseDTO> uploadProductImage(@PathVariable("productId") Long productId
-                                                                     ,@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<List<String>> uploadProductImage(@PathVariable("productId") Long productId
+                                                                     ,@RequestParam("images") List<MultipartFile> imageList) throws IOException {
         User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(ProductImageMapper.toDTO(productService.saveProductImage(file,user,productId)));
+        return ResponseEntity.ok(productService.saveProductImage(imageList,user,productId));
     }
 
+    @DeleteMapping("/{productId}/images/{imageId}")
+    public ResponseEntity<String> deleteProductImage(@PathVariable("productId") Long productId,
+                                                           @PathVariable("imageId") Long imageId) throws IOException {
+        User user = userUtility.getCurrentUser();
+        return ResponseEntity.ok(productService.deleteProductImage(user,productId, imageId));
+    }
     @DeleteMapping("{productId}")
     public ResponseEntity<String> deleteProductById(@PathVariable("productId") Long productId) {
         User  user = userUtility.getCurrentUser();
