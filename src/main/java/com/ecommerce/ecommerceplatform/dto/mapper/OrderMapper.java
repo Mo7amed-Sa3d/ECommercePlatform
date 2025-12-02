@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerceplatform.mapper;
+package com.ecommerce.ecommerceplatform.dto.mapper;
 
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderItemResponseDTO;

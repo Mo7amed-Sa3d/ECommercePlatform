@@ -6,7 +6,7 @@ import com.ecommerce.ecommerceplatform.dto.requestdto.UserRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.AuthResponseDto;
 import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.User;
-import com.ecommerce.ecommerceplatform.mapper.UserMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.security.jwt.BlacklistService;
 import com.ecommerce.ecommerceplatform.security.jwt.JwtService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;

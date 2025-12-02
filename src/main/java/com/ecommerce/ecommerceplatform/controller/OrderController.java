@@ -4,14 +4,12 @@ import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ShipmentResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Order;
-import com.ecommerce.ecommerceplatform.mapper.OrderMapper;
-import com.ecommerce.ecommerceplatform.mapper.ShipmentMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.OrderMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.ShipmentMapper;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
-import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,7 +1,6 @@
-package com.ecommerce.ecommerceplatform.mapper;
+package com.ecommerce.ecommerceplatform.dto.mapper;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.SellerRequestDTO;
-import com.ecommerce.ecommerceplatform.dto.requestdto.UserRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.SellerResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.entity.User;

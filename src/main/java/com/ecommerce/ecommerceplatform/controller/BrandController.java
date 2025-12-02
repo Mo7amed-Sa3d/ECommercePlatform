@@ -2,12 +2,10 @@ package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.BrandRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
-import com.ecommerce.ecommerceplatform.entity.Brand;
-import com.ecommerce.ecommerceplatform.mapper.BrandMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.service.product.BrandService;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;

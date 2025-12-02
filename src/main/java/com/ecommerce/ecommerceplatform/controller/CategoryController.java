@@ -3,13 +3,12 @@ package com.ecommerce.ecommerceplatform.controller;
 import com.ecommerce.ecommerceplatform.dto.requestdto.CategoryRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.CategoryResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
-import com.ecommerce.ecommerceplatform.mapper.CategoryMapper;
-import com.ecommerce.ecommerceplatform.mapper.ProductMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.CategoryMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.service.product.CategoryService;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;

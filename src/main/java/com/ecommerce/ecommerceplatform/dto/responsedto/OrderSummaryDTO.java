@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerceplatform.dto.responsedto;
 
 import com.ecommerce.ecommerceplatform.entity.Order;
-import com.ecommerce.ecommerceplatform.mapper.OrderItemMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.OrderItemMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

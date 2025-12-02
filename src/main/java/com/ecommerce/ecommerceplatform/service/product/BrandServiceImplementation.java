@@ -3,7 +3,7 @@ package com.ecommerce.ecommerceplatform.service.product;
 import com.ecommerce.ecommerceplatform.dto.requestdto.BrandRequestDTO;
 import com.ecommerce.ecommerceplatform.entity.Brand;
 import com.ecommerce.ecommerceplatform.entity.User;
-import com.ecommerce.ecommerceplatform.mapper.BrandMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.repository.BrandRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
