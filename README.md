@@ -1,6 +1,6 @@
 # E-Commerce Platform
 
-A full-stack e-commerce platform built with **Spring Boot** (backend), **React + TypeScript** (frontend), and **MySQL** as the primary database. The system includes authentication, product management, cart & wishlist handling, order processing, payment/shipping integration, and a clean modular architecture.
+A Backend e-commerce platform built with **Spring Boot** (backend) and **MySQL** as the primary database. The system includes authentication, role based access, product management, cart & wishlist handling, order processing, payment/shipping integration, and a clean modular architecture.
 
 ---
 
@@ -43,5 +43,55 @@ backend/
     └── Database/
 ```
 
-## 🛢 Datab
+## 🛢 Database Schema
+Main entities:
+- **User** & **Seller**
+- **Product**
+- **Category**
+- **Brand** & **BrandImage**
+- **ProductImage**
+- **Cart** & **CartItem**
+- **Wishlist** & **WishlistItem**
+- **Order** & **OrderItem**
+- **Address**
+- **Payment**
+- **Shipment**
+
+
+Utility tables:
+- **BlacklistedJWTToken** (optional — for JWT logout)
+
+## 🛢 Database Conceptual Schema (ERD)
+![ERD](src/main/resources/Database/ECommerce.drawio.svg)
+
+## 🔧 Installation & Setup
+
+
+### **Prerequisites**
+- Java 17+
+- Maven
+- MySQL or MariaDB
+
+
+### **Steps**
+1. Clone the project
+2. Create a database:
+```sql
+create database ecommerce;
+```
+3. Configure `application.yml`:
+```yaml
+spring:
+datasource:
+url: jdbc:mysql://localhost:3306/ecommerce
+username: yourUser
+password: yourPassword
+```
+4. Start the backend:
+```bash
+mvn spring-boot:run
+```
+
+## 💬 Contact
+**Developer:** Mohamed Saad Abdel Ghaffar
 
