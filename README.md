@@ -93,8 +93,8 @@ create database if not exists `e-commerce`;
 ```properties
 spring.application.name=ECommercePlatform
 spring.datasource.url=jdbc:mysql://localhost:3306/e-commerce
-spring.datasource.username=root
-spring.datasource.password=302123
+spring.datasource.username=yourUserName
+spring.datasource.password=yourPassword
 product-image.upload-dir=E:/SpringBoot/ECommercePlatform/uploads
 
 ```
