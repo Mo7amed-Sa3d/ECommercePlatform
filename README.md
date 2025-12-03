@@ -85,12 +85,13 @@ create database if not exists `e-commerce`;
 #.....
 ```
 3. Configure `application.properties`:
-```yaml
-spring:
-datasource:
-url: jdbc:mysql://localhost:3306/ecommerce
-username: yourUser
-password: yourPassword
+```properties
+spring.application.name=ECommercePlatform
+spring.datasource.url=jdbc:mysql://localhost:3306/e-commerce
+spring.datasource.username=root
+spring.datasource.password=302123
+product-image.upload-dir=E:/SpringBoot/ECommercePlatform/uploads
+
 ```
 4. Start the backend:
 ```bash
