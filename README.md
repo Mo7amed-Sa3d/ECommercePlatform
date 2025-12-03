@@ -68,10 +68,7 @@ Utility tables:
 - **Check the responsive diagram [here](https://dbdiagram.io/d/ECommerce-Relational-Mapping-6930bac7d6676488ba7e438e)**
 <br>
 <br>
-
-<img src="src/main/resources/Database/ECommerce-Relational-Mapping.svg" style="background-color: white; padding: 2px" alt="https://dbdiagram.io/d/ECommerce-Relational-Mapping-6930bac7d6676488ba7e438e" /> 
-
-[//]: # (![ERD]&#40;src/main/resources/Database/ECommerce-Relational-Mapping.svg&#41;)
+![ERD](src/main/resources/Database/ECommerce-Relational-Mapping-dark.svg)
 
 
 ## 🔧 Installation & Setup
