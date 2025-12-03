@@ -65,7 +65,7 @@ Utility tables:
 ![ERD](src/main/resources/Database/ECommerce.drawio.svg)
 
 ## 🛢 Database Logical Schema (Relational Mapping)
-![ERD](src/main/resources/Database/ECommerceMapping.png)
+![ERD](src/main/resources/Database/ECommerce-Relational-Mapping.svg)
 
 
 ## 🔧 Installation & Setup
