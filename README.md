@@ -74,16 +74,17 @@ Utility tables:
 ### **Prerequisites**
 - Java 17+
 - Maven
-- MySQL or MariaDB
+- MySQL
 
 
 ### **Steps**
 1. Clone the project
-2. Create a database:
+2. Create the database using [e-commerce-schema.sql](src/main/resources/Database/e-commerce-schema.sql):
 ```sql
-create database ecommerce;
+create database if not exists `e-commerce`;
+#.....
 ```
-3. Configure `application.yml`:
+3. Configure `application.properties`:
 ```yaml
 spring:
 datasource:
