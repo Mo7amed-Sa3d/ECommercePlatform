@@ -106,7 +106,6 @@ public class Product {
     }
     public void removeImage(ProductImage image) {
         productImages.remove(image);
-//        image.setProduct(null);
     }
 
     public void addReview(Review review) {

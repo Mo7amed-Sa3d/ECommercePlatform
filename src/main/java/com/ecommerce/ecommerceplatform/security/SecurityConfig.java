@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/products/*/images").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.PUT,"/api/products/*").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.DELETE,"/api/products/*").hasAnyRole("ADMIN","SELLER")
+                        //other endpoints
                         .anyRequest().authenticated()                // all other endpoints require auth
                 )
                 // Use Basic Authentication

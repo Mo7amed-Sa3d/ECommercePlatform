@@ -17,7 +17,6 @@ create table user(
                      role varchar(255),
                      created_at timestamp default current_timestamp,
                      last_login timestamp null
-#    INDEX(email)
 ) ENGINE=InnoDB;
 
 -- ======================================================
@@ -118,6 +117,8 @@ CREATE TABLE address (
                          line1 VARCHAR(255),
                          line2 VARCHAR(255),
                          city VARCHAR(100),
+                         latitude decimal(12),
+                         longitude decimal(12),
                          region VARCHAR(100),
                          postal_code VARCHAR(20),
                          country VARCHAR(100),
@@ -243,3 +244,20 @@ CREATE TABLE WishlistItems (
                                FOREIGN KEY (product_id) REFERENCES product(id),
                                foreign key (variant_id) references product_variant(id)
 ) ENGINE=InnoDB;
+
+
+CREATE TABLE brand_image (
+                             id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                             brand_id BIGINT NOT NULL,
+                             url VARCHAR(255) NOT NULL,
+
+                             CONSTRAINT fk_brand_image_brand
+                                 FOREIGN KEY (brand_id)
+                                     REFERENCES brand(id)
+                                     ON DELETE CASCADE
+);
+
+create table BlacklistedToken (
+                                  id bigint primary key auto_increment,
+                                  token varchar(500)
+)Engine=InnoDB;
