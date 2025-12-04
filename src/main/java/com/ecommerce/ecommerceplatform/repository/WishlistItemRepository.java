@@ -1,8 +1,9 @@
 package com.ecommerce.ecommerceplatform.repository;
 
+import com.ecommerce.ecommerceplatform.entity.WishlistItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WishlistItemRepository extends JpaRepository<WishlistItemRepository, Integer> {
+public interface WishlistItemRepository extends JpaRepository<WishlistItem, Long> {
 }

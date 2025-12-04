@@ -2,6 +2,7 @@ package com.ecommerce.ecommerceplatform.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,8 +16,8 @@ public class Wishlist {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "wishlist")
-    private List<WishlistItem> wishlistItems;
+    @OneToMany(mappedBy = "wishlist",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<WishlistItem> wishlistItems = new ArrayList<>();
 
     @Column(name="name")
     private String name;

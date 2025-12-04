@@ -38,9 +38,9 @@ public class WishlistController {
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<WishlistResponseDTO> deleteWishlistItem(@PathVariable Long itemId) {
+    public ResponseEntity<String> deleteWishlistItem(@PathVariable Long itemId) {
         User user = userUtility.getCurrentUser();
-        Wishlist wishlist = wishlistService.deleteItem(itemId,user);
-        return ResponseEntity.ok(WishlistMapper.toDTO(wishlist));
+        String wishlist = wishlistService.deleteItem(itemId,user);
+        return ResponseEntity.ok(wishlist);
     }
 }

@@ -2,8 +2,10 @@ package com.ecommerce.ecommerceplatform.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+
 @Entity
-@Table(name="WishlistItems")
+@Table(name="Wishlist_items")
 public class WishlistItem {
 
     @Id
@@ -37,6 +39,8 @@ public class WishlistItem {
 
     public void setWishlist(Wishlist wishlist) {
         this.wishlist = wishlist;
+        if(wishlist.getWishlistItems() == null)
+            wishlist.setWishlistItems(new ArrayList<>());
         wishlist.getWishlistItems().add(this);
     }
 
@@ -55,6 +59,8 @@ public class WishlistItem {
 
     public void setProductVariant(ProductVariant productVariant) {
         this.productVariant = productVariant;
+        if(productVariant.getWishlistItems() == null)
+            productVariant.setWishlistItems(new ArrayList<>());
         productVariant.getWishlistItems().add(this);
     }
 }

@@ -10,13 +10,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final String PRODUCT_IMAGE_PATH = "file:uploads/products/";
+    private final String BRAND_IMAGE_PATH = "file:uploads/brands/";
     private final String PRODUCT_IMAGE_HANDLER = "/images/products/**";
-
+    private final String BRAND_IMAGE_HANDLER = "/images/brands/**";
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler(PRODUCT_IMAGE_HANDLER)
                 .addResourceLocations(PRODUCT_IMAGE_PATH)
                 .setCachePeriod(3600) // optional: cache 1 hour
                 .resourceChain(true);
+        registry.addResourceHandler(BRAND_IMAGE_HANDLER)
+                .addResourceLocations(BRAND_IMAGE_PATH)
+                .setCachePeriod(3600) // optional: cache 1 hour
+                .resourceChain(true);
+
     }
 }

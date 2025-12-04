@@ -7,5 +7,5 @@ import com.ecommerce.ecommerceplatform.entity.Wishlist;
 public interface WishlistService {
     Wishlist addItem(WishlistItemRequestDTO wishlistItemRequestDTO, User user);
 
-    Wishlist deleteItem(Long itemId, User user);
+    String deleteItem(Long itemId, User user);
 }
