@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,8 @@ public class OrderServiceImplementation implements OrderService {
         Order order = new Order();
 
         order.setCurrency("EGP");
+        order.setCreatedAt(Instant.now());
+        order.setStatus("Pending Payment");
         //Map cart items to order items
         List<CartItem> cartItems = cart.getCartItems();
         for(CartItem cartItem : cartItems){
@@ -90,6 +93,33 @@ public class OrderServiceImplementation implements OrderService {
         if(order.isEmpty())
             throw new IllegalStateException("Order Not Found");
         return order.get();
+    }
+
+    @Override
+    @Transactional
+    public void markOrderPaid(Long id,String paymentId) {
+        var optional = orderRepository.findById(id);
+        if(optional.isEmpty())
+            throw new IllegalStateException("Order Not Found");
+        Order order = optional.get();
+
+        Payment payment = new Payment();
+        payment.setOrder(order);
+        payment.setPaidAt(Instant.now());
+        payment.setPaymentId(paymentId);
+        payment.setAmount(order.getTotalAmount());
+        order.setStatus("Paid");
+        order.setPayment(payment);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public Order getOrderById(Long orderId) {
+        var optional = orderRepository.findById(orderId);
+        if(optional.isEmpty())
+            throw new IllegalStateException("Order Not Found");
+
+        return optional.get();
     }
 
 }

@@ -9,7 +9,7 @@ public class PaymentMapper {
         PaymentResponseDTO paymentResponseDTO = new PaymentResponseDTO();
         paymentResponseDTO.setId(payment.getId());
         paymentResponseDTO.setProvider(payment.getProvider());
-        paymentResponseDTO.setProviderTxnId(payment.getProviderTxnId());
+        paymentResponseDTO.setProviderTxnId(payment.getPaymentId());
         paymentResponseDTO.setStatus(payment.getStatus());
         paymentResponseDTO.setAmount(payment.getAmount());
         paymentResponseDTO.setPaidAt(payment.getPaidAt());

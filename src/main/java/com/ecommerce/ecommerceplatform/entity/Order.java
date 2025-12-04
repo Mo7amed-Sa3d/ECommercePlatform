@@ -128,7 +128,6 @@ public class Order {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
-        payment.setOrder(this);
     }
 
     public void setShipment(Shipment shipment) {

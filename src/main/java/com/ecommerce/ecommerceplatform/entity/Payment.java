@@ -16,8 +16,8 @@ public class Payment {
     @Column(name = "provider", length = 50)
     private String provider;
 
-    @Column(name = "provider_txn_id")
-    private String providerTxnId;
+    @Column(name = "payment_id")
+    private String paymentId;
 
     @Column(name = "status", length = 50)
     private String status;
@@ -48,12 +48,12 @@ public class Payment {
         this.provider = provider;
     }
 
-    public String getProviderTxnId() {
-        return providerTxnId;
+    public String getPaymentId() {
+        return paymentId;
     }
 
-    public void setProviderTxnId(String providerTxnId) {
-        this.providerTxnId = providerTxnId;
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 
     public String getStatus() {

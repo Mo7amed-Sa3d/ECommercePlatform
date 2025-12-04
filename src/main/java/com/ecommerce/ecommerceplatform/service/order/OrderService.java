@@ -14,4 +14,8 @@ public interface OrderService {
     Shipment createShipment(Long addressId,Order order);
 
     Order findById(Long orderId);
+
+    void markOrderPaid(Long id,String PaymentId);
+
+    Order getOrderById(Long orderId);
 }

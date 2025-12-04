@@ -1,7 +1,10 @@
 package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.PaymentRequest;
+import com.ecommerce.ecommerceplatform.entity.Order;
+import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,25 +19,37 @@ import java.util.Map;
 public class PaymentController {
 
 
+    OrderService orderService;
+
+    public PaymentController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
     @PostMapping("/create-payment-intent")
     public ResponseEntity<?> createPaymentIntent(@RequestBody PaymentRequest request) {
         try {
 
-            Map<String, Object> metadata = new HashMap<>();
-            metadata.put("orderId", request.getOrderId());
-
-            Map<String, Object> params = new HashMap<>();
-            params.put("amount", request.getAmount());  // amount in cents
-            params.put("currency", request.getCurrency());
-            params.put("automatic_payment_methods", Map.of("enabled", true));
-            params.put("metadata", metadata);
+            Order order = orderService.getOrderById(request.getOrderId());
+            // Use Stripe's proper builder pattern
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount(order.getTotalAmount().toBigInteger().longValue() * 100) // amount in cents
+                    .setCurrency(order.getCurrency())
+                    .putMetadata("orderId", request.getOrderId().toString())
+                    .setAutomaticPaymentMethods(
+                            PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                    .setEnabled(true)
+                                    .build()
+                    )
+                    .build();
 
             PaymentIntent intent = PaymentIntent.create(params);
 
-            return ResponseEntity.ok(Map.of("clientSecret", intent.getClientSecret()));
+            return ResponseEntity.ok(Map.of(
+                    "clientSecret", intent.getClientSecret(),
+                    "orderId", request.getOrderId()
+            ));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e.getMessage());
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
-
 }
