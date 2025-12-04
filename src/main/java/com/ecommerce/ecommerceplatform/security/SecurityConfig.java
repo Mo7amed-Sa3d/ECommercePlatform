@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/products/*").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.DELETE,"/api/products/*").hasAnyRole("ADMIN","SELLER")
                         //other endpoints
+                        .requestMatchers("/api/stripe-webhook").permitAll()
                         .anyRequest().authenticated()                // all other endpoints require auth
                 )
                 // Use Basic Authentication
