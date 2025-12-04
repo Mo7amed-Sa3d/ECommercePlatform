@@ -72,7 +72,25 @@ Utility tables:
 
 [//]: # (![ERD]&#40;src/main/resources/Database/ECommerce-Relational-Mapping.svg&#41;)
 
+## 💲 Payment Gateway Integration (Stripe Gateway)
 
+The platform uses **Stripe** to handle secure payments. Payments are processed via **PaymentIntents**, which ensure that the correct amount is charged and provide support for multiple payment methods. The flow is:
+
+1. Backend creates a PaymentIntent for the order.
+2. Frontend confirms the payment using Stripe.js.
+3. Stripe calls a webhook to notify the backend about payment status.
+4. Backend updates order status in the database.
+
+- **For local testing use Stripe CLI**
+  - Use the following command to get the webhook secret
+```CLI
+stripe listen --forward-to localhost:8080/api/stripe-webhook
+```
+- **Update Your API Keys in `application.properties` file**
+```properties
+stripe.secret.key=sk_test_51SacfWA..........
+stripe.webhook.secret=whsec_9414ea..........
+```
 ## 🔧 Installation & Setup
 
 
