@@ -15,5 +15,5 @@ public class BrandRequestDTO {
     private String description;
     private String country;
     private Instant createdAt;
-    
+
 }

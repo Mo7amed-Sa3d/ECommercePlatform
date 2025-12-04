@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.repository;
 
+import com.ecommerce.ecommerceplatform.entity.Wishlist;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
