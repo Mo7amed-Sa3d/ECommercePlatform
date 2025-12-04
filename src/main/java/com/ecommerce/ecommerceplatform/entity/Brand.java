@@ -31,6 +31,10 @@ public class Brand {
     @OneToMany(mappedBy = "brand")
     private List<Product> products;
 
+
+    @OneToOne(mappedBy = "brand", cascade = CascadeType.ALL)
+    private BrandImage brandImage;
+
     public Long getId() {
         return id;
     }
@@ -78,5 +82,14 @@ public class Brand {
     public void addProduct(Product product){
         this.products.add(product);
         product.setBrand(this);
+    }
+
+    public BrandImage getBrandImage() {
+        return brandImage;
+    }
+
+    public void setBrandImage(BrandImage brandImage) {
+        brandImage.setBrand(this);
+        this.brandImage = brandImage;
     }
 }

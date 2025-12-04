@@ -42,6 +42,9 @@ public class ProductVariant {
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
 
+    @OneToMany(mappedBy = "productVariant")
+    private List<WishlistItem> wishlistItems;
+
     public Long getId() {
         return id;
     }
@@ -106,4 +109,11 @@ public class ProductVariant {
         this.orderItems = orderItems;
     }
 
+    public List<WishlistItem> getWishlistItems() {
+        return wishlistItems;
+    }
+
+    public void setWishlistItems(List<WishlistItem> wishlistItems) {
+        this.wishlistItems = wishlistItems;
+    }
 }

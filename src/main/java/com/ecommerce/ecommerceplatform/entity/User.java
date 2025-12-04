@@ -55,6 +55,9 @@ public class User {
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private Cart cart;
 
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private Wishlist wishlist;
+
     public Long getId() {
         return id;
     }
@@ -207,4 +210,12 @@ public class User {
         seller.setUser(this);
     }
 
+    public Wishlist getWishlist() {
+        return wishlist;
+    }
+
+    public void setWishlist(Wishlist wishlist) {
+        this.wishlist = wishlist;
+        wishlist.setUser(this);
+    }
 }

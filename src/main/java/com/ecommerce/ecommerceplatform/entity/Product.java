@@ -77,6 +77,10 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<OrderItem> orderItems;
 
+
+    @OneToMany(mappedBy = "product")
+    private List<WishlistItem> wishlistItems;
+
     public Product(){
         categories = new ArrayList<>();
     }
@@ -262,5 +266,13 @@ public class Product {
             cartItems = new ArrayList<>();
         if(!cartItems.contains(cartItem))
             cartItems.add(cartItem);
+    }
+
+    public List<WishlistItem> getWishlistItems() {
+        return wishlistItems;
+    }
+
+    public void setWishlistItems(List<WishlistItem> wishlistItems) {
+        this.wishlistItems = wishlistItems;
     }
 }
