@@ -35,7 +35,7 @@ public class OrderServiceImplementation implements OrderService {
             throw new IllegalStateException("Cart is Empty");
         Order order = new Order();
 
-        order.setCurrency("EGP");
+        order.setCurrency("USD");
         order.setCreatedAt(Instant.now());
         order.setStatus("Pending Payment");
         //Map cart items to order items

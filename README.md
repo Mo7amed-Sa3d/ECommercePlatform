@@ -82,8 +82,9 @@ The platform uses **Stripe** to handle secure payments. Payments are processed v
 4. Backend updates order status in the database.
 
 - For local testing use Stripe CLI
-  - Use the following command to get the webhook secret
+  - Use the following commands to get the webhook secret
 ```CLI
+stripe login
 stripe listen --forward-to localhost:8080/api/stripe-webhook
 ```
 - Update Your API Keys in `application.properties` file

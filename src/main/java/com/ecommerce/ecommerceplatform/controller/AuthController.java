@@ -11,6 +11,7 @@ import com.ecommerce.ecommerceplatform.security.jwt.BlacklistService;
 import com.ecommerce.ecommerceplatform.security.jwt.JwtService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -71,7 +72,7 @@ public class AuthController {
     }
 
     @PostMapping("/registerSeller")
-    public ResponseEntity<UserResponseDTO> registerSeller(@RequestBody SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException {
+    public ResponseEntity<UserResponseDTO> registerSeller(@RequestBody SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
         User admin = userUtility.getCurrentUser();
         return ResponseEntity.ok(UserMapper.toDto(userServices.registerSeller(admin,sellerRequestDTO)));
     }

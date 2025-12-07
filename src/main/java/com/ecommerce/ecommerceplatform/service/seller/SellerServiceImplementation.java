@@ -5,6 +5,7 @@ import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SellerServiceImplementation implements SellerService {
@@ -23,4 +24,11 @@ public class SellerServiceImplementation implements SellerService {
             throw new RuntimeException("Seller not found");
         return user.get().getSeller();
     }
+
+    @Override
+    public Seller findSellerByUserId(Long userId) {
+        return userServices.getUserByID(userId).getSeller();
+    }
+
+
 }

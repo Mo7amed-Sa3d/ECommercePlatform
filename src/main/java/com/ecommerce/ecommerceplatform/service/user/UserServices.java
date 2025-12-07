@@ -6,6 +6,7 @@ import com.ecommerce.ecommerceplatform.entity.Address;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.entity.User;
+import com.stripe.exception.StripeException;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.nio.file.AccessDeniedException;
@@ -20,6 +21,6 @@ public interface UserServices {
     void deleteAddressFromUser(Long userId,Long addressId);
     User getUserByID(Long userId);
     Cart getCartByUserID(Long userId);
-    User registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException;
+    User registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException;
     User registerAdmin(User adminUser,UserRequestDTO userRequestDTO) throws AccessDeniedException;
 }

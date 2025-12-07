@@ -36,6 +36,8 @@ public class Seller {
     @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Product> products;
 
+    @Column(name="payment_account_id")
+    private String paymentAccountId;
 
     public Seller() {
     }
@@ -110,4 +112,11 @@ public class Seller {
         this.products = products;
     }
 
+    public String getPaymentAccountId() {
+        return paymentAccountId;
+    }
+
+    public void setPaymentAccountId(String paymentAccountId) {
+        this.paymentAccountId = paymentAccountId;
+    }
 }

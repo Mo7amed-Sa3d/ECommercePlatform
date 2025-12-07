@@ -33,6 +33,10 @@ public class OrderItem {
     @JoinColumn(name = "variant_id")
     private ProductVariant productVariant;
 
+    @Column(name="payment_dues")
+    private Long dues = 0L;
+
+
     public Long getId() {
         return id;
     }
@@ -89,4 +93,11 @@ public class OrderItem {
         this.productVariant = variant;
     }
 
+    public Long getDues() {
+        return dues;
+    }
+
+    public void setDues(Long dues) {
+        this.dues = dues;
+    }
 }

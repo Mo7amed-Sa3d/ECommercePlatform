@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface SellerService {
     Seller findSellerByEmail(String email);
+    Seller findSellerByUserId(Long userId);
 }
