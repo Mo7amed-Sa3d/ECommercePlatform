@@ -80,6 +80,7 @@ The platform uses **Stripe** to handle secure payments. Payments are processed v
 2. Frontend confirms the payment using Stripe.js.
 3. Stripe calls a webhook to notify the backend about payment status.
 4. Backend updates order status in the database.
+5. A payout service runs in the background to transfer Sellers' Dues everyday at 02:00 AM automatically
 
 - For local testing use Stripe CLI
   - Use the following commands to get the webhook secret
@@ -92,11 +93,59 @@ stripe listen --forward-to localhost:8080/api/stripe-webhook
 stripe.secret.key=sk_test_51SacfWA..........
 stripe.webhook.secret=whsec_9414ea..........
 ```
+## 🚀 Caching (Redis Integration)
+
+The platform uses **Redis** as a high-performance, in-memory caching layer to improve application speed and reduce database load.
+
+### **Why Redis?**
+
+Redis provides:
+
+- ⚡ Ultra-fast read/write operations
+- 🧠 In-memory key–value storage
+- 🗄️ Automatic expiration (TTL) support
+- 🔒 Secure session/token handling
+- 🌐 Distributed and scalable architecture
+
+This makes it ideal for caching frequently accessed data such as products, categories, and user-related information.
+
+---
+
+### **How Caching Works**
+
+1. **Cache Lookup**  
+   The system checks Redis for cached data using a dedicated key (e.g., `product:{id}`).
+
+2. **Cache Hit**  
+   If the value exists in Redis, it is returned immediately without querying the database.
+
+3. **Cache Miss**  
+   If not found:
+  - The data is retrieved from the database.
+  - The result is stored in Redis with a TTL (expiration time).
+  - Future requests are served from the cached value.
+
+---
+
+### **Run Redis**
+* Using Docker
+```bash
+docker run -p 6379:6379 --name redis -d redis 
+```
+* For other hosting platforms and more info see the [Redis documentation](https://redis.io/docs/latest/develop/)
+### **Caching Example**
+
+```java
+@Cacheable(value = "product", key = "#id")
+public Product getProduct(Long id) {
+    /// Database call
+}
+```
 ## 🔧 Installation & Setup
 
 
 ### **Prerequisites**
-- Java 17+
+- Java 21
 - Maven
 - MySQL
 
