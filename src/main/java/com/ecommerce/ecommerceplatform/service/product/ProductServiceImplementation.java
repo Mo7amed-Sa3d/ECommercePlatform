@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +45,9 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "product", key = "#productId")
     public Product getProductById(Long productId) {
+        System.err.println("Cache Miss!");
         Optional<Product> optional = productRepository.findByIdAndActiveTrue(productId);
         if(optional.isEmpty())
             throw new EntityNotFoundException("Product not found");

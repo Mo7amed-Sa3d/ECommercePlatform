@@ -22,7 +22,8 @@ public class ProductMapper {
         productResponseDTO.setActive(product.getActive());
         productResponseDTO.setAttributes(product.getAttributes());
         productResponseDTO.setCreatedAt(product.getCreatedAt());
-        productResponseDTO.setImages(ProductImageMapper.toDTOLList(product.getProductImages()));
+        if (product.getProductImages() != null)
+            productResponseDTO.setImages(ProductImageMapper.toDTOLList(product.getProductImages()));
         return productResponseDTO;
     }
 
