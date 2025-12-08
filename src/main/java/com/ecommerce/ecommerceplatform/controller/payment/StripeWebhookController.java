@@ -3,6 +3,7 @@ package com.ecommerce.ecommerceplatform.controller.payment;
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.entity.OrderItem;
 import com.ecommerce.ecommerceplatform.entity.Seller;
+import com.ecommerce.ecommerceplatform.service.mailing.MailService;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.seller.SellerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,10 +28,11 @@ public class StripeWebhookController {
 
     private final OrderService orderService;
     private final SellerService sellerService;
-
-    public StripeWebhookController(OrderService orderService, SellerService sellerService) {
+    private final MailService mailService;
+    public StripeWebhookController(OrderService orderService, SellerService sellerService,MailService mailService) {
         this.orderService = orderService;
         this.sellerService = sellerService;
+        this.mailService = mailService;
     }
 
     @PostMapping("/stripe-webhook")
@@ -66,7 +68,8 @@ public class StripeWebhookController {
                 System.err.println("Stripe Webhook Success " + orderIdStr);
                 System.err.println("Stripe Webhook Payload " + paymentId);
                 orderService.markOrderPaid(Long.valueOf(orderIdStr), paymentId);
-
+                mailService.sendTextEmail(order.getUser().getEmail(),"Payment Successful!",
+                        "Payment successful for order " + order.getId());
             }
             return ResponseEntity.ok("Payment Intent: " + event.getType());
         } catch (JsonProcessingException | StripeException e) {

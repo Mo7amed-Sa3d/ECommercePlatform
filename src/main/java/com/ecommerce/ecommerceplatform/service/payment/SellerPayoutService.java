@@ -3,6 +3,7 @@ package com.ecommerce.ecommerceplatform.service.payment;
 import com.ecommerce.ecommerceplatform.entity.OrderItem;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.repository.OrderItemRepository;
+import com.ecommerce.ecommerceplatform.service.mailing.MailService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Transfer;
 import com.stripe.param.TransferCreateParams;
@@ -18,16 +19,18 @@ import java.util.List;
 public class SellerPayoutService {
 
     private final OrderItemRepository orderItemRepository;
+    private final MailService mailService;
 
     @Value("${currencyMultiplier}")
     private Long currencyMultiplier;
 
     @Autowired
-    public SellerPayoutService(OrderItemRepository orderItemRepository) {
+    public SellerPayoutService(OrderItemRepository orderItemRepository, MailService mailService) {
         this.orderItemRepository = orderItemRepository;
+        this.mailService = mailService;
     }
 
-    @Scheduled(cron = "0 19 22 * * *")
+    @Scheduled(cron = "0 18 2 * * *")
     @Transactional
     public void payout() {
         System.err.println("Entered PayoutService");
@@ -44,7 +47,6 @@ public class SellerPayoutService {
                         TransferCreateParams.builder()
                                 .setAmount(dues)
                                 .setCurrency(orderItem.getOrder().getCurrency())
-//                                .setCurrency("USD")
                                 .setDestination(seller.getPaymentAccountId())
                                 .setTransferGroup("ORDER_" +  orderItem.getId())
                                 .build();
@@ -56,10 +58,11 @@ public class SellerPayoutService {
 
                     orderItem.setDues(0L);
                     orderItemRepository.save(orderItem);
+                    mailService.sendTextEmail(seller.getUser().getEmail(),"Payout Received Successfully",
+                            "You received payout successfully for item with id " + orderItem.getId());
                 }
             } catch (StripeException e) {
                 System.err.println("Failed to transfer dues for order item " + orderItem.getId() + ": " + e.getMessage());
-                // Optionally, log and retry later
             }
         }
     }

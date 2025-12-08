@@ -5,6 +5,7 @@ import com.ecommerce.ecommerceplatform.entity.*;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.OrderRepository;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
+import com.ecommerce.ecommerceplatform.service.mailing.MailService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +21,18 @@ public class OrderServiceImplementation implements OrderService {
     private final AddressRepository addressRepository;
     UserServices userServices;
     OrderRepository orderRepository;
-    public OrderServiceImplementation(UserServices userServices, OrderRepository orderRepository, CartService cartService, AddressRepository addressRepository) {
+    MailService mailService;
+
+    public OrderServiceImplementation(UserServices userServices,
+                                      OrderRepository orderRepository,
+                                      CartService cartService,
+                                      AddressRepository addressRepository,
+                                      MailService mailService) {
         this.userServices = userServices;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.addressRepository = addressRepository;
+        this.mailService = mailService;
     }
 
     @Override
@@ -63,6 +71,7 @@ public class OrderServiceImplementation implements OrderService {
         User user = userServices.getUserByID(userId);
         Order order = createOrder(user);
         createShipment(addressId, order);
+        mailService.sendTextEmail(user.getEmail(),"Order Placed Successfully","Your order has been placed successfully" + order.getOrderItems().toString());
         return new OrderSummaryDTO(order);
     }
 
