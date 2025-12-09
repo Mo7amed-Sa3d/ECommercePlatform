@@ -393,4 +393,4 @@ CREATE INDEX idx_brand_image_brand ON brand_image(brand_id);
 -- ===========================
 -- BLACKLISTED TOKEN
 -- ===========================
-CREATE UNIQUE INDEX idx_blacklisted_token ON BlacklistedToken(token);
+CREATE UNIQUE INDEX idx_blacklisted_token ON blacklistedtoken(token);

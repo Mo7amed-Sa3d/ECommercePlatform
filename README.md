@@ -145,30 +145,16 @@ public Product getProduct(Long id) {
 
 
 ### **Prerequisites**
-- Java 21
-- Maven
-- MySQL
+- Docker
 
 
 ### **Steps**
 1. Clone the project
-2. Create the database using [e-commerce-schema.sql](src/main/resources/Database/e-commerce-schema.sql):
-```sql
-create database if not exists `e-commerce`;
-#.....
-```
-3. Configure `application.properties`:
-```properties
-spring.application.name=ECommercePlatform
-spring.datasource.url=jdbc:mysql://localhost:3306/e-commerce
-spring.datasource.username=yourUserName
-spring.datasource.password=yourPassword
-product-image.upload-dir=E:/SpringBoot/ECommercePlatform/uploads
 
-```
-4. Start the backend:
+
+4. Build and start the docker images:
 ```bash
-mvn spring-boot:run
+docker compose up --build
 ```
 
 ## 💬 Contact
