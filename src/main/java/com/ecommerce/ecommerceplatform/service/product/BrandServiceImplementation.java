@@ -60,8 +60,12 @@ public class BrandServiceImplementation implements BrandService {
     @Override
     public String addBrandImage(MultipartFile image, Long brandId, User user) throws IOException {
 
-        if(user.getRole().equals("ROLE_ADMIN"))
+        System.err.println("USER Role " + user.getRole());
+
+        if(!user.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access denied");
+
+        System.err.println("brand image directory " + brandImagesUploadDirectory);
 
         String brandDir = brandImagesUploadDirectory + "/brands/" + brandId + "/";
         File dir = new File(brandDir);

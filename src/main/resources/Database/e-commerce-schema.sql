@@ -28,6 +28,7 @@ create table sellers(
                         seller_name varchar(255),
                         verified boolean default false,
                         created_at timestamp default current_timestamp,
+                        payment_account_id varchar(255),
                         foreign key (user_id) references user(id) on delete cascade
 ) ENGINE=InnoDB;
 
@@ -150,6 +151,7 @@ CREATE TABLE order_item (
                             quantity INT NOT NULL,
                             unit_price DECIMAL(10,2) NOT NULL,
                             tax_amount DECIMAL(10,2) NOT NULL,
+                            payment_dues bigint,
                             FOREIGN KEY (product_id) REFERENCES product(id),
                             FOREIGN KEY (order_id) REFERENCES `order`(id) ON DELETE CASCADE,
                             FOREIGN KEY (variant_id) REFERENCES product_variant(id)
@@ -239,7 +241,7 @@ CREATE TABLE WishlistItems (
                                id bigint PRIMARY KEY auto_increment,
                                wishlist_id bigint NOT NULL,
                                product_id bigint NOT NULL,
-                               variant_id bigint not null,
+                               variant_id bigint,
                                FOREIGN KEY (wishlist_id) REFERENCES Wishlists(id) ON DELETE CASCADE,
                                FOREIGN KEY (product_id) REFERENCES product(id),
                                foreign key (variant_id) references product_variant(id)
@@ -261,3 +263,134 @@ create table BlacklistedToken (
                                   id bigint primary key auto_increment,
                                   token varchar(500)
 )Engine=InnoDB;
+
+
+-- ===========================
+-- INDEX
+-- ===========================
+
+
+-- ===========================
+-- USER
+-- ===========================
+
+
+CREATE INDEX idx_user_phone ON user(phone);
+CREATE INDEX idx_user_role ON user(role);
+
+-- ===========================
+-- SELLERS
+-- ===========================
+CREATE INDEX idx_sellers_user_id ON sellers(user_id);
+CREATE INDEX idx_sellers_verified ON sellers(verified);
+
+-- ===========================
+-- CATEGORY
+-- ===========================
+CREATE INDEX idx_category_parent ON category(parent_category_id);
+
+-- ===========================
+-- BRAND
+-- ===========================
+CREATE INDEX idx_brand_name ON brand(name);
+CREATE INDEX idx_brand_country ON brand(country);
+
+-- ===========================
+-- PRODUCT
+-- ===========================
+CREATE INDEX idx_product_seller ON product(seller_id);
+CREATE INDEX idx_product_brand ON product(brand_id);
+CREATE INDEX idx_product_active ON product(active);
+CREATE INDEX idx_product_sku ON product(sku);
+CREATE FULLTEXT INDEX idx_product_title ON product(title);
+
+-- ===========================
+-- PRODUCT_VARIANT
+-- ===========================
+CREATE INDEX idx_variant_product ON product_variant(product_id);
+CREATE INDEX idx_variant_sku ON product_variant(sku);
+
+-- ===========================
+-- PRODUCT_IMAGE
+-- ===========================
+CREATE INDEX idx_product_image_product ON product_image(product_id);
+
+-- ===========================
+-- PRODUCT_CATEGORY
+-- ===========================
+CREATE INDEX idx_product_category_category ON product_category(category_id);
+
+-- ===========================
+-- ADDRESS
+-- ===========================
+CREATE INDEX idx_address_user ON address(user_id);
+CREATE INDEX idx_address_postal_code ON address(postal_code);
+CREATE INDEX idx_address_city ON address(city);
+
+-- ===========================
+-- ORDER
+-- ===========================
+CREATE INDEX idx_order_user ON `order`(user_id);
+CREATE INDEX idx_order_status ON `order`(status);
+CREATE INDEX idx_order_created_at ON `order`(created_at);
+
+-- ===========================
+-- ORDER_ITEM
+-- ===========================
+CREATE INDEX idx_order_item_order ON order_item(order_id);
+CREATE INDEX idx_order_item_product ON order_item(product_id);
+CREATE INDEX idx_order_item_variant ON order_item(variant_id);
+
+-- ===========================
+-- PAYMENT
+-- ===========================
+CREATE INDEX idx_payment_order ON payment(order_id);
+CREATE INDEX idx_payment_status ON payment(status);
+
+-- ===========================
+-- SHIPMENT
+-- ===========================
+CREATE INDEX idx_shipment_order ON shipment(order_id);
+CREATE INDEX idx_shipment_status ON shipment(status);
+CREATE INDEX idx_shipment_address ON shipment(address_id);
+
+-- ===========================
+-- REVIEW
+-- ===========================
+CREATE INDEX idx_review_product ON review(product_id);
+CREATE INDEX idx_review_user ON review(user_id);
+CREATE INDEX idx_review_rating ON review(rating);
+
+-- ===========================
+-- CART
+-- ===========================
+CREATE INDEX idx_cart_user ON cart(user_id);
+
+-- ===========================
+-- CART_ITEM
+-- ===========================
+CREATE INDEX idx_cart_item_cart ON cart_item(cart_id);
+CREATE INDEX idx_cart_item_product ON cart_item(product_id);
+CREATE INDEX idx_cart_item_variant ON cart_item(variant_id);
+
+-- ===========================
+-- WISHLISTS
+-- ===========================
+CREATE INDEX idx_wishlist_user ON wishlists(user_id);
+
+-- ===========================
+-- WISHLIST_ITEMS
+-- ===========================
+CREATE INDEX idx_wishlist_items_wishlist ON wishlist_items(wishlist_id);
+CREATE INDEX idx_wishlist_items_product ON wishlist_items(product_id);
+CREATE INDEX idx_wishlist_items_variant ON wishlist_items(variant_id);
+
+-- ===========================
+-- BRAND_IMAGE
+-- ===========================
+CREATE INDEX idx_brand_image_brand ON brand_image(brand_id);
+
+-- ===========================
+-- BLACKLISTED TOKEN
+-- ===========================
+CREATE UNIQUE INDEX idx_blacklisted_token ON BlacklistedToken(token);
