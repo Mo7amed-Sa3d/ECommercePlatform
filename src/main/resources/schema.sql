@@ -6,7 +6,7 @@ use `e-commerce`;
 
 -- ======================================================
 -- USERS
--- ======================================================s
+-- ======================================================
 create table user(
                      id bigint primary key auto_increment,
                      email varchar(255) not null unique,
@@ -28,6 +28,7 @@ create table sellers(
                         seller_name varchar(255),
                         verified boolean default false,
                         created_at timestamp default current_timestamp,
+                        payment_account_id varchar(255),
                         foreign key (user_id) references user(id) on delete cascade
 ) ENGINE=InnoDB;
 
@@ -150,6 +151,7 @@ CREATE TABLE order_item (
                             quantity INT NOT NULL,
                             unit_price DECIMAL(10,2) NOT NULL,
                             tax_amount DECIMAL(10,2) NOT NULL,
+                            payment_dues bigint,
                             FOREIGN KEY (product_id) REFERENCES product(id),
                             FOREIGN KEY (order_id) REFERENCES `order`(id) ON DELETE CASCADE,
                             FOREIGN KEY (variant_id) REFERENCES product_variant(id)
@@ -239,7 +241,7 @@ CREATE TABLE WishlistItems (
                                id bigint PRIMARY KEY auto_increment,
                                wishlist_id bigint NOT NULL,
                                product_id bigint NOT NULL,
-                               variant_id bigint not null,
+                               variant_id bigint,
                                FOREIGN KEY (wishlist_id) REFERENCES Wishlists(id) ON DELETE CASCADE,
                                FOREIGN KEY (product_id) REFERENCES product(id),
                                foreign key (variant_id) references product_variant(id)

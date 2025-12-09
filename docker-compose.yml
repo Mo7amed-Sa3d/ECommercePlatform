@@ -1,0 +1,47 @@
+version: "1.0"
+services:
+  backend:
+    build: .
+    container_name: e-commerce-backend
+    restart: always
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - uploads_data:/app/uploads
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-server:3306/e-commerce
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 302123
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      UPLOAD_DIR: /app/uploads
+    depends_on:
+      - db-server
+      - redis
+
+  db-server:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: e-commerce
+      MYSQL_ROOT_PASSWORD: 302123
+
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  redis:
+    image: redis
+    container_name: redis_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:
+  uploads_data:
