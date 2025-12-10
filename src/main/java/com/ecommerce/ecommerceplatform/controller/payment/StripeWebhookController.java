@@ -2,7 +2,6 @@ package com.ecommerce.ecommerceplatform.controller.payment;
 
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.entity.OrderItem;
-import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.service.mailing.MailService;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.seller.SellerService;
@@ -14,7 +13,6 @@ import com.stripe.model.*;
 import com.stripe.net.Webhook;
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.ObjectNotFoundException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,7 +66,7 @@ public class StripeWebhookController {
                 System.err.println("Stripe Webhook Success " + orderIdStr);
                 System.err.println("Stripe Webhook Payload " + paymentId);
                 orderService.markOrderPaid(Long.valueOf(orderIdStr), paymentId);
-                mailService.sendTextEmail(order.getUser().getEmail(),"Payment Successful!",
+                mailService.sendEmail(order.getUser().getEmail(),"Payment Successful!",
                         "Payment successful for order " + order.getId());
             }
             return ResponseEntity.ok("Payment Intent: " + event.getType());

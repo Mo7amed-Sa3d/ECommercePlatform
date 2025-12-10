@@ -30,7 +30,7 @@ public class SellerPayoutService {
         this.mailService = mailService;
     }
 
-    @Scheduled(cron = "0 18 2 * * *")
+    @Scheduled(cron = "0 42 20 * * *")
     @Transactional
     public void payout() {
         System.err.println("Entered PayoutService");
@@ -58,7 +58,7 @@ public class SellerPayoutService {
 
                     orderItem.setDues(0L);
                     orderItemRepository.save(orderItem);
-                    mailService.sendTextEmail(seller.getUser().getEmail(),"Payout Received Successfully",
+                    mailService.sendEmail(seller.getUser().getEmail(),"Payout Received Successfully",
                             "You received payout successfully for item with id " + orderItem.getId());
                 }
             } catch (StripeException e) {

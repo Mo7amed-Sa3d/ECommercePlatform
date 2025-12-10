@@ -71,7 +71,7 @@ public class OrderServiceImplementation implements OrderService {
         User user = userServices.getUserByID(userId);
         Order order = createOrder(user);
         createShipment(addressId, order);
-        mailService.sendTextEmail(user.getEmail(),"Order Placed Successfully","Your order has been placed successfully" + order.getOrderItems().toString());
+        mailService.sendEmail(user.getEmail(),"Order Placed Successfully","Your order has been placed successfully" + order.getOrderItems().toString());
         return new OrderSummaryDTO(order);
     }
 

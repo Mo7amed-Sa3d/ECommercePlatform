@@ -40,6 +40,12 @@ public class SecurityConfig {
                 // Enable CORS for React frontend
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        //Swagger
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        //mail
+                        .requestMatchers("/api/mail/**").permitAll()
                         //Auth endpoints
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
