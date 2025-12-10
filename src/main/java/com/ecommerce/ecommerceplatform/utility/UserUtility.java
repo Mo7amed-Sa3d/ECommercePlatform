@@ -1,6 +1,7 @@
 package com.ecommerce.ecommerceplatform.utility;
 
 import com.ecommerce.ecommerceplatform.entity.User;
+import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -10,11 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserUtility{
 
-    private final UserServices userServices;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserUtility(UserServices userServices) {
-        this.userServices = userServices;
+    public UserUtility(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     /**
@@ -28,7 +29,7 @@ public class UserUtility{
             return null;
         }
         String email = authentication.getName(); // usually username/email
-        return userServices.getUserByEmail(email).orElse(null);
+        return userRepository.findByEmail(email).get();
     }
 
 }

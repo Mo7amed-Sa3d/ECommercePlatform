@@ -1,8 +1,8 @@
 package com.ecommerce.ecommerceplatform.service.wishlist;
 
-import com.ecommerce.ecommerceplatform.dto.mapper.WishlistItemMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.WishlistMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.WishlistItemRequestDTO;
-import com.ecommerce.ecommerceplatform.entity.Product;
+import com.ecommerce.ecommerceplatform.dto.responsedto.WishlistResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.entity.Wishlist;
 import com.ecommerce.ecommerceplatform.entity.WishlistItem;
@@ -28,7 +28,7 @@ public class WishlistServiceImplementation implements WishlistService {
 
     @Override
     @Transactional
-    public Wishlist addItem(WishlistItemRequestDTO wishlistItemRequestDTO, User user) {
+    public WishlistResponseDTO addItem(WishlistItemRequestDTO wishlistItemRequestDTO, User user) {
         var optional = productRepository.findById(wishlistItemRequestDTO.getProductId());
         if (optional.isEmpty())
             throw new EntityNotFoundException("Product not found");
@@ -51,7 +51,7 @@ public class WishlistServiceImplementation implements WishlistService {
         wishlistItem.setProduct(product);
         wishlistItem.setWishlist(wishlist);
 
-        return wishlistRepository.save(user.getWishlist());
+        return WishlistMapper.toDTO(wishlistRepository.save(user.getWishlist()));
     }
 
     @Override

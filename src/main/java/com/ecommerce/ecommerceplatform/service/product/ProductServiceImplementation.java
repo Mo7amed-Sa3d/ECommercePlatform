@@ -1,7 +1,11 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
+import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.ProductRequestDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.*;
+import com.ecommerce.ecommerceplatform.repository.BrandRepository;
+import com.ecommerce.ecommerceplatform.repository.CategoryRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductImageRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,8 +27,8 @@ import java.util.*;
 @Service
 public class ProductServiceImplementation implements ProductService {
 
-    private final BrandService brandService;
-    private final CategoryService categoryService;
+    private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
     ProductRepository productRepository;
     ProductImageRepository productImageRepository;
 
@@ -32,33 +36,33 @@ public class ProductServiceImplementation implements ProductService {
     private String productImagesUploadDirectory;
 
     @Autowired
-    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository, BrandService brandService, CategoryService categoryService) {
+    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository, CategoryService categoryService, BrandRepository brandRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
-        this.brandService = brandService;
-        this.categoryService = categoryService;
+        this.brandRepository = brandRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findByActiveTrue();
+    public List<ProductResponseDTO> getAllProducts() {
+        return ProductMapper.toDTOList(productRepository.findByActiveTrue());
     }
 
     @Override
     @Cacheable(value = "product", key = "#productId")
-    public Product getProductById(Long productId) {
+    public ProductResponseDTO getProductById(Long productId) {
         System.err.println("Cache Miss!");
         Optional<Product> optional = productRepository.findByIdAndActiveTrue(productId);
         if(optional.isEmpty())
             throw new EntityNotFoundException("Product not found");
-        return optional.get();
+        return ProductMapper.toDTO(optional.get());
     }
 
     @Override
     @Transactional
-    public Product saveProduct(Product product, Seller seller) {
+    public ProductResponseDTO saveProduct(Product product, Seller seller) {
         seller.addProduct(product);
-        return product;
+        return ProductMapper.toDTO(product);
     }
 
     @Override
@@ -114,23 +118,23 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
-    public Product saveProduct(Product product, Long brandId, Long categoryId, Seller seller) {
-        Brand brand = brandService.findById(brandId);
-        Category category = categoryService.findById(categoryId);
+    public ProductResponseDTO saveProduct(Product product, Long brandId, Long categoryId, Seller seller) {
+        Brand brand = brandRepository.findById(brandId).get();
+        Category category = categoryRepository.findById(categoryId).get();
         brand.addProduct(product);
         category.addProduct(product);
         seller.addProduct(product);
-        return productRepository.save(product);
+        return ProductMapper.toDTO(productRepository.save(product));
     }
 
     @Override
-    public List<Product> findAllByCategoryId(Long categoryId) {
-        return productRepository.findAllProductsByCategory(categoryId);
+    public List<ProductResponseDTO> findAllByCategoryId(Long categoryId) {
+        return  ProductMapper.toDTOList(productRepository.findAllProductsByCategory(categoryId));
     }
 
     @Override
     @Transactional
-    public Product updateProduct(User user,Long productId, ProductRequestDTO productRequestDTO) {
+    public ProductResponseDTO updateProduct(User user,Long productId, ProductRequestDTO productRequestDTO) {
         Optional<Product> optional = productRepository.findById(productId);
         if(optional.isEmpty())
             throw new EntityNotFoundException("Product not found");
@@ -144,7 +148,7 @@ public class ProductServiceImplementation implements ProductService {
         product.setBasePrice(productRequestDTO.getBasePrice());
         product.setActive(productRequestDTO.getActive());
         product.setCreatedAt(productRequestDTO.getCreatedAt());
-        return product;
+        return ProductMapper.toDTO(product);
     }
 
     @Override

@@ -29,20 +29,20 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(){
-        return ResponseEntity.ok(CategoryMapper.toDTOList(categoryService.getAllCategories()));
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) throws AccessDeniedException {
         var user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(CategoryMapper.toDTO(categoryService.createCategory(user,
+        return ResponseEntity.ok(categoryService.createCategory(user,
                                                         categoryRequestDTO.getName(),
-                                                         categoryRequestDTO.getParentId())));
+                                                         categoryRequestDTO.getParentId()));
     }
 
     @GetMapping("/{categoryId}/products")
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts(@PathVariable Long categoryId){
-        return ResponseEntity.ok(ProductMapper.toDTOList(categoryService.getAllProducts(categoryId)));
+        return ResponseEntity.ok(categoryService.getAllProducts(categoryId));
     }
 
 }

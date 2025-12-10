@@ -4,7 +4,6 @@ import com.ecommerce.ecommerceplatform.dto.mapper.WishlistMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.WishlistItemRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.WishlistResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.User;
-import com.ecommerce.ecommerceplatform.entity.Wishlist;
 import com.ecommerce.ecommerceplatform.service.wishlist.WishlistService;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +32,8 @@ public class WishlistController {
     @PostMapping
     public ResponseEntity<WishlistResponseDTO> addWishlistItem(@RequestBody WishlistItemRequestDTO wishlistItemRequestDTO) {
         User user = userUtility.getCurrentUser();
-        Wishlist wishlist = wishlistService.addItem(wishlistItemRequestDTO,user);
-        return ResponseEntity.ok(WishlistMapper.toDTO(wishlist));
+        var wishlist = wishlistService.addItem(wishlistItemRequestDTO,user);
+        return ResponseEntity.ok(wishlist);
     }
 
     @DeleteMapping("/{itemId}")

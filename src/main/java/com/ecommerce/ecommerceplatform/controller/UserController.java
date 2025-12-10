@@ -9,6 +9,7 @@ import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.dto.mapper.AddressMapper;
 import com.ecommerce.ecommerceplatform.dto.mapper.UserMapper;
+import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.payment.PaymentService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
@@ -32,18 +33,20 @@ public class UserController {
     private final UserServices userServices;
     private final UserUtility userUtility;
     private final PaymentService paymentService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserServices userServices, UserUtility userUtility, PaymentService paymentService) {
+    public UserController(UserServices userServices, UserUtility userUtility, PaymentService paymentService, UserRepository userRepository) {
         this.userServices = userServices;
         this.userUtility = userUtility;
         this.paymentService = paymentService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
         String email = authentication.getName();
-        Optional<User> user = userServices.getUserByEmail(email);
+        var user = userRepository.findByEmail(email);
         if (user.isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(UserMapper.toDto(user.get()));
@@ -52,8 +55,8 @@ public class UserController {
     @PostMapping("/addresses")
     public ResponseEntity<AddressResponseDTO> addAddress(@RequestBody AddressRequestDTO addressRequestDTO) {
         User user = userUtility.getCurrentUser();
-        Address savedAddress = userServices.addAddressToUser(user.getId(), AddressMapper.toEntity(addressRequestDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(AddressMapper.toDto(savedAddress));
+        var savedAddress = userServices.addAddressToUser(user.getId(), AddressMapper.toEntity(addressRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
     }
 
 
@@ -61,7 +64,7 @@ public class UserController {
     @GetMapping("/addresses")
     public ResponseEntity<List<AddressResponseDTO>> getAddresses() {
         User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(AddressMapper.toDtoList(userServices.getAddresses(user.getId())));
+        return ResponseEntity.ok(userServices.getAddresses(user.getId()));
     }
 
     @DeleteMapping("/addresses/{addressId}")
@@ -73,7 +76,7 @@ public class UserController {
 
     @GetMapping("/{sellerId}/onboarding-link")
     public ResponseEntity<?> onboardingLink(@PathVariable Long sellerId) throws StripeException {
-        Seller seller = userServices.getUserByID(sellerId).getSeller();
+        Seller seller = userRepository.findById(sellerId).get().getSeller();
         return ResponseEntity.ok(paymentService.generateOnboardingLink(seller.getPaymentAccountId()));
     }
 

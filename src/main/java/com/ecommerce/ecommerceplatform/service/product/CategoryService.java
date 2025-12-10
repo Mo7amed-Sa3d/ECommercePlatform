@@ -1,5 +1,7 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
+import com.ecommerce.ecommerceplatform.dto.responsedto.CategoryResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Category;
 import com.ecommerce.ecommerceplatform.entity.Product;
 import com.ecommerce.ecommerceplatform.entity.User;
@@ -10,12 +12,12 @@ import java.util.Optional;
 
 public interface CategoryService {
 
-    List<Category> getAllCategories();
+    List<CategoryResponseDTO> getAllCategories();
 
-    Category createCategory(User user,String categoryName, Long parentId) throws AccessDeniedException;
+    CategoryResponseDTO createCategory(User user,String categoryName, Long parentId) throws AccessDeniedException;
 
-    List<Product> getAllProducts(Long categoryId);
+    List<ProductResponseDTO> getAllProducts(Long categoryId);
 
-    Category findById(Long categoryId);
+    CategoryResponseDTO findById(Long categoryId);
 
 }

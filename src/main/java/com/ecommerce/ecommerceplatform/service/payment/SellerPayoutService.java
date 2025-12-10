@@ -3,7 +3,7 @@ package com.ecommerce.ecommerceplatform.service.payment;
 import com.ecommerce.ecommerceplatform.entity.OrderItem;
 import com.ecommerce.ecommerceplatform.entity.Seller;
 import com.ecommerce.ecommerceplatform.repository.OrderItemRepository;
-import com.ecommerce.ecommerceplatform.service.mailing.MailService;
+import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Transfer;
 import com.stripe.param.TransferCreateParams;
@@ -19,13 +19,13 @@ import java.util.List;
 public class SellerPayoutService {
 
     private final OrderItemRepository orderItemRepository;
-    private final MailService mailService;
+    private final MailServiceImplementation mailService;
 
     @Value("${currencyMultiplier}")
     private Long currencyMultiplier;
 
     @Autowired
-    public SellerPayoutService(OrderItemRepository orderItemRepository, MailService mailService) {
+    public SellerPayoutService(OrderItemRepository orderItemRepository, MailServiceImplementation mailService) {
         this.orderItemRepository = orderItemRepository;
         this.mailService = mailService;
     }

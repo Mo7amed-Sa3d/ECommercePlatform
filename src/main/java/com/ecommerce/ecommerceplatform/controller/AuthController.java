@@ -68,18 +68,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userData) throws AccessDeniedException {
-        return ResponseEntity.ok(UserMapper.toDto(userServices.registerUser(userData)));
+        return ResponseEntity.ok(userServices.registerUser(userData));
     }
 
     @PostMapping("/registerSeller")
     public ResponseEntity<UserResponseDTO> registerSeller(@RequestBody SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
         User admin = userUtility.getCurrentUser();
-        return ResponseEntity.ok(UserMapper.toDto(userServices.registerSeller(admin,sellerRequestDTO)));
+        return ResponseEntity.ok(userServices.registerSeller(admin,sellerRequestDTO));
     }
 
     @PostMapping("/registerAdmin")
     public ResponseEntity<UserResponseDTO> registerAdmin(@RequestBody UserRequestDTO userData) throws AccessDeniedException {
         User admin = userUtility.getCurrentUser();
-        return ResponseEntity.ok(UserMapper.toDto(userServices.registerAdmin(admin,userData)));
+        return ResponseEntity.ok(userServices.registerAdmin(admin,userData));
     }
 }

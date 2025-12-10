@@ -1,5 +1,7 @@
 package com.ecommerce.ecommerceplatform.service.cart;
 
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartItemResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.entity.User;
@@ -7,8 +9,8 @@ import com.ecommerce.ecommerceplatform.entity.User;
 import java.util.List;
 
 public interface CartService {
-    Cart addItemToCartByUserID(Long userId, Long productId, int quantity);
-    Cart RemoveItemFromCart(Long userId, CartItem item);
-    Cart clearCart(Cart cart);
-    CartItem gatCartItem(Long itemId);
+    CartResponseDTO addItemToCartByUserID(Long userId, Long productId, int quantity);
+    CartResponseDTO RemoveItemFromCart(Long userId, Long itemId);
+    CartResponseDTO clearCart(Cart cart);
+    CartItemResponseDTO gatCartItem(Long itemId);
 }

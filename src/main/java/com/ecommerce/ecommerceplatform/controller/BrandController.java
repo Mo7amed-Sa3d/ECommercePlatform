@@ -27,18 +27,18 @@ public class BrandController {
 
     @GetMapping
     public ResponseEntity<List<BrandResponseDTO>> getAllBrands() {
-        return ResponseEntity.ok(BrandMapper.toDTOList(brandService.findAll()));
+        return ResponseEntity.ok(brandService.findAll());
     }
 
     @GetMapping({"/{brandId}"})
     public ResponseEntity<BrandResponseDTO> getAllBrandsByBrandId(@PathVariable Long brandId) {
-        return ResponseEntity.ok(BrandMapper.toDTO(brandService.findById(brandId)));
+        return ResponseEntity.ok(brandService.findById(brandId));
     }
 
     @PostMapping
     public ResponseEntity<BrandResponseDTO> addBrand(@RequestBody BrandRequestDTO brandRequestDTO) throws AccessDeniedException {
         var user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(BrandMapper.toDTO(brandService.createBrand(brandRequestDTO,user)));
+        return ResponseEntity.ok(brandService.createBrand(brandRequestDTO,user));
     }
 
     @PostMapping("/image/{brandId}")

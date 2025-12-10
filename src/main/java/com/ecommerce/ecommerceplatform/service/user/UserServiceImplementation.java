@@ -1,9 +1,13 @@
 package com.ecommerce.ecommerceplatform.service.user;
 
+import com.ecommerce.ecommerceplatform.dto.mapper.AddressMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.CartMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.SellerRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.requestdto.UserRequestDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.AddressResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
-import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.dto.mapper.SellerMapper;
 import com.ecommerce.ecommerceplatform.dto.mapper.UserMapper;
@@ -11,6 +15,7 @@ import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.payment.PaymentService;
 import com.stripe.exception.StripeException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.naming.directory.InvalidAttributesException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserServices {
@@ -38,14 +42,17 @@ public class UserServiceImplementation implements UserServices {
 
     //TODO: Make it private
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserResponseDTO getUserByEmail(String email) {
+        var optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty())
+            throw new EntityNotFoundException("User with email " + email + " not found");
+        return UserMapper.toDto(optionalUser.get());
     }
 
 
     @Override
     @Transactional
-    public User registerUser(UserRequestDTO userRequestDTO) throws AccessDeniedException {
+    public UserResponseDTO registerUser(UserRequestDTO userRequestDTO) throws AccessDeniedException {
         User user = UserMapper.toEntity(userRequestDTO);
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             throw new IllegalArgumentException("Email Already Exists");
@@ -54,12 +61,12 @@ public class UserServiceImplementation implements UserServices {
             throw new AccessDeniedException("Access Denied! role must be 'ROLE_USER'");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return UserMapper.toDto(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public User registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
+    public UserResponseDTO registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
         if(!adminUser.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access Denied!");
 
@@ -76,12 +83,12 @@ public class UserServiceImplementation implements UserServices {
         String paymentAccountId = paymentService.createSellerAccount().getId();
         user.getSeller().setPaymentAccountId(paymentAccountId);
         System.err.println(paymentAccountId);
-        return userRepository.save(user);
+        return UserMapper.toDto(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public User registerAdmin(User adminUser,UserRequestDTO userRequestDTO) throws AccessDeniedException {
+    public UserResponseDTO registerAdmin(User adminUser,UserRequestDTO userRequestDTO) throws AccessDeniedException {
         if(!adminUser.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access Denied!");
 
@@ -93,21 +100,21 @@ public class UserServiceImplementation implements UserServices {
             throw new AccessDeniedException("Access Denied! role must be 'ROLE_ADMIN'");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return UserMapper.toDto(userRepository.save(user));
     }
 
 
     @Override
     @Transactional
-    public Address addAddressToUser(Long userId,Address address) {
+    public AddressResponseDTO addAddressToUser(Long userId, Address address) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
         user.addAddress(address);
-        return address;
+        return AddressMapper.toDto(address);
     }
 
     @Override
-    public List<Address> getAddresses(Long userId) {
-        return addressRepository.findByUserId(userId);
+    public List<AddressResponseDTO> getAddresses(Long userId) {
+        return AddressMapper.toDtoList(addressRepository.findByUserId(userId));
     }
 
     @Override
@@ -119,13 +126,18 @@ public class UserServiceImplementation implements UserServices {
     }
 
     @Override
-    public User getUserByID(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+    public UserResponseDTO getUserByID(Long userId) {
+        var user = userRepository.findById(userId);
+        if(user.isEmpty())
+            throw new EntityNotFoundException("User with id " + userId + " not found");
+        return UserMapper.toDto(user.get());
     }
 
     @Override
-    public Cart getCartByUserID(Long userId) {
-        User user = getUserByID(userId);
-        return user.getCart();
+    public CartResponseDTO getCartByUserID(Long userId) {
+        var user = userRepository.findById(userId);
+        if(user.isEmpty())
+            throw new EntityNotFoundException("User with id " + userId + " not found");
+        return CartMapper.toDTO(user.get().getCart());
     }
 }

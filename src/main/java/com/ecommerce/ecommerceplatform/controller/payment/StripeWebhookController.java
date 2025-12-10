@@ -2,7 +2,8 @@ package com.ecommerce.ecommerceplatform.controller.payment;
 
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.entity.OrderItem;
-import com.ecommerce.ecommerceplatform.service.mailing.MailService;
+import com.ecommerce.ecommerceplatform.repository.OrderRepository;
+import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
 import com.ecommerce.ecommerceplatform.service.order.OrderService;
 import com.ecommerce.ecommerceplatform.service.seller.SellerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,11 +26,11 @@ public class StripeWebhookController {
     private String webhookSecret;
 
     private final OrderService orderService;
-    private final SellerService sellerService;
-    private final MailService mailService;
-    public StripeWebhookController(OrderService orderService, SellerService sellerService,MailService mailService) {
+    private final OrderRepository orderRepository;
+    private final MailServiceImplementation mailService;
+    public StripeWebhookController(OrderService orderService, OrderRepository orderRepository, MailServiceImplementation mailService) {
         this.orderService = orderService;
-        this.sellerService = sellerService;
+        this.orderRepository = orderRepository;
         this.mailService = mailService;
     }
 
@@ -58,7 +59,7 @@ public class StripeWebhookController {
                 if(orderIdStr == null)
                     throw new ObjectNotFoundException(event,"Payment Intent Object is null");
 
-                Order order = orderService.getOrderById(Long.parseLong(orderIdStr));
+                Order order = orderRepository.findById(Long.parseLong(orderIdStr)).get();
                 for(OrderItem orderItem : order.getOrderItems()) {
                     Long amount = orderItem.getQuantity() * orderItem.getUnitPrice().longValue();
                     orderItem.setDues(orderItem.getDues() + amount);

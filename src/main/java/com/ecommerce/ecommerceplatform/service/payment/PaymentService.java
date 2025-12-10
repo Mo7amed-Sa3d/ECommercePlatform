@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface PaymentService {
     Account createSellerAccount() throws StripeException;
-     String generateOnboardingLink(String accountId) throws StripeException;
-     PaymentIntent createPaymentIntent(Order order) throws StripeException;
+    String generateOnboardingLink(String accountId) throws StripeException;
+    PaymentIntent createPaymentIntent(Order order) throws StripeException;
 }

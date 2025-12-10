@@ -1,9 +1,9 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.BrandRequestDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Brand;
 import com.ecommerce.ecommerceplatform.entity.BrandImage;
-import com.ecommerce.ecommerceplatform.entity.ProductImage;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.repository.BrandRepository;
@@ -36,25 +36,25 @@ public class BrandServiceImplementation implements BrandService {
         this.brandRepository = brandRepository;
     }
     @Override
-    public List<Brand> findAll() {
-        return brandRepository.findAll();
+    public List<BrandResponseDTO> findAll() {
+        return BrandMapper.toDTOList(brandRepository.findAll());
     }
 
     @Override
-    public Brand findById(Long brandId) {
+    public BrandResponseDTO findById(Long brandId) {
         Optional<Brand> brand = brandRepository.findById(brandId);
         if(brand.isEmpty())
             throw new EntityNotFoundException("Brand with id " + brandId + " not found");
-        return brand.get();
+        return BrandMapper.toDTO(brand.get());
     }
 
     @Override
     @Transactional
-    public Brand createBrand(BrandRequestDTO brandRequestDTO, User user) throws AccessDeniedException {
+    public BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO, User user) throws AccessDeniedException {
         if(!user.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access denied");
         Brand brand = BrandMapper.toEntity(brandRequestDTO);
-        return brandRepository.save(brand);
+        return BrandMapper.toDTO(brandRepository.save(brand));
     }
 
     @Override

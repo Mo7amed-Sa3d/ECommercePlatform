@@ -1,11 +1,16 @@
 package com.ecommerce.ecommerceplatform.service.order;
 
+import com.ecommerce.ecommerceplatform.dto.mapper.OrderMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.ShipmentMapper;
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ShipmentResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.*;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.OrderRepository;
+import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
-import com.ecommerce.ecommerceplatform.service.mailing.MailService;
+import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,20 +24,22 @@ import java.util.Optional;
 public class OrderServiceImplementation implements OrderService {
     private final CartService cartService;
     private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
     UserServices userServices;
     OrderRepository orderRepository;
-    MailService mailService;
+    MailServiceImplementation mailService;
 
     public OrderServiceImplementation(UserServices userServices,
                                       OrderRepository orderRepository,
                                       CartService cartService,
                                       AddressRepository addressRepository,
-                                      MailService mailService) {
+                                      MailServiceImplementation mailService, UserRepository userRepository) {
         this.userServices = userServices;
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.addressRepository = addressRepository;
         this.mailService = mailService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -68,7 +75,7 @@ public class OrderServiceImplementation implements OrderService {
     @Override
     @Transactional
     public OrderSummaryDTO checkout(Long userId,Long addressId) {
-        User user = userServices.getUserByID(userId);
+        User user = userRepository.findById(userId).get();
         Order order = createOrder(user);
         createShipment(addressId, order);
         mailService.sendEmail(user.getEmail(),"Order Placed Successfully","Your order has been placed successfully" + order.getOrderItems().toString());
@@ -76,13 +83,13 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public List<Order> getAllOrdersById(Long userId) {
-        return orderRepository.findAllByUserId(userId);
+    public List<OrderResponseDTO> getAllOrdersById(Long userId) {
+        return OrderMapper.toDtoList(orderRepository.findAllByUserId(userId));
     }
 
     @Override
     @Transactional
-    public Shipment createShipment(Long addressId,Order order) {
+    public ShipmentResponseDTO createShipment(Long addressId, Order order) {
         Shipment shipment = new Shipment();
         shipment.setOrder(order);
         Optional<Address> optional = addressRepository.findById(addressId);
@@ -93,15 +100,15 @@ public class OrderServiceImplementation implements OrderService {
         order.setShipment(shipment);
         shipment.setTrackingNumber("123456");
         shipment.setCarrier("Ahmed");
-        return shipment;
+        return ShipmentMapper.toDto(shipment);
     }
 
     @Override
-    public Order findById(Long orderId) {
+    public OrderResponseDTO findById(Long orderId) {
         var order = orderRepository.findById(orderId);
         if(order.isEmpty())
             throw new IllegalStateException("Order Not Found");
-        return order.get();
+        return OrderMapper.toDTO(order.get());
     }
 
     @Override
@@ -123,12 +130,12 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public Order getOrderById(Long orderId) {
+    public OrderResponseDTO getOrderById(Long orderId) {
         var optional = orderRepository.findById(orderId);
         if(optional.isEmpty())
             throw new IllegalStateException("Order Not Found");
 
-        return optional.get();
+        return OrderMapper.toDTO(optional.get());
     }
 
 }

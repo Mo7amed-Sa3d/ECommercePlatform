@@ -1,8 +1,9 @@
 package com.ecommerce.ecommerceplatform.service.order;
 
+import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderSummaryDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ShipmentResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Order;
-import com.ecommerce.ecommerceplatform.entity.Shipment;
 import com.ecommerce.ecommerceplatform.entity.User;
 
 import java.util.List;
@@ -10,12 +11,9 @@ import java.util.List;
 public interface OrderService {
     Order createOrder(User user);
     OrderSummaryDTO checkout(Long userId,Long addressId);
-    List<Order> getAllOrdersById(Long userId);
-    Shipment createShipment(Long addressId,Order order);
-
-    Order findById(Long orderId);
-
+    List<OrderResponseDTO> getAllOrdersById(Long userId);
+    ShipmentResponseDTO createShipment(Long addressId, Order order);
+    OrderResponseDTO findById(Long orderId);
     void markOrderPaid(Long id,String PaymentId);
-
-    Order getOrderById(Long orderId);
+    OrderResponseDTO getOrderById(Long orderId);
 }

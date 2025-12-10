@@ -4,6 +4,7 @@ import com.ecommerce.ecommerceplatform.dto.requestdto.CartItemRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.dto.mapper.CartMapper;
+import com.ecommerce.ecommerceplatform.repository.CartItemRepository;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +19,13 @@ public class CartController {
 
     private final CartService cartService;
     private final UserUtility userUtility;
+    private final CartItemRepository cartItemRepository;
+
     @Autowired
-    CartController(CartService cartService, UserUtility userUtility) {
+    CartController(CartService cartService, UserUtility userUtility, CartItemRepository cartItemRepository) {
         this.cartService = cartService;
         this.userUtility = userUtility;
+        this.cartItemRepository = cartItemRepository;
     }
 
     @GetMapping
@@ -37,16 +41,14 @@ public class CartController {
     public ResponseEntity<CartResponseDTO> addItemToCart(@RequestBody CartItemRequestDTO cartItemRequestDTO) {
 
         var user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(CartMapper.toDTO(cartService.addItemToCartByUserID(user.getId()
+        return ResponseEntity.ok(cartService.addItemToCartByUserID(user.getId()
                                                                     , cartItemRequestDTO.getProductId()
-                                                                    , cartItemRequestDTO.getQuantity())));
+                                                                    , cartItemRequestDTO.getQuantity()));
     }
 
     @DeleteMapping("/{itemId}")
     public ResponseEntity<CartResponseDTO> removeItemFromCart(@PathVariable Long itemId) {
         var user = userUtility.getCurrentUser();
-        //TODO: improve: move getCartItem inside the service layer and throw exception if not found
-        CartItem item = cartService.gatCartItem(itemId);
-        return ResponseEntity.ok(CartMapper.toDTO(cartService.RemoveItemFromCart(user.getId(),item)));
+        return ResponseEntity.ok(cartService.RemoveItemFromCart(user.getId(),itemId));
     }
 }

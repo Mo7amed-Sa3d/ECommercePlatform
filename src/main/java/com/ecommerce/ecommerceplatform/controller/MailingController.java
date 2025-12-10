@@ -1,7 +1,7 @@
 package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.MailRequestDTO;
-import com.ecommerce.ecommerceplatform.service.mailing.MailService;
+import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/mail")
 public class MailingController {
 
-    MailService mailService;
+    MailServiceImplementation mailService;
 
     @Autowired
-    public MailingController(MailService mailService) {
+    public MailingController(MailServiceImplementation mailService) {
         this.mailService = mailService;
     }
 

@@ -35,12 +35,12 @@ public class ProductController {
      */
     @GetMapping
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
-        return ResponseEntity.ok(ProductMapper.toDTOList(productService.getAllProducts()));
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable("productId") Long productId) {
-        return ResponseEntity.ok(ProductMapper.toDTO(productService.getProductById(productId)));
+        return ResponseEntity.ok(productService.getProductById(productId));
     }
 
     /*
@@ -50,22 +50,22 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
         Seller seller = userUtility.getCurrentUser().getSeller();
-        return ResponseEntity.ok().body(ProductMapper.toDTO(productService.saveProduct(ProductMapper.toEntity(productRequestDTO),
+        return ResponseEntity.ok().body(productService.saveProduct(ProductMapper.toEntity(productRequestDTO),
                                                                                         productRequestDTO.getBrandId(),
                                                                                         productRequestDTO.getCategoryId()
-                                                                                        ,seller)));
+                                                                                        ,seller));
     }
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProductResponseDTO>> getProductsByCategoryId(@PathVariable("categoryId") Long categoryId) {
-        return ResponseEntity.ok(ProductMapper.toDTOList(productService.findAllByCategoryId(categoryId)));
+        return ResponseEntity.ok(productService.findAllByCategoryId(categoryId));
     }
 
     @PutMapping("/{productId}")
     public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long productId,
                                                             @RequestBody ProductRequestDTO productRequestDTO){
         User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(ProductMapper.toDTO(productService.updateProduct(user,productId, productRequestDTO)));
+        return ResponseEntity.ok(productService.updateProduct(user,productId, productRequestDTO));
     }
 
     @PostMapping("/{productId}/images")

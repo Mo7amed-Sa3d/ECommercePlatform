@@ -1,7 +1,10 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
+import com.ecommerce.ecommerceplatform.dto.mapper.CategoryMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CategoryResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Category;
-import com.ecommerce.ecommerceplatform.entity.Product;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.repository.CategoryRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
@@ -25,13 +28,13 @@ public class CategoryServiceImplementation implements CategoryService {
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDTO> getAllCategories() {
+        return CategoryMapper.toDTOList(categoryRepository.findAll());
     }
 
     @Override
     @Transactional
-    public Category createCategory(User user, String categoryName, Long parentId) throws AccessDeniedException {
+    public CategoryResponseDTO createCategory(User user, String categoryName, Long parentId) throws AccessDeniedException {
         if(!user.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("You are not allowed to access this category");
         Category category = new Category();
@@ -40,19 +43,19 @@ public class CategoryServiceImplementation implements CategoryService {
             parentOptional.ifPresent(parent -> parent.addChild(category));
         }
         category.setName(categoryName);
-        return categoryRepository.save(category);
+        return CategoryMapper.toDTO(categoryRepository.save(category));
     }
 
     @Override
-    public List<Product> getAllProducts(Long categoryId) {
-        return productRepository.findAllProductsByCategory(categoryId);
+    public List<ProductResponseDTO> getAllProducts(Long categoryId) {
+        return ProductMapper.toDTOList(productRepository.findAllProductsByCategory(categoryId));
     }
 
     @Override
-    public Category findById(Long categoryId) {
+    public CategoryResponseDTO findById(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
         if(category.isEmpty())
             throw new EntityNotFoundException("Category not found");
-        return category.get();
+        return CategoryMapper.toDTO(category.get());
     }
 }

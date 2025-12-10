@@ -1,10 +1,16 @@
 package com.ecommerce.ecommerceplatform.service.cart;
 
+import com.ecommerce.ecommerceplatform.dto.mapper.CartItemMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.CartMapper;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartItemResponseDTO;
+import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Cart;
 import com.ecommerce.ecommerceplatform.entity.CartItem;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.repository.CartItemRepository;
 import com.ecommerce.ecommerceplatform.repository.CartRepository;
+import com.ecommerce.ecommerceplatform.repository.ProductRepository;
+import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.product.ProductService;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +22,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 @Service
 public class CartServiceImplementation implements CartService {
 
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     CartRepository cartRepository;
     ProductService productService;
     UserServices userServices;
@@ -29,23 +36,25 @@ public class CartServiceImplementation implements CartService {
     public CartServiceImplementation(CartRepository cartRepository,
                                      UserServices userServices,
                                      ProductService productService,
-                                     CartItemRepository cartItemRepository) {
+                                     CartItemRepository cartItemRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
         this.userServices = userServices;
         this.productService = productService;
         this.cartItemRepository = cartItemRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
 
     @Override
     @Transactional
-    public Cart addItemToCartByUserID(Long userId, Long productId, int quantity) {
-        Cart cart = userServices.getCartByUserID(userId);
+    public CartResponseDTO addItemToCartByUserID(Long userId, Long productId, int quantity) {
+        User user = userRepository.findById(userId).get();
+        Cart cart = user.getCart();
         if(cart == null) {
             //TODO: Make this throw exception
             cart = new Cart();
             cart.setCartItems(new ArrayList<>());
-            User user = userServices.getUserByID(userId);
             cart.setUser(user);
         }
         cart.setUpdatedAt(Instant.now());
@@ -55,29 +64,30 @@ public class CartServiceImplementation implements CartService {
                 itemExists = true;
                 cartItem.setQuantity(cartItem.getQuantity() + quantity);
                 if(cartItem.getQuantity() <= 0) {
-                    RemoveItemFromCart(userId,cartItem);
+                    RemoveItemFromCart(userId,cartItem.getId());
                 }
                 break;
             }
         }
         if(!itemExists) {
             CartItem item = new CartItem();
-            item.setProduct(productService.getProductById(productId));
+            item.setProduct(productRepository.findById(productId).get());
             item.setQuantity(quantity);
             cart.addCartItem(item);
         }
-        return cart;
+        return CartMapper.toDTO(cart);
     }
 
     @Override
     @Transactional
-    public Cart RemoveItemFromCart(Long userId, CartItem item) {
-        Cart cart = userServices.getCartByUserID(userId);
+    public CartResponseDTO RemoveItemFromCart(Long userId, Long itemId) {
+        CartItem cartItem = cartItemRepository.findById(itemId).get();
+        Cart cart = userRepository.findById(userId).get().getCart();
         if(cart == null || cart.getCartItems().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
-        cart.removeCartItem(item);
-        return cartRepository.save(cart);
+        cart.removeCartItem(cartItem);
+        return CartMapper.toDTO(cartRepository.save(cart));
     }
 
 
@@ -85,19 +95,20 @@ public class CartServiceImplementation implements CartService {
 
     @Override
     @Transactional
-    public Cart clearCart(Cart cart) {
+    public CartResponseDTO clearCart(Cart cart) {
         Iterator<CartItem> iterator = cart.getCartItems().iterator();
         while (iterator.hasNext()) {
             CartItem item = iterator.next();
             item.setCart(null);   // break the child relationship
             iterator.remove();
         }
-        return cartRepository.save(cart);
+        return CartMapper.toDTO(cartRepository.save(cart));
 
     }
 
     @Override
-    public CartItem gatCartItem(Long itemId) {
-        return cartItemRepository.findById(itemId).orElse(null);
+    public CartItemResponseDTO gatCartItem(Long itemId) {
+        CartItem cartItem = cartItemRepository.findById(itemId).orElse(null);
+        return CartItemMapper.toDTO(cartItem);
     }
 }
