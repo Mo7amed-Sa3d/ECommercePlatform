@@ -55,6 +55,7 @@ public class SecurityConfig {
                         //Brand endpoints
                         .requestMatchers(HttpMethod.GET,"/api/brand/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/brand").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/brand").hasRole("ADMIN")
                         //Category endpoints
                         .requestMatchers(HttpMethod.GET,"/api/categories").permitAll()

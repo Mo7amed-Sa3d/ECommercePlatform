@@ -100,7 +100,7 @@ public class ProductServiceImplementation implements ProductService {
             String url = "/images/products/" + productId + "/" + fileName;
 
 
-            if (!product.getSeller().getId().equals(user.getSeller().getId()))
+            if (!user.getRole().equals("ROLE_ADMIN") && !product.getSeller().getId().equals(user.getSeller().getId()))
                 throw new EntityNotFoundException("ACCESS DENIED!");
 
             ProductImage productImage = new ProductImage(product, url);
