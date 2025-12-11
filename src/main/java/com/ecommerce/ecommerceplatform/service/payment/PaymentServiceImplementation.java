@@ -21,18 +21,18 @@ import java.util.Map;
 @Service
 public class PaymentServiceImplementation implements PaymentService {
 
-    private final UserUtility userUtility;
-    @Value("${supportedCurrencies}")
-        private List<String> supportedCurrencies;
+        private final UserUtility userUtility;
+        @Value("${supportedCurrencies}")
+            private List<String> supportedCurrencies;
 
-        @Value("${currencyMultiplier}")
-        private Long currencyMultiplier;
+            @Value("${currencyMultiplier}")
+            private Long currencyMultiplier;
 
-    public PaymentServiceImplementation(UserUtility userUtility) {
-        this.userUtility = userUtility;
-    }
+        public PaymentServiceImplementation(UserUtility userUtility) {
+            this.userUtility = userUtility;
+        }
 
-    @Override
+        @Override
         public Account createSellerAccount() throws StripeException {
             AccountCreateParams params = AccountCreateParams.builder()
                     .setType(AccountCreateParams.Type.EXPRESS)

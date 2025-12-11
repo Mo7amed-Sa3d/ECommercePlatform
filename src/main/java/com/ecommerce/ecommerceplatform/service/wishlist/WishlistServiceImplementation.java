@@ -3,6 +3,7 @@ package com.ecommerce.ecommerceplatform.service.wishlist;
 import com.ecommerce.ecommerceplatform.dto.mapper.WishlistMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.WishlistItemRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.WishlistResponseDTO;
+import com.ecommerce.ecommerceplatform.entity.Product;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.entity.Wishlist;
 import com.ecommerce.ecommerceplatform.entity.WishlistItem;
@@ -22,40 +23,35 @@ public class WishlistServiceImplementation implements WishlistService {
     private final WishlistRepository wishlistRepository;
     private final WishlistItemRepository wishlistItemRepository;
     private final UserUtility userUtility;
-    public WishlistServiceImplementation(WishlistRepository wishlistRepository, ProductRepository productRepository, WishlistItemRepository wishlistItemRepository, UserUtility userUtility) {
+
+    public WishlistServiceImplementation(WishlistRepository wishlistRepository,
+                                         ProductRepository productRepository,
+                                         WishlistItemRepository wishlistItemRepository,
+                                         UserUtility userUtility) {
         this.wishlistRepository = wishlistRepository;
         this.productRepository = productRepository;
         this.wishlistItemRepository = wishlistItemRepository;
         this.userUtility = userUtility;
     }
 
+    // -------------------------------------------------------------------------
+    // Public Methods
+    // -------------------------------------------------------------------------
+
     @Override
     @Transactional
-    public WishlistResponseDTO addItem(WishlistItemRequestDTO wishlistItemRequestDTO) {
+    public WishlistResponseDTO addItem(WishlistItemRequestDTO dto) {
         User user = userUtility.getCurrentUser();
-        var optional = productRepository.findById(wishlistItemRequestDTO.getProductId());
-        if (optional.isEmpty())
-            throw new EntityNotFoundException("Product not found");
-        var product = optional.get();
+        Product product = findProductByIdOrThrow(dto.getProductId());
+        Wishlist wishlist = getOrCreateWishlist(user);
 
-        if(user.getWishlist() == null){
-            user.setWishlist(new Wishlist());
-
-        }
-        Wishlist wishlist = user.getWishlist();
-        wishlist.setName("Wishlist");
-
-        for(var item : wishlist.getWishlistItems()){
-            if(item.getProduct().getId().equals(product.getId())){
-                throw new EntityExistsException("Product already exists");
-            }
-        }
+        ensureProductNotInWishlist(wishlist, product);
 
         WishlistItem wishlistItem = new WishlistItem();
         wishlistItem.setProduct(product);
         wishlistItem.setWishlist(wishlist);
 
-        return WishlistMapper.toDTO(wishlistRepository.save(user.getWishlist()));
+        return WishlistMapper.toDTO(wishlistRepository.save(wishlist));
     }
 
     @Override
@@ -67,14 +63,41 @@ public class WishlistServiceImplementation implements WishlistService {
     @Override
     @Transactional
     public String deleteItem(Long itemId) {
-        User user = userUtility.getCurrentUser();
-        var optional = wishlistItemRepository.findById(itemId);
-        if(optional.isEmpty())
-            throw new EntityNotFoundException("Item not found");
-        WishlistItem item = optional.get();
+        WishlistItem item = findWishlistItemByIdOrThrow(itemId);
         item.getWishlist().getWishlistItems().remove(item);
         wishlistItemRepository.delete(item);
         return "Done deleting item with id " + item.getId();
     }
 
+    // -------------------------------------------------------------------------
+    // Helper Methods
+    // -------------------------------------------------------------------------
+
+    private Product findProductByIdOrThrow(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    }
+
+    private WishlistItem findWishlistItemByIdOrThrow(Long itemId) {
+        return wishlistItemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+    }
+
+    private Wishlist getOrCreateWishlist(User user) {
+        Wishlist wishlist = user.getWishlist();
+        if (wishlist == null) {
+            wishlist = new Wishlist();
+            wishlist.setName("Wishlist");
+            user.setWishlist(wishlist);
+        }
+        return wishlist;
+    }
+
+    private void ensureProductNotInWishlist(Wishlist wishlist, Product product) {
+        boolean exists = wishlist.getWishlistItems().stream()
+                .anyMatch(item -> item.getProduct().getId().equals(product.getId()));
+        if (exists) {
+            throw new EntityExistsException("Product already exists in wishlist");
+        }
+    }
 }

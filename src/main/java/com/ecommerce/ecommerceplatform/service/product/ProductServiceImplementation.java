@@ -4,25 +4,19 @@ import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.ProductRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.*;
-import com.ecommerce.ecommerceplatform.repository.BrandRepository;
-import com.ecommerce.ecommerceplatform.repository.CategoryRepository;
-import com.ecommerce.ecommerceplatform.repository.ProductImageRepository;
-import com.ecommerce.ecommerceplatform.repository.ProductRepository;
+import com.ecommerce.ecommerceplatform.repository.*;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 
 @Service
@@ -38,13 +32,23 @@ public class ProductServiceImplementation implements ProductService {
     private String productImagesUploadDirectory;
 
     @Autowired
-    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository, CategoryService categoryService, BrandRepository brandRepository, CategoryRepository categoryRepository, UserUtility userUtility) {
+    public ProductServiceImplementation(ProductRepository productRepository,
+                                        ProductImageRepository productImageRepository,
+                                        CategoryService categoryService,
+                                        BrandRepository brandRepository,
+                                        CategoryRepository categoryRepository,
+                                        UserUtility userUtility) {
+
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
         this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
         this.userUtility = userUtility;
     }
+
+    // -------------------------------------------------------------------------
+    // Main Service Methods
+    // -------------------------------------------------------------------------
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {
@@ -55,10 +59,8 @@ public class ProductServiceImplementation implements ProductService {
     @Cacheable(value = "product", key = "#productId")
     public ProductResponseDTO getProductById(Long productId) {
         System.err.println("Cache Miss!");
-        Optional<Product> optional = productRepository.findByIdAndActiveTrue(productId);
-        if(optional.isEmpty())
-            throw new EntityNotFoundException("Product not found");
-        return ProductMapper.toDTO(optional.get());
+        Product product = getActiveProductOrThrow(productId);
+        return ProductMapper.toDTO(product);
     }
 
     @Override
@@ -71,15 +73,8 @@ public class ProductServiceImplementation implements ProductService {
     @Override
     @Transactional
     public void removeProduct(Long productId) {
-        User  user = userUtility.getCurrentUser();
-        Optional<Product> optional = productRepository.findById(productId);
-        if(optional.isEmpty())
-            throw new EntityNotFoundException("Product not found");
-        Product product = optional.get();
-
-
-        if(!product.getSeller().getId().equals(user.getSeller().getId()))
-            throw new EntityNotFoundException("Product not found");
+        Product product = getProductOrThrow(productId);
+        ensureCurrentUserIsProductOwner(product);
 
         product.setActive(false);
     }
@@ -87,35 +82,28 @@ public class ProductServiceImplementation implements ProductService {
     @Override
     @Transactional
     public List<String> saveProductImage(List<MultipartFile> imageList, Long productId) throws IOException {
+
+        Product product = getProductOrThrow(productId);
         User user = userUtility.getCurrentUser();
-        String productDir = productImagesUploadDirectory + "/products/" + productId + "/";
-        File dir = new File(productDir);
-        if (!dir.exists())
-            dir.mkdirs();
 
-        var optional = productRepository.findById(productId);
-        if (optional.isEmpty())
-            throw new EntityNotFoundException("Product not found");
-
-        Product product = optional.get();
+        ensureUserCanModifyProduct(user, product);
+        String productDir = createProductDirectory(productId);
 
         List<String> urlList = new ArrayList<>();
 
-        for(var image : imageList) {
-            String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            Path path = Paths.get(productDir + fileName);
-            Files.copy(image.getInputStream(), path);
+        for (MultipartFile image : imageList) {
+            String fileName = generateUniqueFileName(image);
+            Path filePath = Paths.get(productDir + fileName);
+
+            Files.copy(image.getInputStream(), filePath);
+
             String url = "/images/products/" + productId + "/" + fileName;
-
-
-            if (!user.getRole().equals("ROLE_ADMIN") && !product.getSeller().getId().equals(user.getSeller().getId()))
-                throw new EntityNotFoundException("ACCESS DENIED!");
-
             ProductImage productImage = new ProductImage(product, url);
 
             product.addImage(productImage);
             urlList.add(url);
         }
+
         productRepository.save(product);
         return urlList;
     }
@@ -124,74 +112,113 @@ public class ProductServiceImplementation implements ProductService {
     @Transactional
     public ProductResponseDTO saveProduct(Product product, Long brandId, Long categoryId) {
         Seller seller = userUtility.getCurrentUser().getSeller();
+
         Brand brand = brandRepository.findById(brandId).get();
         Category category = categoryRepository.findById(categoryId).get();
+
         brand.addProduct(product);
         category.addProduct(product);
         seller.addProduct(product);
-        return ProductMapper.toDTO(productRepository.save(product));
+
+        Product saved = productRepository.save(product);
+        return ProductMapper.toDTO(saved);
     }
 
     @Override
     public List<ProductResponseDTO> findAllByCategoryId(Long categoryId) {
-        return  ProductMapper.toDTOList(productRepository.findAllProductsByCategory(categoryId));
+        return ProductMapper.toDTOList(productRepository.findAllProductsByCategory(categoryId));
     }
 
     @Override
     @Transactional
-    public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
-        User user = userUtility.getCurrentUser();
-        Optional<Product> optional = productRepository.findById(productId);
-        if(optional.isEmpty())
-            throw new EntityNotFoundException("Product not found");
-        Product product = optional.get();
-        if(!product.getSeller().getId().equals(user.getSeller().getId()))
-            throw new EntityNotFoundException("Product not found");
-        product.setSku(productRequestDTO.getSku());
-        product.setTitle(productRequestDTO.getTitle());
-        product.setDescription(productRequestDTO.getDescription());
-        product.setAttributes(productRequestDTO.getAttributes());
-        product.setBasePrice(productRequestDTO.getBasePrice());
-        product.setActive(productRequestDTO.getActive());
-        product.setCreatedAt(productRequestDTO.getCreatedAt());
+    public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO dto) {
+
+        Product product = getProductOrThrow(productId);
+        ensureCurrentUserIsProductOwner(product);
+
+        product.setSku(dto.getSku());
+        product.setTitle(dto.getTitle());
+        product.setDescription(dto.getDescription());
+        product.setAttributes(dto.getAttributes());
+        product.setBasePrice(dto.getBasePrice());
+        product.setActive(dto.getActive());
+        product.setCreatedAt(dto.getCreatedAt());
+
         return ProductMapper.toDTO(product);
     }
 
     @Override
     @Transactional
     public String deleteProductImage(Long productId, Long imageId) throws IOException {
+
+        ProductImage image = productImageRepository.findById(imageId)
+                .orElseThrow(() -> new EntityNotFoundException("Product image not found"));
+
+        if (!image.getProduct().getId().equals(productId)) {
+            throw new EntityNotFoundException("Product image not found");
+        }
+
+        Product product = image.getProduct();
+        ensureCurrentUserIsProductOwner(product);
+
+        deleteImageFile(productId, image.getUrl());
+
+        product.removeImage(image);
+        productImageRepository.delete(image);
+
+        return "Done deleting image with id " + imageId +
+                " for product with id " + productId;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Methods (Clean Code)
+    // -------------------------------------------------------------------------
+
+    private Product getProductOrThrow(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    }
+
+    private Product getActiveProductOrThrow(Long id) {
+        return productRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    }
+
+    private void ensureCurrentUserIsProductOwner(Product product) {
         User user = userUtility.getCurrentUser();
-        var optional = productImageRepository.findById(imageId);
+        if (!product.getSeller().getId().equals(user.getSeller().getId())) {
+            throw new EntityNotFoundException("Product not found");
+        }
+    }
 
-        if(optional.isEmpty())
-            throw new EntityNotFoundException("Product image not found");
-        ProductImage productImage = optional.get();
+    private void ensureUserCanModifyProduct(User user, Product product) {
+        boolean isAdmin = user.getRole().equals("ROLE_ADMIN");
+        boolean isOwner = product.getSeller().getId().equals(user.getSeller().getId());
 
-        if(!productImage.getProduct().getId().equals(productId))
-            throw new EntityNotFoundException("Product image not found");
+        if (!isAdmin && !isOwner) {
+            throw new EntityNotFoundException("ACCESS DENIED!");
+        }
+    }
 
-        if(!productImage.getProduct().getSeller().getId().equals(user.getSeller().getId()))
-            throw new AccessDeniedException("Access Denied");
+    private String createProductDirectory(Long productId) {
+        String productDir = productImagesUploadDirectory + "/products/" + productId + "/";
+        File dir = new File(productDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return productDir;
+    }
 
+    private String generateUniqueFileName(MultipartFile image) {
+        return UUID.randomUUID() + "_" + image.getOriginalFilename();
+    }
 
-        String url = productImage.getUrl();
+    private void deleteImageFile(Long productId, String url) throws IOException {
         String filename = url.substring(url.lastIndexOf("/") + 1);
 
         String filePath = productImagesUploadDirectory +
                 "/products/" + productId + "/" + filename;
 
         Files.deleteIfExists(Paths.get(filePath));
-
-        var product =  productImage.getProduct();
-
-        //Break the link
-        product.removeImage(productImage);
-
-        productImageRepository.delete(productImage);
-
-
-        return "Done deleting image with id " +  imageId + " for product with id " + productId;
     }
-
-
 }

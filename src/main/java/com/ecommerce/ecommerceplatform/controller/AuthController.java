@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userData) throws AccessDeniedException {
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRequestDTO userData) throws AccessDeniedException, InvalidAttributesException {
         return ResponseEntity.ok(userServices.registerUser(userData));
     }
 
@@ -59,7 +59,7 @@ public class AuthController {
     }
 
     @PostMapping("/registerAdmin")
-    public ResponseEntity<UserResponseDTO> registerAdmin(@RequestBody UserRequestDTO userData) throws AccessDeniedException {
+    public ResponseEntity<UserResponseDTO> registerAdmin(@RequestBody UserRequestDTO userData) throws AccessDeniedException, InvalidAttributesException {
         return ResponseEntity.ok(userServices.registerAdmin(userData));
     }
 }

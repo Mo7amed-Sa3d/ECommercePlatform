@@ -2,6 +2,8 @@ package com.ecommerce.ecommerceplatform.service.user;
 
 import com.ecommerce.ecommerceplatform.dto.mapper.AddressMapper;
 import com.ecommerce.ecommerceplatform.dto.mapper.CartMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.SellerMapper;
+import com.ecommerce.ecommerceplatform.dto.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.SellerRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.requestdto.UserRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.AddressResponseDTO;
@@ -9,8 +11,6 @@ import com.ecommerce.ecommerceplatform.dto.responsedto.CartResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.UserResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Address;
 import com.ecommerce.ecommerceplatform.entity.User;
-import com.ecommerce.ecommerceplatform.dto.mapper.SellerMapper;
-import com.ecommerce.ecommerceplatform.dto.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.payment.PaymentService;
@@ -33,9 +33,10 @@ public class UserServiceImplementation implements UserServices {
     private final PasswordEncoder passwordEncoder;
     private final PaymentService paymentService;
     private final UserUtility userUtility;
-    public UserServiceImplementation(UserRepository userRepository
-                                     ,PasswordEncoder passwordEncoder
-                                     ,AddressRepository addressRepository,
+
+    public UserServiceImplementation(UserRepository userRepository,
+                                     PasswordEncoder passwordEncoder,
+                                     AddressRepository addressRepository,
                                      PaymentService paymentService,
                                      UserUtility userUtility) {
         this.userRepository = userRepository;
@@ -45,25 +46,21 @@ public class UserServiceImplementation implements UserServices {
         this.userUtility = userUtility;
     }
 
-    //TODO: Make it private
+    // -------------------------------------------------------------------------
+    // Public Service Methods
+    // -------------------------------------------------------------------------
+
     @Override
     public UserResponseDTO getUserByEmail(String email) {
-        var optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isEmpty())
-            throw new EntityNotFoundException("User with email " + email + " not found");
-        return UserMapper.toDto(optionalUser.get());
+        return UserMapper.toDto(findUserByEmailOrThrow(email));
     }
-
 
     @Override
     @Transactional
-    public UserResponseDTO registerUser(UserRequestDTO userRequestDTO) throws AccessDeniedException {
-        User user = UserMapper.toEntity(userRequestDTO);
-        if(userRepository.findByEmail(user.getEmail()).isPresent()){
-            throw new IllegalArgumentException("Email Already Exists");
-        }
-        if(!user.getRole().equals("ROLE_USER"))
-            throw new AccessDeniedException("Access Denied! role must be 'ROLE_USER'");
+    public UserResponseDTO registerUser(UserRequestDTO dto) throws AccessDeniedException, InvalidAttributesException {
+        User user = UserMapper.toEntity(dto);
+        validateEmailNotExists(user.getEmail());
+        ensureRole(user, "ROLE_USER");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return UserMapper.toDto(userRepository.save(user));
@@ -71,45 +68,36 @@ public class UserServiceImplementation implements UserServices {
 
     @Override
     @Transactional
-    public UserResponseDTO registerSeller(SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
-        User adminUser = userUtility.getCurrentUser();
-        if(!adminUser.getRole().equals("ROLE_ADMIN"))
-            throw new AccessDeniedException("Access Denied!");
+    public UserResponseDTO registerSeller(SellerRequestDTO dto)
+            throws AccessDeniedException, InvalidAttributesException, StripeException {
 
-        User user =  SellerMapper.toEntity(sellerRequestDTO);
-        if(userRepository.findByEmail(user.getEmail()).isPresent()){
-            throw new IllegalArgumentException("Email Already Exists");
-        }
+        ensureCurrentUserIsAdmin();
 
-        if(!user.getRole().equals("ROLE_SELLER"))
-            throw new InvalidAttributesException("role must be 'ROLE_SELLER'");
+        User user = SellerMapper.toEntity(dto);
+        validateEmailNotExists(user.getEmail());
+        ensureRole(user, "ROLE_SELLER");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         String paymentAccountId = paymentService.createSellerAccount().getId();
         user.getSeller().setPaymentAccountId(paymentAccountId);
-        System.err.println(paymentAccountId);
+
         return UserMapper.toDto(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) throws AccessDeniedException {
-        User adminUser = userUtility.getCurrentUser();
-        if(!adminUser.getRole().equals("ROLE_ADMIN"))
-            throw new AccessDeniedException("Access Denied!");
+    public UserResponseDTO registerAdmin(UserRequestDTO dto) throws AccessDeniedException, InvalidAttributesException {
 
-        User user = UserMapper.toEntity(userRequestDTO);
-        if(userRepository.findByEmail(user.getEmail()).isPresent()){
-            throw new IllegalArgumentException("Email Already Exists");
-        }
-        if(!user.getRole().equals("ROLE_ADMIN"))
-            throw new AccessDeniedException("Access Denied! role must be 'ROLE_ADMIN'");
+        ensureCurrentUserIsAdmin();
+
+        User user = UserMapper.toEntity(dto);
+        validateEmailNotExists(user.getEmail());
+        ensureRole(user, "ROLE_ADMIN");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return UserMapper.toDto(userRepository.save(user));
     }
-
 
     @Override
     @Transactional
@@ -129,23 +117,55 @@ public class UserServiceImplementation implements UserServices {
     @Transactional
     public void deleteAddressFromUser(Long addressId) {
         User user = userUtility.getCurrentUser();
-        Address address = addressRepository.findById(addressId).orElseThrow(() -> new RuntimeException("Address Not Found"));
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address Not Found"));
         user.removeAddress(address);
     }
 
     @Override
     public UserResponseDTO getUserByID(Long userId) {
-        var user = userRepository.findById(userId);
-        if(user.isEmpty())
-            throw new EntityNotFoundException("User with id " + userId + " not found");
-        return UserMapper.toDto(user.get());
+        return UserMapper.toDto(findUserByIdOrThrow(userId));
     }
 
     @Override
     public CartResponseDTO getCartByUserID(Long userId) {
-        var user = userRepository.findById(userId);
-        if(user.isEmpty())
-            throw new EntityNotFoundException("User with id " + userId + " not found");
-        return CartMapper.toDTO(user.get().getCart());
+        User user = findUserByIdOrThrow(userId);
+        return CartMapper.toDTO(user.getCart());
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Methods
+    // -------------------------------------------------------------------------
+
+    private void ensureCurrentUserIsAdmin() throws AccessDeniedException {
+        User current = userUtility.getCurrentUser();
+        if (!"ROLE_ADMIN".equals(current.getRole())) {
+            throw new AccessDeniedException("Access Denied!");
+        }
+    }
+
+    private void ensureRole(User user, String requiredRole) throws AccessDeniedException, InvalidAttributesException {
+        if (!requiredRole.equals(user.getRole())) {
+            if ("ROLE_SELLER".equals(requiredRole)) {
+                throw new InvalidAttributesException("Role must be 'ROLE_SELLER'");
+            }
+            throw new AccessDeniedException("Access Denied! role must be '" + requiredRole + "'");
+        }
+    }
+
+    private void validateEmailNotExists(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email Already Exists");
+        }
+    }
+
+    private User findUserByEmailOrThrow(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User with email " + email + " not found"));
+    }
+
+    private User findUserByIdOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
     }
 }

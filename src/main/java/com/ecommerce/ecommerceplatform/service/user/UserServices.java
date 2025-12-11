@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserServices {
-    UserResponseDTO registerUser(UserRequestDTO userRequestDTO) throws AccessDeniedException;
+    UserResponseDTO registerUser(UserRequestDTO userRequestDTO) throws AccessDeniedException, InvalidAttributesException;
     UserResponseDTO getUserByEmail(String email);
     AddressResponseDTO addAddressToUser(Address address);
     List<AddressResponseDTO> getAddresses();
@@ -25,5 +25,5 @@ public interface UserServices {
     UserResponseDTO getUserByID(Long userId);
     CartResponseDTO getCartByUserID(Long userId);
     UserResponseDTO registerSeller(SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException;
-    UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) throws AccessDeniedException;
+    UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) throws AccessDeniedException, InvalidAttributesException;
 }

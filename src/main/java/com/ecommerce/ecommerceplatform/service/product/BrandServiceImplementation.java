@@ -1,11 +1,11 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
+import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.BrandRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Brand;
 import com.ecommerce.ecommerceplatform.entity.BrandImage;
 import com.ecommerce.ecommerceplatform.entity.User;
-import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.repository.BrandRepository;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,17 +27,17 @@ import java.util.UUID;
 @Service
 public class BrandServiceImplementation implements BrandService {
 
-    BrandRepository brandRepository;
-    UserUtility userUtility;
+    private final BrandRepository brandRepository;
+    private final UserUtility userUtility;
 
     @Value("${brand-image.upload-dir}")
     private String brandImagesUploadDirectory;
-
 
     public BrandServiceImplementation(BrandRepository brandRepository, UserUtility userUtility) {
         this.brandRepository = brandRepository;
         this.userUtility = userUtility;
     }
+
     @Override
     public List<BrandResponseDTO> findAll() {
         return BrandMapper.toDTOList(brandRepository.findAll());
@@ -45,56 +45,88 @@ public class BrandServiceImplementation implements BrandService {
 
     @Override
     public BrandResponseDTO findById(Long brandId) {
-        Optional<Brand> brand = brandRepository.findById(brandId);
-        if(brand.isEmpty())
-            throw new EntityNotFoundException("Brand with id " + brandId + " not found");
-        return BrandMapper.toDTO(brand.get());
+        Brand brand = getBrandOrThrow(brandId);
+        return BrandMapper.toDTO(brand);
     }
 
     @Override
     @Transactional
     public BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO) throws AccessDeniedException {
-        var user = userUtility.getCurrentUser();
-        if(!user.getRole().equals("ROLE_ADMIN"))
-            throw new AccessDeniedException("Access denied");
+        ensureCurrentUserIsAdmin();
+
         Brand brand = BrandMapper.toEntity(brandRequestDTO);
-        return BrandMapper.toDTO(brandRepository.save(brand));
+        Brand savedBrand = brandRepository.save(brand);
+
+        return BrandMapper.toDTO(savedBrand);
     }
 
     @Override
     @Transactional
     public String addBrandImage(MultipartFile image, Long brandId) throws IOException {
-        User user = userUtility.getCurrentUser();
-        System.err.println("USER Role " + user.getRole());
+        ensureCurrentUserIsAdmin();
 
-        if(!user.getRole().equals("ROLE_ADMIN"))
-            throw new AccessDeniedException("Access denied");
+        Brand brand = getBrandOrThrow(brandId);
 
-        System.err.println("brand image directory " + brandImagesUploadDirectory);
+        String directoryPath = buildBrandImageDirectory(brandId);
+        createDirectoryIfNotExists(directoryPath);
 
-        String brandDir = brandImagesUploadDirectory + "/brands/" + brandId + "/";
-        File dir = new File(brandDir);
-        if (!dir.exists())
-            dir.mkdirs();
+        String fileName = generateUniqueFileName(image.getOriginalFilename());
+        Path filePath = saveFileToDisk(image, directoryPath, fileName);
 
-        var optional = brandRepository.findById(brandId);
-        if(optional.isEmpty())
-            throw new EntityNotFoundException("Brand with id " + brandId + " not found");
-        var brand = optional.get();
-
-        String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-        Path path = Paths.get(brandDir + fileName);
-        Files.copy(image.getInputStream(), path);
-        String url = "/images/brand/" + brandId + "/" + fileName;
-
-        BrandImage brandImage = new BrandImage();
-
-        brandImage.setUrl(url);
-        brand.setBrandImage(brandImage);
+        String url = buildImageUrl(brandId, fileName);
+        attachBrandImage(brand, url);
 
         brandRepository.save(brand);
         return url;
     }
 
+    // ------------------------------------------------------------
+    // Helper Methods
+    // ------------------------------------------------------------
 
+    private void ensureCurrentUserIsAdmin() throws AccessDeniedException {
+        User user = userUtility.getCurrentUser();
+        if (!"ROLE_ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException("Access denied");
+        }
+    }
+
+    private Brand getBrandOrThrow(Long brandId) {
+        Optional<Brand> brand = brandRepository.findById(brandId);
+        if (brand.isEmpty()) {
+            throw new EntityNotFoundException("Brand with id " + brandId + " not found");
+        }
+        return brand.get();
+    }
+
+    private String buildBrandImageDirectory(Long brandId) {
+        return brandImagesUploadDirectory + "/brands/" + brandId + "/";
+    }
+
+    private void createDirectoryIfNotExists(String path) {
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
+
+    private String generateUniqueFileName(String originalFileName) {
+        return UUID.randomUUID() + "_" + originalFileName;
+    }
+
+    private Path saveFileToDisk(MultipartFile image, String directoryPath, String fileName) throws IOException {
+        Path path = Paths.get(directoryPath + fileName);
+        Files.copy(image.getInputStream(), path);
+        return path;
+    }
+
+    private String buildImageUrl(Long brandId, String fileName) {
+        return "/images/brand/" + brandId + "/" + fileName;
+    }
+
+    private void attachBrandImage(Brand brand, String url) {
+        BrandImage brandImage = new BrandImage();
+        brandImage.setUrl(url);
+        brand.setBrandImage(brandImage);
+    }
 }

@@ -8,54 +8,159 @@ import com.ecommerce.ecommerceplatform.dto.responsedto.ShipmentResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.*;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.OrderRepository;
-import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
-import com.ecommerce.ecommerceplatform.service.user.UserServices;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderServiceImplementation implements OrderService {
+
     private final CartService cartService;
     private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final MailServiceImplementation mailService;
     private final UserUtility userUtility;
-    public OrderServiceImplementation(OrderRepository orderRepository,
-                                      CartService cartService,
-                                      AddressRepository addressRepository,
-                                      MailServiceImplementation mailService,
-                                      UserRepository userRepository, UserUtility userUtility) {
+
+    public OrderServiceImplementation(
+            OrderRepository orderRepository,
+            CartService cartService,
+            AddressRepository addressRepository,
+            MailServiceImplementation mailService,
+            UserUtility userUtility
+    ) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.addressRepository = addressRepository;
         this.mailService = mailService;
-        this.userRepository = userRepository;
         this.userUtility = userUtility;
     }
+
+    // ================================================================
+    // Order creation
+    // ================================================================
 
     @Override
     @Transactional
     public Order createOrder(User user) {
-        Cart cart = user.getCart();
-        if(cart == null || cart.getCartItems().isEmpty())
-            throw new IllegalStateException("Cart is Empty");
-        Order order = new Order();
+        Cart cart = validateAndGetCart(user);
 
+        Order order = initializeOrder();
+        mapCartItemsToOrder(cart, order);
+
+        order.setTotalAmount(order.getTotalAmount());
+        user.addOrder(order);
+
+        Order savedOrder = orderRepository.save(order);
+        cartService.clearCart(cart);
+
+        return savedOrder;
+    }
+
+    @Override
+    @Transactional
+    public OrderSummaryDTO checkout(Long addressId) {
+        User user = userUtility.getCurrentUser();
+
+        Order order = createOrder(user);
+
+        createShipment(addressId, order);
+
+        sendOrderConfirmationEmail(user, order);
+
+        return new OrderSummaryDTO(order);
+    }
+
+
+    // ================================================================
+    // Read operations
+    // ================================================================
+
+    @Override
+    public List<OrderResponseDTO> getAllOrdersById() {
+        User user = userUtility.getCurrentUser();
+        return OrderMapper.toDtoList(orderRepository.findAllByUserId(user.getId()));
+    }
+
+    @Override
+    public OrderResponseDTO findById(Long orderId) {
+        Order order = fetchOrderOrThrow(orderId);
+        return OrderMapper.toDTO(order);
+    }
+
+    @Override
+    public OrderResponseDTO getOrderById(Long orderId) {
+        Order order = fetchOrderOrThrow(orderId);
+        return OrderMapper.toDTO(order);
+    }
+
+
+    // ================================================================
+    // Shipment creation
+    // ================================================================
+
+    @Override
+    @Transactional
+    public ShipmentResponseDTO createShipment(Long addressId, Order order) {
+        Address address = fetchAddressOrThrow(addressId);
+
+        Shipment shipment = new Shipment();
+        shipment.setOrder(order);
+        shipment.setAddress(address);
+        shipment.setTrackingNumber("123456");
+        shipment.setCarrier("Ahmed");
+        order.setShipment(shipment);
+
+        return ShipmentMapper.toDto(shipment);
+    }
+
+
+    // ================================================================
+    // Payment
+    // ================================================================
+
+    @Override
+    @Transactional
+    public void markOrderPaid(Long id, String paymentId) {
+        Order order = fetchOrderOrThrow(id);
+
+        Payment payment = createPayment(order, paymentId);
+
+        order.setStatus("Paid");
+        order.setPayment(payment);
+
+        orderRepository.save(order);
+    }
+
+
+    // ================================================================
+    // Helper Methods (NO logic changes)
+    // ================================================================
+
+    private Cart validateAndGetCart(User user) {
+        Cart cart = user.getCart();
+        if (cart == null || cart.getCartItems().isEmpty()) {
+            throw new IllegalStateException("Cart is Empty");
+        }
+        return cart;
+    }
+
+    private Order initializeOrder() {
+        Order order = new Order();
         order.setCurrency("USD");
         order.setCreatedAt(Instant.now());
         order.setStatus("Pending Payment");
-        //Map cart items to order items
-        List<CartItem> cartItems = cart.getCartItems();
-        for(CartItem cartItem : cartItems){
+        return order;
+    }
+
+    private void mapCartItemsToOrder(Cart cart, Order order) {
+        for (CartItem cartItem : cart.getCartItems()) {
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(cartItem.getProduct());
             orderItem.setUnitPrice(cartItem.getProduct().getBasePrice());
@@ -63,80 +168,32 @@ public class OrderServiceImplementation implements OrderService {
             orderItem.setTaxAmount(BigDecimal.ZERO);
             order.addOrderItem(orderItem);
         }
-        order.setTotalAmount(order.getTotalAmount());
-        user.addOrder(order);
-
-        var savedOrder = orderRepository.save(order);
-        cartService.clearCart(cart);
-        return savedOrder;
     }
 
-
-    @Override
-    @Transactional
-    public OrderSummaryDTO checkout(Long addressId) {
-        var user = userUtility.getCurrentUser();
-        Order order = createOrder(user);
-        createShipment(addressId, order);
-        mailService.sendEmail(user.getEmail(),"Order Placed Successfully","Your order has been placed successfully" + order.getOrderItems().toString());
-        return new OrderSummaryDTO(order);
+    private void sendOrderConfirmationEmail(User user, Order order) {
+        mailService.sendEmail(
+                user.getEmail(),
+                "Order Placed Successfully",
+                "Your order has been placed successfully" + order.getOrderItems().toString()
+        );
     }
 
-    @Override
-    public List<OrderResponseDTO> getAllOrdersById() {
-        var user = userUtility.getCurrentUser();
-        return OrderMapper.toDtoList(orderRepository.findAllByUserId(user.getId()));
+    private Order fetchOrderOrThrow(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalStateException("Order Not Found"));
     }
 
-    @Override
-    @Transactional
-    public ShipmentResponseDTO createShipment(Long addressId, Order order) {
-        Shipment shipment = new Shipment();
-        shipment.setOrder(order);
-        Optional<Address> optional = addressRepository.findById(addressId);
-        if(optional.isEmpty())
-            throw new IllegalStateException("Address Not Found");
-        Address address = optional.get();
-        shipment.setAddress(address);
-        order.setShipment(shipment);
-        shipment.setTrackingNumber("123456");
-        shipment.setCarrier("Ahmed");
-        return ShipmentMapper.toDto(shipment);
+    private Address fetchAddressOrThrow(Long addressId) {
+        return addressRepository.findById(addressId)
+                .orElseThrow(() -> new IllegalStateException("Address Not Found"));
     }
 
-    @Override
-    public OrderResponseDTO findById(Long orderId) {
-        var order = orderRepository.findById(orderId);
-        if(order.isEmpty())
-            throw new IllegalStateException("Order Not Found");
-        return OrderMapper.toDTO(order.get());
-    }
-
-    @Override
-    @Transactional
-    public void markOrderPaid(Long id,String paymentId) {
-        var optional = orderRepository.findById(id);
-        if(optional.isEmpty())
-            throw new IllegalStateException("Order Not Found");
-        Order order = optional.get();
-
+    private Payment createPayment(Order order, String paymentId) {
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setPaidAt(Instant.now());
         payment.setPaymentId(paymentId);
         payment.setAmount(order.getTotalAmount());
-        order.setStatus("Paid");
-        order.setPayment(payment);
-        orderRepository.save(order);
+        return payment;
     }
-
-    @Override
-    public OrderResponseDTO getOrderById(Long orderId) {
-        var optional = orderRepository.findById(orderId);
-        if(optional.isEmpty())
-            throw new IllegalStateException("Order Not Found");
-
-        return OrderMapper.toDTO(optional.get());
-    }
-
 }

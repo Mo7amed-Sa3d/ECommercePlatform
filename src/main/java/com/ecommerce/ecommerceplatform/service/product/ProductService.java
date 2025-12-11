@@ -20,6 +20,5 @@ public interface ProductService {
     ProductResponseDTO saveProduct(Product entity, Long brandId, Long categoryId);
     List<ProductResponseDTO> findAllByCategoryId(Long categoryId);
     ProductResponseDTO updateProduct(Long productId, ProductRequestDTO productRequestDTO);
-
     String deleteProductImage(Long productId, Long imageId) throws IOException;
 }
