@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,8 +29,8 @@ public class Brand {
     @Column(name = "created_at")
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "brand")
-    private List<Product> products;
+    @OneToMany(mappedBy = "brand",fetch = FetchType.LAZY)
+    private List<Product> products = new ArrayList<>();
 
 
     @OneToOne(mappedBy = "brand", cascade = CascadeType.ALL)

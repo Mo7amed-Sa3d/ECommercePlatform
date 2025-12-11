@@ -40,10 +40,10 @@ public class ProductVariant {
     private Product product;
 
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItems = new  ArrayList<>();
 
-    @OneToMany(mappedBy = "productVariant")
-    private List<WishlistItem> wishlistItems;
+    @OneToMany(mappedBy = "productVariant",fetch = FetchType.LAZY)
+    private List<WishlistItem> wishlistItems = new  ArrayList<>();
 
     public Long getId() {
         return id;

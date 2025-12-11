@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -48,8 +49,8 @@ public class Address {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "address")
-    private List<Shipment> shipments;
+    @OneToMany(mappedBy = "address",fetch = FetchType.LAZY)
+    private List<Shipment> shipments = new ArrayList<>();
 
     public Long getId() {
         return id;

@@ -23,10 +23,10 @@ public class Category {
     private Category parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    protected List<Category> children;
+    protected List<Category> children = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "categories")
-    private List<Product> products;
+    @ManyToMany(mappedBy = "categories",fetch =  FetchType.EAGER)
+    private List<Product> products = new ArrayList<>();
 
 
     public Long getId() {

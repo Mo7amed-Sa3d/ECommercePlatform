@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 
 @Entity
-@Table(name="Wishlist_items")
+@Table(name="wishlistitems")
 public class WishlistItem {
 
     @Id

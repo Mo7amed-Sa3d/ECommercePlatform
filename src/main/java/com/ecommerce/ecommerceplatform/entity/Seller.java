@@ -33,8 +33,8 @@ public class Seller {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Product> products;
+    @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<>();
 
     @Column(name="payment_account_id")
     private String paymentAccountId;
