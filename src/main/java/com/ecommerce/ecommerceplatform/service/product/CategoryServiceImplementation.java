@@ -8,6 +8,7 @@ import com.ecommerce.ecommerceplatform.entity.Category;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.repository.CategoryRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +22,11 @@ public class CategoryServiceImplementation implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
-
-    public CategoryServiceImplementation(CategoryRepository categoryRepository,ProductRepository productRepository) {
+    private final UserUtility userUtility;
+    public CategoryServiceImplementation(CategoryRepository categoryRepository, ProductRepository productRepository, UserUtility userUtility) {
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
+        this.userUtility = userUtility;
     }
 
     @Override
@@ -34,7 +36,8 @@ public class CategoryServiceImplementation implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponseDTO createCategory(User user, String categoryName, Long parentId) throws AccessDeniedException {
+    public CategoryResponseDTO createCategory(String categoryName, Long parentId) throws AccessDeniedException {
+        var user = userUtility.getCurrentUser();
         if(!user.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("You are not allowed to access this category");
         Category category = new Category();

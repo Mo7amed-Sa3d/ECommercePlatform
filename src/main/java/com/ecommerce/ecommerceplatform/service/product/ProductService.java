@@ -15,11 +15,11 @@ public interface ProductService {
     List<ProductResponseDTO> getAllProducts();
     ProductResponseDTO getProductById(Long productId);
     ProductResponseDTO saveProduct(Product product, Seller seller);
-    void removeProduct(Long productId, User user);
-    List<String> saveProductImage(List<MultipartFile> imageList, User user, Long productId) throws IOException;
-    ProductResponseDTO saveProduct(Product entity, Long brandId, Long categoryId, Seller seller);
+    void removeProduct(Long productId);
+    List<String> saveProductImage(List<MultipartFile> imageList, Long productId) throws IOException;
+    ProductResponseDTO saveProduct(Product entity, Long brandId, Long categoryId);
     List<ProductResponseDTO> findAllByCategoryId(Long categoryId);
-    ProductResponseDTO updateProduct(User user,Long productId, ProductRequestDTO productRequestDTO);
+    ProductResponseDTO updateProduct(Long productId, ProductRequestDTO productRequestDTO);
 
-    String deleteProductImage(User user, Long productId, Long imageId) throws IOException;
+    String deleteProductImage(Long productId, Long imageId) throws IOException;
 }

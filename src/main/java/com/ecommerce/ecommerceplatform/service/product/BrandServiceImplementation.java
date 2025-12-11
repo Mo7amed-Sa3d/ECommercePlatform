@@ -7,6 +7,7 @@ import com.ecommerce.ecommerceplatform.entity.BrandImage;
 import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.repository.BrandRepository;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,15 @@ import java.util.UUID;
 public class BrandServiceImplementation implements BrandService {
 
     BrandRepository brandRepository;
+    UserUtility userUtility;
 
     @Value("${brand-image.upload-dir}")
     private String brandImagesUploadDirectory;
 
 
-    public BrandServiceImplementation(BrandRepository brandRepository) {
+    public BrandServiceImplementation(BrandRepository brandRepository, UserUtility userUtility) {
         this.brandRepository = brandRepository;
+        this.userUtility = userUtility;
     }
     @Override
     public List<BrandResponseDTO> findAll() {
@@ -50,7 +53,8 @@ public class BrandServiceImplementation implements BrandService {
 
     @Override
     @Transactional
-    public BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO, User user) throws AccessDeniedException {
+    public BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO) throws AccessDeniedException {
+        var user = userUtility.getCurrentUser();
         if(!user.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access denied");
         Brand brand = BrandMapper.toEntity(brandRequestDTO);
@@ -58,8 +62,9 @@ public class BrandServiceImplementation implements BrandService {
     }
 
     @Override
-    public String addBrandImage(MultipartFile image, Long brandId, User user) throws IOException {
-
+    @Transactional
+    public String addBrandImage(MultipartFile image, Long brandId) throws IOException {
+        User user = userUtility.getCurrentUser();
         System.err.println("USER Role " + user.getRole());
 
         if(!user.getRole().equals("ROLE_ADMIN"))

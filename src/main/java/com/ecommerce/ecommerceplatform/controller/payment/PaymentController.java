@@ -30,7 +30,6 @@ public class PaymentController {
     @PostMapping("/create-payment-intent")
     public ResponseEntity<?> createPaymentIntent(@RequestBody PaymentRequest request) {
         try {
-        User user = userUtility.getCurrentUser();
         Order order = orderRepository.findById(request.getOrderId()).get();
         if(order.getStatus().equals("Paid"))
             throw new IllegalArgumentException("Order has already been paid");
@@ -48,8 +47,7 @@ public class PaymentController {
 
     @GetMapping("/onboarding-link")
     public ResponseEntity<?> onboardingLink() throws StripeException {
-        User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(paymentService.generateOnboardingLink(user.getSeller().getPaymentAccountId()));
+        return ResponseEntity.ok(paymentService.generateOnboardingLink());
     }
 
 }

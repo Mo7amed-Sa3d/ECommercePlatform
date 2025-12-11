@@ -31,31 +31,17 @@ import java.util.Optional;
 public class UserController {
 
     private final UserServices userServices;
-    private final UserUtility userUtility;
     private final PaymentService paymentService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserServices userServices, UserUtility userUtility, PaymentService paymentService, UserRepository userRepository) {
+    public UserController(UserServices userServices, PaymentService paymentService) {
         this.userServices = userServices;
-        this.userUtility = userUtility;
         this.paymentService = paymentService;
-        this.userRepository = userRepository;
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getCurrentUser(Authentication authentication) {
-        String email = authentication.getName();
-        var user = userRepository.findByEmail(email);
-        if (user.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(UserMapper.toDto(user.get()));
     }
 
     @PostMapping("/addresses")
     public ResponseEntity<AddressResponseDTO> addAddress(@RequestBody AddressRequestDTO addressRequestDTO) {
-        User user = userUtility.getCurrentUser();
-        var savedAddress = userServices.addAddressToUser(user.getId(), AddressMapper.toEntity(addressRequestDTO));
+        var savedAddress = userServices.addAddressToUser(AddressMapper.toEntity(addressRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAddress);
     }
 
@@ -63,21 +49,18 @@ public class UserController {
 
     @GetMapping("/addresses")
     public ResponseEntity<List<AddressResponseDTO>> getAddresses() {
-        User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(userServices.getAddresses(user.getId()));
+        return ResponseEntity.ok(userServices.getAddresses());
     }
 
     @DeleteMapping("/addresses/{addressId}")
     public ResponseEntity<String> deleteAddress(@PathVariable Long addressId){
-        User user = userUtility.getCurrentUser();
-        userServices.deleteAddressFromUser(user.getId(),addressId);
-        return ResponseEntity.ok().body("Done Deleting Address with id " + addressId + "From User" + user.getId());
+        userServices.deleteAddressFromUser(addressId);
+        return ResponseEntity.ok().body("Done Deleting Address with id " + addressId);
     }
 
     @GetMapping("/{sellerId}/onboarding-link")
     public ResponseEntity<?> onboardingLink(@PathVariable Long sellerId) throws StripeException {
-        Seller seller = userRepository.findById(sellerId).get().getSeller();
-        return ResponseEntity.ok(paymentService.generateOnboardingLink(seller.getPaymentAccountId()));
+        return ResponseEntity.ok(paymentService.generateOnboardingLink());
     }
 
 }

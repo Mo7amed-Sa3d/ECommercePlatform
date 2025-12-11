@@ -14,7 +14,7 @@ public interface CategoryService {
 
     List<CategoryResponseDTO> getAllCategories();
 
-    CategoryResponseDTO createCategory(User user,String categoryName, Long parentId) throws AccessDeniedException;
+    CategoryResponseDTO createCategory(String categoryName, Long parentId) throws AccessDeniedException;
 
     List<ProductResponseDTO> getAllProducts(Long categoryId);
 

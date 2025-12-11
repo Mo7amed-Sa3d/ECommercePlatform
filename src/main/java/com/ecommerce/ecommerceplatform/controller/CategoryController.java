@@ -3,10 +3,7 @@ package com.ecommerce.ecommerceplatform.controller;
 import com.ecommerce.ecommerceplatform.dto.requestdto.CategoryRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.CategoryResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
-import com.ecommerce.ecommerceplatform.dto.mapper.CategoryMapper;
-import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.service.product.CategoryService;
-import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +16,10 @@ import java.util.List;
 public class CategoryController {
 
     private CategoryService categoryService;
-    private UserUtility userUtility;
 
     @Autowired
-    public void setCategoryService(CategoryService categoryService, UserUtility userUtility) {
+    public void setCategoryService(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.userUtility = userUtility;
     }
 
     @GetMapping
@@ -34,10 +29,8 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) throws AccessDeniedException {
-        var user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(categoryService.createCategory(user,
-                                                        categoryRequestDTO.getName(),
-                                                         categoryRequestDTO.getParentId()));
+        return ResponseEntity.ok(categoryService.createCategory(categoryRequestDTO.getName(),
+                                                                categoryRequestDTO.getParentId()));
     }
 
     @GetMapping("/{categoryId}/products")

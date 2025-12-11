@@ -12,6 +12,7 @@ import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
 import com.ecommerce.ecommerceplatform.service.user.UserServices;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,21 +26,20 @@ public class OrderServiceImplementation implements OrderService {
     private final CartService cartService;
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
-    UserServices userServices;
-    OrderRepository orderRepository;
-    MailServiceImplementation mailService;
-
-    public OrderServiceImplementation(UserServices userServices,
-                                      OrderRepository orderRepository,
+    private final OrderRepository orderRepository;
+    private final MailServiceImplementation mailService;
+    private final UserUtility userUtility;
+    public OrderServiceImplementation(OrderRepository orderRepository,
                                       CartService cartService,
                                       AddressRepository addressRepository,
-                                      MailServiceImplementation mailService, UserRepository userRepository) {
-        this.userServices = userServices;
+                                      MailServiceImplementation mailService,
+                                      UserRepository userRepository, UserUtility userUtility) {
         this.orderRepository = orderRepository;
         this.cartService = cartService;
         this.addressRepository = addressRepository;
         this.mailService = mailService;
         this.userRepository = userRepository;
+        this.userUtility = userUtility;
     }
 
     @Override
@@ -74,8 +74,8 @@ public class OrderServiceImplementation implements OrderService {
 
     @Override
     @Transactional
-    public OrderSummaryDTO checkout(Long userId,Long addressId) {
-        User user = userRepository.findById(userId).get();
+    public OrderSummaryDTO checkout(Long addressId) {
+        var user = userUtility.getCurrentUser();
         Order order = createOrder(user);
         createShipment(addressId, order);
         mailService.sendEmail(user.getEmail(),"Order Placed Successfully","Your order has been placed successfully" + order.getOrderItems().toString());
@@ -83,8 +83,9 @@ public class OrderServiceImplementation implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getAllOrdersById(Long userId) {
-        return OrderMapper.toDtoList(orderRepository.findAllByUserId(userId));
+    public List<OrderResponseDTO> getAllOrdersById() {
+        var user = userUtility.getCurrentUser();
+        return OrderMapper.toDtoList(orderRepository.findAllByUserId(user.getId()));
     }
 
     @Override

@@ -2,8 +2,6 @@ package com.ecommerce.ecommerceplatform.controller;
 
 import com.ecommerce.ecommerceplatform.dto.requestdto.BrandRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
-import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
-import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.service.product.BrandService;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +16,9 @@ import java.util.List;
 @RequestMapping("/api/brand")
 public class BrandController {
 
-    private final UserUtility userUtility;
     BrandService brandService;
     public BrandController(BrandService brandService, UserUtility userUtility) {
         this.brandService = brandService;
-        this.userUtility = userUtility;
     }
 
     @GetMapping
@@ -37,13 +33,11 @@ public class BrandController {
 
     @PostMapping
     public ResponseEntity<BrandResponseDTO> addBrand(@RequestBody BrandRequestDTO brandRequestDTO) throws AccessDeniedException {
-        var user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(brandService.createBrand(brandRequestDTO,user));
+        return ResponseEntity.ok(brandService.createBrand(brandRequestDTO));
     }
 
     @PostMapping("/image/{brandId}")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image, @PathVariable Long brandId) throws IOException {
-        User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(brandService.addBrandImage(image,brandId,user));
+        return ResponseEntity.ok(brandService.addBrandImage(image,brandId));
     }
 }

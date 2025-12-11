@@ -8,6 +8,7 @@ import com.ecommerce.ecommerceplatform.repository.BrandRepository;
 import com.ecommerce.ecommerceplatform.repository.CategoryRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductImageRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,18 +30,20 @@ public class ProductServiceImplementation implements ProductService {
 
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
-    ProductRepository productRepository;
-    ProductImageRepository productImageRepository;
+    private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
+    private final UserUtility userUtility;
 
     @Value("${product-image.upload-dir}")
     private String productImagesUploadDirectory;
 
     @Autowired
-    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository, CategoryService categoryService, BrandRepository brandRepository, CategoryRepository categoryRepository) {
+    public ProductServiceImplementation(ProductRepository productRepository, ProductImageRepository productImageRepository, CategoryService categoryService, BrandRepository brandRepository, CategoryRepository categoryRepository, UserUtility userUtility) {
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
         this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
+        this.userUtility = userUtility;
     }
 
     @Override
@@ -67,7 +70,8 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
-    public void removeProduct(Long productId,User user) {
+    public void removeProduct(Long productId) {
+        User  user = userUtility.getCurrentUser();
         Optional<Product> optional = productRepository.findById(productId);
         if(optional.isEmpty())
             throw new EntityNotFoundException("Product not found");
@@ -82,8 +86,8 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
-    public List<String> saveProductImage(List<MultipartFile> imageList, User user, Long productId) throws IOException {
-
+    public List<String> saveProductImage(List<MultipartFile> imageList, Long productId) throws IOException {
+        User user = userUtility.getCurrentUser();
         String productDir = productImagesUploadDirectory + "/products/" + productId + "/";
         File dir = new File(productDir);
         if (!dir.exists())
@@ -118,7 +122,8 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponseDTO saveProduct(Product product, Long brandId, Long categoryId, Seller seller) {
+    public ProductResponseDTO saveProduct(Product product, Long brandId, Long categoryId) {
+        Seller seller = userUtility.getCurrentUser().getSeller();
         Brand brand = brandRepository.findById(brandId).get();
         Category category = categoryRepository.findById(categoryId).get();
         brand.addProduct(product);
@@ -134,7 +139,8 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
-    public ProductResponseDTO updateProduct(User user,Long productId, ProductRequestDTO productRequestDTO) {
+    public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO productRequestDTO) {
+        User user = userUtility.getCurrentUser();
         Optional<Product> optional = productRepository.findById(productId);
         if(optional.isEmpty())
             throw new EntityNotFoundException("Product not found");
@@ -153,7 +159,8 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
-    public String deleteProductImage(User user, Long productId, Long imageId) throws IOException {
+    public String deleteProductImage(Long productId, Long imageId) throws IOException {
+        User user = userUtility.getCurrentUser();
         var optional = productImageRepository.findById(imageId);
 
         if(optional.isEmpty())

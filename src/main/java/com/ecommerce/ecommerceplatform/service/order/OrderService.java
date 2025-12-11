@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface OrderService {
     Order createOrder(User user);
-    OrderSummaryDTO checkout(Long userId,Long addressId);
-    List<OrderResponseDTO> getAllOrdersById(Long userId);
+    OrderSummaryDTO checkout(Long addressId);
+    List<OrderResponseDTO> getAllOrdersById();
     ShipmentResponseDTO createShipment(Long addressId, Order order);
     OrderResponseDTO findById(Long orderId);
     void markOrderPaid(Long id,String PaymentId);

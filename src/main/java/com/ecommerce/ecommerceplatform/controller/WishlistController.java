@@ -14,32 +14,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users/wishlist")
 public class WishlistController {
 
-    private final UserUtility userUtility;
     private final WishlistService wishlistService;
 
     @Autowired
-    public WishlistController(WishlistService wishlistService, UserUtility userUtility) {
+    public WishlistController(WishlistService wishlistService) {
         this.wishlistService = wishlistService;
-        this.userUtility = userUtility;
     }
 
     @GetMapping
     public ResponseEntity<WishlistResponseDTO> getAllWishlist() {
-        User user = userUtility.getCurrentUser();
-        return ResponseEntity.ok(WishlistMapper.toDTO(user.getWishlist()));
+        return ResponseEntity.ok(wishlistService.getWishlist());
     }
 
     @PostMapping
     public ResponseEntity<WishlistResponseDTO> addWishlistItem(@RequestBody WishlistItemRequestDTO wishlistItemRequestDTO) {
-        User user = userUtility.getCurrentUser();
-        var wishlist = wishlistService.addItem(wishlistItemRequestDTO,user);
-        return ResponseEntity.ok(wishlist);
+        return ResponseEntity.ok(wishlistService.addItem(wishlistItemRequestDTO));
     }
 
     @DeleteMapping("/{itemId}")
     public ResponseEntity<String> deleteWishlistItem(@PathVariable Long itemId) {
-        User user = userUtility.getCurrentUser();
-        String wishlist = wishlistService.deleteItem(itemId,user);
-        return ResponseEntity.ok(wishlist);
+        return ResponseEntity.ok(wishlistService.deleteItem(itemId));
     }
 }

@@ -9,6 +9,7 @@ import com.ecommerce.ecommerceplatform.entity.WishlistItem;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
 import com.ecommerce.ecommerceplatform.repository.WishlistItemRepository;
 import com.ecommerce.ecommerceplatform.repository.WishlistRepository;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,15 +21,18 @@ public class WishlistServiceImplementation implements WishlistService {
     private final ProductRepository productRepository;
     private final WishlistRepository wishlistRepository;
     private final WishlistItemRepository wishlistItemRepository;
-    public WishlistServiceImplementation(WishlistRepository wishlistRepository, ProductRepository productRepository, WishlistItemRepository wishlistItemRepository) {
+    private final UserUtility userUtility;
+    public WishlistServiceImplementation(WishlistRepository wishlistRepository, ProductRepository productRepository, WishlistItemRepository wishlistItemRepository, UserUtility userUtility) {
         this.wishlistRepository = wishlistRepository;
         this.productRepository = productRepository;
         this.wishlistItemRepository = wishlistItemRepository;
+        this.userUtility = userUtility;
     }
 
     @Override
     @Transactional
-    public WishlistResponseDTO addItem(WishlistItemRequestDTO wishlistItemRequestDTO, User user) {
+    public WishlistResponseDTO addItem(WishlistItemRequestDTO wishlistItemRequestDTO) {
+        User user = userUtility.getCurrentUser();
         var optional = productRepository.findById(wishlistItemRequestDTO.getProductId());
         if (optional.isEmpty())
             throw new EntityNotFoundException("Product not found");
@@ -55,8 +59,15 @@ public class WishlistServiceImplementation implements WishlistService {
     }
 
     @Override
+    public WishlistResponseDTO getWishlist() {
+        User user = userUtility.getCurrentUser();
+        return WishlistMapper.toDTO(user.getWishlist());
+    }
+
+    @Override
     @Transactional
-    public String deleteItem(Long itemId, User user) {
+    public String deleteItem(Long itemId) {
+        User user = userUtility.getCurrentUser();
         var optional = wishlistItemRepository.findById(itemId);
         if(optional.isEmpty())
             throw new EntityNotFoundException("Item not found");

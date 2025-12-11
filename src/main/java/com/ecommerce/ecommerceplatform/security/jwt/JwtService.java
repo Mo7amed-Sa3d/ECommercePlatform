@@ -1,9 +1,17 @@
 package com.ecommerce.ecommerceplatform.security.jwt;
 
+import com.ecommerce.ecommerceplatform.dto.requestdto.AuthRequestDto;
+import com.ecommerce.ecommerceplatform.dto.responsedto.AuthResponseDto;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Key;
 import java.util.Date;
@@ -11,10 +19,26 @@ import java.util.Date;
 @Component
 public class JwtService {
 
+
+    @Value("${jwt.secret.key}")
+    String SECRET_KEY;
+
+    private final BlacklistService blacklistService;
+
+    public JwtService( BlacklistService blacklistService) {
+        this.blacklistService = blacklistService;
+    }
+
     private Key getSigningKey() {
-        //at least 256 bits
-        String SECRET_KEY = "Qw2wnrqqHxo0lmYtZ0ljamf2bCBz2gbA";
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    }
+
+    public void logout(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+        String token = authHeader.substring(7); // remove Bearer
+        blacklistService.blackListToken(token);
     }
 
     public String generateToken(String userEmail) {

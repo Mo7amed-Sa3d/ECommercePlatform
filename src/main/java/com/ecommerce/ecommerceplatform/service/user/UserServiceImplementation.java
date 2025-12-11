@@ -14,6 +14,7 @@ import com.ecommerce.ecommerceplatform.dto.mapper.UserMapper;
 import com.ecommerce.ecommerceplatform.repository.AddressRepository;
 import com.ecommerce.ecommerceplatform.repository.UserRepository;
 import com.ecommerce.ecommerceplatform.service.payment.PaymentService;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import com.stripe.exception.StripeException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,13 +32,17 @@ public class UserServiceImplementation implements UserServices {
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
     private final PaymentService paymentService;
-    public UserServiceImplementation(UserRepository userRepository,
-                                     PasswordEncoder passwordEncoder
-                                     , AddressRepository addressRepository, PaymentService paymentService) {
+    private final UserUtility userUtility;
+    public UserServiceImplementation(UserRepository userRepository
+                                     ,PasswordEncoder passwordEncoder
+                                     ,AddressRepository addressRepository,
+                                     PaymentService paymentService,
+                                     UserUtility userUtility) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
         this.passwordEncoder = passwordEncoder;
         this.paymentService = paymentService;
+        this.userUtility = userUtility;
     }
 
     //TODO: Make it private
@@ -66,7 +71,8 @@ public class UserServiceImplementation implements UserServices {
 
     @Override
     @Transactional
-    public UserResponseDTO registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
+    public UserResponseDTO registerSeller(SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException {
+        User adminUser = userUtility.getCurrentUser();
         if(!adminUser.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access Denied!");
 
@@ -88,7 +94,8 @@ public class UserServiceImplementation implements UserServices {
 
     @Override
     @Transactional
-    public UserResponseDTO registerAdmin(User adminUser,UserRequestDTO userRequestDTO) throws AccessDeniedException {
+    public UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) throws AccessDeniedException {
+        User adminUser = userUtility.getCurrentUser();
         if(!adminUser.getRole().equals("ROLE_ADMIN"))
             throw new AccessDeniedException("Access Denied!");
 
@@ -106,21 +113,22 @@ public class UserServiceImplementation implements UserServices {
 
     @Override
     @Transactional
-    public AddressResponseDTO addAddressToUser(Long userId, Address address) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+    public AddressResponseDTO addAddressToUser(Address address) {
+        User user = userUtility.getCurrentUser();
         user.addAddress(address);
         return AddressMapper.toDto(address);
     }
 
     @Override
-    public List<AddressResponseDTO> getAddresses(Long userId) {
-        return AddressMapper.toDtoList(addressRepository.findByUserId(userId));
+    public List<AddressResponseDTO> getAddresses() {
+        User user = userUtility.getCurrentUser();
+        return AddressMapper.toDtoList(addressRepository.findByUserId(user.getId()));
     }
 
     @Override
     @Transactional
-    public void deleteAddressFromUser(Long userId, Long addressId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+    public void deleteAddressFromUser(Long addressId) {
+        User user = userUtility.getCurrentUser();
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new RuntimeException("Address Not Found"));
         user.removeAddress(address);
     }

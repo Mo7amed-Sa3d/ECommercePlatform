@@ -11,8 +11,7 @@ import com.ecommerce.ecommerceplatform.repository.CartItemRepository;
 import com.ecommerce.ecommerceplatform.repository.CartRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
 import com.ecommerce.ecommerceplatform.repository.UserRepository;
-import com.ecommerce.ecommerceplatform.service.product.ProductService;
-import com.ecommerce.ecommerceplatform.service.user.UserServices;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,28 +27,29 @@ public class CartServiceImplementation implements CartService {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    CartRepository cartRepository;
-    ProductService productService;
-    UserServices userServices;
-    CartItemRepository cartItemRepository;
+    private final UserUtility userUtility;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     @Autowired
     public CartServiceImplementation(CartRepository cartRepository,
-                                     UserServices userServices,
-                                     ProductService productService,
-                                     CartItemRepository cartItemRepository, UserRepository userRepository, ProductRepository productRepository) {
+                                     CartItemRepository cartItemRepository,
+                                     UserRepository userRepository,
+                                     ProductRepository productRepository,
+                                     UserUtility userUtility) {
         this.cartRepository = cartRepository;
-        this.userServices = userServices;
-        this.productService = productService;
         this.cartItemRepository = cartItemRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.userUtility = userUtility;
     }
+
+
 
 
     @Override
     @Transactional
-    public CartResponseDTO addItemToCartByUserID(Long userId, Long productId, int quantity) {
-        User user = userRepository.findById(userId).get();
+    public CartResponseDTO addItemToCartByUserID(Long productId, int quantity) {
+        User user = userUtility.getCurrentUser();
         Cart cart = user.getCart();
         if(cart == null) {
             //TODO: Make this throw exception
@@ -64,7 +64,7 @@ public class CartServiceImplementation implements CartService {
                 itemExists = true;
                 cartItem.setQuantity(cartItem.getQuantity() + quantity);
                 if(cartItem.getQuantity() <= 0) {
-                    RemoveItemFromCart(userId,cartItem.getId());
+                    RemoveItemFromCart(cartItem.getId());
                 }
                 break;
             }
@@ -80,9 +80,10 @@ public class CartServiceImplementation implements CartService {
 
     @Override
     @Transactional
-    public CartResponseDTO RemoveItemFromCart(Long userId, Long itemId) {
+    public CartResponseDTO RemoveItemFromCart(Long itemId) {
+        var user = userUtility.getCurrentUser();
         CartItem cartItem = cartItemRepository.findById(itemId).get();
-        Cart cart = userRepository.findById(userId).get().getCart();
+        Cart cart = userRepository.findById(user.getId()).get().getCart();
         if(cart == null || cart.getCartItems().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart is empty");
         }
@@ -110,5 +111,11 @@ public class CartServiceImplementation implements CartService {
     public CartItemResponseDTO gatCartItem(Long itemId) {
         CartItem cartItem = cartItemRepository.findById(itemId).orElse(null);
         return CartItemMapper.toDTO(cartItem);
+    }
+
+    @Override
+    public CartResponseDTO getUserCart() {
+        User user = userUtility.getCurrentUser();
+        return CartMapper.toDTO(user.getCart());
     }
 }

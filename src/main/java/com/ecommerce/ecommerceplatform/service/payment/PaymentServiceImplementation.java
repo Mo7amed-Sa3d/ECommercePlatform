@@ -1,6 +1,8 @@
 package com.ecommerce.ecommerceplatform.service.payment;
 
 import com.ecommerce.ecommerceplatform.entity.Order;
+import com.ecommerce.ecommerceplatform.entity.Seller;
+import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
@@ -19,13 +21,18 @@ import java.util.Map;
 @Service
 public class PaymentServiceImplementation implements PaymentService {
 
-        @Value("${supportedCurrencies}")
+    private final UserUtility userUtility;
+    @Value("${supportedCurrencies}")
         private List<String> supportedCurrencies;
 
         @Value("${currencyMultiplier}")
         private Long currencyMultiplier;
 
-        @Override
+    public PaymentServiceImplementation(UserUtility userUtility) {
+        this.userUtility = userUtility;
+    }
+
+    @Override
         public Account createSellerAccount() throws StripeException {
             AccountCreateParams params = AccountCreateParams.builder()
                     .setType(AccountCreateParams.Type.EXPRESS)
@@ -35,7 +42,9 @@ public class PaymentServiceImplementation implements PaymentService {
         }
 
         @Override
-        public String generateOnboardingLink(String accountId) throws StripeException {
+        public String generateOnboardingLink() throws StripeException {
+            Seller seller = userUtility.getCurrentUser().getSeller();
+            String accountId = seller.getPaymentAccountId();
             AccountLink link = AccountLink.create(
                     AccountLinkCreateParams.builder()
                             .setAccount(accountId)

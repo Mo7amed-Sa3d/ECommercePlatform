@@ -15,6 +15,6 @@ import java.util.Optional;
 public interface BrandService {
     List<BrandResponseDTO> findAll();
     BrandResponseDTO findById(Long brandId);
-    BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO, User user) throws AccessDeniedException;
-    String addBrandImage(MultipartFile image,Long brandId, User user) throws IOException;
+    BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO) throws AccessDeniedException;
+    String addBrandImage(MultipartFile image,Long brandId) throws IOException;
 }

@@ -19,11 +19,11 @@ import java.util.Optional;
 public interface UserServices {
     UserResponseDTO registerUser(UserRequestDTO userRequestDTO) throws AccessDeniedException;
     UserResponseDTO getUserByEmail(String email);
-    AddressResponseDTO addAddressToUser(Long userId, Address address);
-    List<AddressResponseDTO> getAddresses(Long userId);
-    void deleteAddressFromUser(Long userId,Long addressId);
+    AddressResponseDTO addAddressToUser(Address address);
+    List<AddressResponseDTO> getAddresses();
+    void deleteAddressFromUser(Long addressId);
     UserResponseDTO getUserByID(Long userId);
     CartResponseDTO getCartByUserID(Long userId);
-    UserResponseDTO registerSeller(User adminUser, SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException;
-    UserResponseDTO registerAdmin(User adminUser,UserRequestDTO userRequestDTO) throws AccessDeniedException;
+    UserResponseDTO registerSeller(SellerRequestDTO sellerRequestDTO) throws AccessDeniedException, InvalidAttributesException, StripeException;
+    UserResponseDTO registerAdmin(UserRequestDTO userRequestDTO) throws AccessDeniedException;
 }
