@@ -13,4 +13,6 @@ public interface PaymentService {
     Account createSellerAccount() throws StripeException;
     String generateOnboardingLink() throws StripeException;
     PaymentIntent createPaymentIntent(Order order) throws StripeException;
+
+    List<String> getAccountRequirements() throws StripeException;
 }

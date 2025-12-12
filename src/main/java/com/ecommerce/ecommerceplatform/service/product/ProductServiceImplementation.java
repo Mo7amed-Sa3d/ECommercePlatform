@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -119,7 +120,7 @@ public class ProductServiceImplementation implements ProductService {
         brand.addProduct(product);
         category.addProduct(product);
         seller.addProduct(product);
-
+        product.setCreatedAt(Instant.now());
         Product saved = productRepository.save(product);
         return ProductMapper.toDTO(saved);
     }

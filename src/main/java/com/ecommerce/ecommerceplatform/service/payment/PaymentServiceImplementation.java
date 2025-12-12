@@ -2,6 +2,7 @@ package com.ecommerce.ecommerceplatform.service.payment;
 
 import com.ecommerce.ecommerceplatform.entity.Order;
 import com.ecommerce.ecommerceplatform.entity.Seller;
+import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
@@ -14,9 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PaymentServiceImplementation implements PaymentService {
@@ -79,6 +78,13 @@ public class PaymentServiceImplementation implements PaymentService {
                             .build();
 
             return PaymentIntent.create(params);
+        }
+
+        @Override
+        public List<String> getAccountRequirements() throws StripeException {
+            User user = userUtility.getCurrentUser();
+            Account account = Account.retrieve(user.getSeller().getPaymentAccountId());
+            return account.getRequirements().getCurrentlyDue();
         }
 
         private boolean checkSupportedCurrencies(String currency) {

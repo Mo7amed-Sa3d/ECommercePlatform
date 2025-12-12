@@ -11,6 +11,7 @@ import com.stripe.exception.StripeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,6 +44,11 @@ public class PaymentController {
             System.err.println("payment controller error " + e.getMessage());
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/acount-requirement")
+    public ResponseEntity<List<String>> accountRequirement() throws StripeException {
+        return ResponseEntity.ok(paymentService.getAccountRequirements());
     }
 
     @GetMapping("/onboarding-link")
