@@ -22,7 +22,7 @@ public class Category {
     @JoinColumn(name = "parent_category_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
     protected List<Category> children = new ArrayList<>();
 
     @ManyToMany(mappedBy = "categories",fetch =  FetchType.EAGER)

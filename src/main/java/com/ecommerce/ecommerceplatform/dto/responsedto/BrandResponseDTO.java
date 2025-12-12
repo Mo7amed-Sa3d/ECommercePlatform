@@ -16,4 +16,5 @@ public class BrandResponseDTO {
     private String description;
     private String country;
     private Instant createdAt;
+    private String imageUrl;
 }

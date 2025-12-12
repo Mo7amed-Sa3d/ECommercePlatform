@@ -17,6 +17,8 @@ public class BrandMapper {
         brandResponseDTO.setDescription(brand.getDescription());
         brandResponseDTO.setCountry(brand.getCountry());
         brandResponseDTO.setCreatedAt(brand.getCreatedAt());
+        if(brand.getBrandImage() != null)
+            brandResponseDTO.setImageUrl(brand.getBrandImage().getUrl());
         return brandResponseDTO;
     }
 

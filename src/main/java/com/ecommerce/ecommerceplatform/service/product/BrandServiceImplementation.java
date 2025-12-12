@@ -20,6 +20,7 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,6 +56,7 @@ public class BrandServiceImplementation implements BrandService {
         ensureCurrentUserIsAdmin();
 
         Brand brand = BrandMapper.toEntity(brandRequestDTO);
+        brand.setCreatedAt(Instant.now());
         Brand savedBrand = brandRepository.save(brand);
 
         return BrandMapper.toDTO(savedBrand);
@@ -121,7 +123,7 @@ public class BrandServiceImplementation implements BrandService {
     }
 
     private String buildImageUrl(Long brandId, String fileName) {
-        return "/images/brand/" + brandId + "/" + fileName;
+        return "/images/brands/" + brandId + "/" + fileName;
     }
 
     private void attachBrandImage(Brand brand, String url) {

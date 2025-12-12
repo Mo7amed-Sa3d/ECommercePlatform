@@ -375,9 +375,9 @@ CREATE INDEX idx_wishlist_user ON wishlists(user_id);
 -- ===========================
 -- WISHLIST_ITEMS
 -- ===========================
-CREATE INDEX idx_wishlist_items_wishlist ON wishlist_items(wishlist_id);
-CREATE INDEX idx_wishlist_items_product ON wishlist_items(product_id);
-CREATE INDEX idx_wishlist_items_variant ON wishlist_items(variant_id);
+CREATE INDEX idx_wishlist_items_wishlist ON WishlistItems(wishlist_id);
+CREATE INDEX idx_wishlist_items_product ON WishlistItems(product_id);
+CREATE INDEX idx_wishlist_items_variant ON WishlistItems(variant_id);
 
 -- ===========================
 -- BRAND_IMAGE

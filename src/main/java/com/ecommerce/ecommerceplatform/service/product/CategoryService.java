@@ -13,11 +13,8 @@ import java.util.Optional;
 public interface CategoryService {
 
     List<CategoryResponseDTO> getAllCategories();
-
     CategoryResponseDTO createCategory(String categoryName, Long parentId) throws AccessDeniedException;
-
     List<ProductResponseDTO> getAllProducts(Long categoryId);
-
     CategoryResponseDTO findById(Long categoryId);
-
+    void deleteCategory(Long categoryId) throws AccessDeniedException;
 }

@@ -5,6 +5,7 @@ import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.dto.responsedto.CategoryResponseDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
 import com.ecommerce.ecommerceplatform.entity.Category;
+import com.ecommerce.ecommerceplatform.entity.User;
 import com.ecommerce.ecommerceplatform.repository.CategoryRepository;
 import com.ecommerce.ecommerceplatform.repository.ProductRepository;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
@@ -63,6 +64,19 @@ public class CategoryServiceImplementation implements CategoryService {
     public CategoryResponseDTO findById(Long categoryId) {
         Category category = getCategoryOrThrow(categoryId);
         return CategoryMapper.toDTO(category);
+    }
+
+    @Override
+    public void deleteCategory(Long categoryId) throws AccessDeniedException {
+        User user = userUtility.getCurrentUser();
+        if (!"ROLE_ADMIN".equals(user.getRole())) {
+            throw new AccessDeniedException("You are not allowed to delete this category");
+        }
+        for(var category : categoryRepository.findAll()) {
+            category.setParent(null);
+        }
+        Category category = getCategoryOrThrow(categoryId);
+        categoryRepository.delete(category);
     }
 
     // ---------------------------------------------------------------------

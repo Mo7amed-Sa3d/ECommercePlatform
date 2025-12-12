@@ -38,4 +38,9 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllProducts(categoryId));
     }
 
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) throws AccessDeniedException {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok("Category deleted successfully");
+    }
 }
