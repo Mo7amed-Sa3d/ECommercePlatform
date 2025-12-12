@@ -54,6 +54,8 @@ public class CartServiceImplementation implements CartService {
     @Override
     @Transactional
     public CartResponseDTO addItemToCartByUserID(Long productId, int quantity) {
+
+        //TODO: the returned cart is null when created but works fine when get
         User user = userUtility.getCurrentUser();
         Cart cart = initializeUserCartIfNeeded(user);
 

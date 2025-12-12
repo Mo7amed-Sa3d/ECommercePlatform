@@ -47,8 +47,8 @@ public class PaymentServiceImplementation implements PaymentService {
             AccountLink link = AccountLink.create(
                     AccountLinkCreateParams.builder()
                             .setAccount(accountId)
-                            .setRefreshUrl("https://yourapp.com/stripe/refresh")
-                            .setReturnUrl("https://yourapp.com/stripe/complete")
+                            .setRefreshUrl("http://localhost/stripe/refresh")
+                            .setReturnUrl("http://localhost/stripe/complete")
                             .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                             .build()
             );
