@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.order;
 
+import com.ecommerce.ecommerceplatform.configuration.cache.CacheNames;
 import com.ecommerce.ecommerceplatform.dto.mapper.OrderMapper;
 import com.ecommerce.ecommerceplatform.dto.mapper.ShipmentMapper;
 import com.ecommerce.ecommerceplatform.dto.responsedto.OrderResponseDTO;
@@ -12,6 +13,9 @@ import com.ecommerce.ecommerceplatform.service.cart.CartService;
 import com.ecommerce.ecommerceplatform.service.mailing.MailServiceImplementation;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +69,9 @@ public class OrderServiceImplementation implements OrderService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.orderList, key = "#userUtility.getCurrentUser().id")
+    })
     public OrderSummaryDTO checkout(Long addressId) {
         User user = userUtility.getCurrentUser();
 
@@ -83,22 +90,19 @@ public class OrderServiceImplementation implements OrderService {
     // ================================================================
 
     @Override
+    @Cacheable(value = CacheNames.orders, key = "#userUtility.getCurrentUser().id")
     public List<OrderResponseDTO> getAllOrdersById() {
         User user = userUtility.getCurrentUser();
         return OrderMapper.toDtoList(orderRepository.findAllByUserId(user.getId()));
     }
 
     @Override
+    @Cacheable(value = CacheNames.orders, key = "#orderId")
     public OrderResponseDTO findById(Long orderId) {
         Order order = fetchOrderOrThrow(orderId);
         return OrderMapper.toDTO(order);
     }
 
-    @Override
-    public OrderResponseDTO getOrderById(Long orderId) {
-        Order order = fetchOrderOrThrow(orderId);
-        return OrderMapper.toDTO(order);
-    }
 
 
     // ================================================================
@@ -127,6 +131,10 @@ public class OrderServiceImplementation implements OrderService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.orders, key = "#id"),
+            @CacheEvict(value = CacheNames.orderList, key = "#userUtility.currentUser.id")
+    })
     public void markOrderPaid(Long id, String paymentId) {
         Order order = fetchOrderOrThrow(id);
 
@@ -140,7 +148,7 @@ public class OrderServiceImplementation implements OrderService {
 
 
     // ================================================================
-    // Helper Methods (NO logic changes)
+    // Helper Methods
     // ================================================================
 
     private Cart validateAndGetCart(User user) {

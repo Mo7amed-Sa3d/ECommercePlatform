@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.wishlist;
 
+import com.ecommerce.ecommerceplatform.configuration.cache.CacheNames;
 import com.ecommerce.ecommerceplatform.dto.mapper.WishlistMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.WishlistItemRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.WishlistResponseDTO;
@@ -13,6 +14,10 @@ import com.ecommerce.ecommerceplatform.repository.WishlistRepository;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +45,7 @@ public class WishlistServiceImplementation implements WishlistService {
 
     @Override
     @Transactional
+    @CachePut(value = CacheNames.wishlists, key = "#userUtility.getCurrentUser().id")
     public WishlistResponseDTO addItem(WishlistItemRequestDTO dto) {
         User user = userUtility.getCurrentUser();
         Product product = findProductByIdOrThrow(dto.getProductId());
@@ -55,6 +61,7 @@ public class WishlistServiceImplementation implements WishlistService {
     }
 
     @Override
+    @Cacheable(value = CacheNames.wishlists, key = "#userUtility.getCurrentUser().id")
     public WishlistResponseDTO getWishlist() {
         User user = userUtility.getCurrentUser();
         return WishlistMapper.toDTO(user.getWishlist());
@@ -62,6 +69,7 @@ public class WishlistServiceImplementation implements WishlistService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.wishlists, key = "#userUtility.getCurrentUser().id")
     public String deleteItem(Long itemId) {
         WishlistItem item = findWishlistItemByIdOrThrow(itemId);
         item.getWishlist().getWishlistItems().remove(item);

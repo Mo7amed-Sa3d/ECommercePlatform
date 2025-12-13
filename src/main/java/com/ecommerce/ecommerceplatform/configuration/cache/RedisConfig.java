@@ -1,4 +1,4 @@
-package com.ecommerce.ecommerceplatform.configuration;
+package com.ecommerce.ecommerceplatform.configuration.cache;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
+import com.ecommerce.ecommerceplatform.configuration.cache.CacheNames;
 import com.ecommerce.ecommerceplatform.dto.mapper.ProductMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.ProductRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.ProductResponseDTO;
@@ -9,7 +10,10 @@ import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,12 +56,13 @@ public class ProductServiceImplementation implements ProductService {
     // -------------------------------------------------------------------------
 
     @Override
+    @Cacheable(value = CacheNames.productList)
     public List<ProductResponseDTO> getAllProducts() {
         return ProductMapper.toDTOList(productRepository.findByActiveTrue());
     }
 
     @Override
-    @Cacheable(value = "product", key = "#productId")
+    @Cacheable(value = CacheNames.products, key = "#productId")
     public ProductResponseDTO getProductById(Long productId) {
         System.err.println("Cache Miss!");
         Product product = getActiveProductOrThrow(productId);
@@ -66,6 +71,10 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
+    @Caching(
+            put = @CachePut(value = CacheNames.products, key = "#result.id"),
+            evict = @CacheEvict(value = CacheNames.productList, allEntries = true)
+    )
     public ProductResponseDTO saveProduct(Product product, Seller seller) {
         seller.addProduct(product);
         return ProductMapper.toDTO(product);
@@ -73,8 +82,14 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.products, key = "#productId"),
+                    @CacheEvict(value = CacheNames.productList, allEntries = true)
+            }
+    )
     public void removeProduct(Long productId) {
-        Product product = getProductOrThrow(productId);
+        Product product = getActiveProductOrThrow(productId);
         ensureCurrentUserIsProductOwner(product);
 
         product.setActive(false);
@@ -82,9 +97,14 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.products, key = "#productId"),
+                    @CacheEvict(value = CacheNames.productList, allEntries = true)
+            })
     public List<String> saveProductImage(List<MultipartFile> imageList, Long productId) throws IOException {
 
-        Product product = getProductOrThrow(productId);
+        Product product = getActiveProductOrThrow(productId);
         User user = userUtility.getCurrentUser();
 
         ensureUserCanModifyProduct(user, product);
@@ -126,15 +146,26 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
+    @Cacheable(
+            value = CacheNames.productsInCategory,
+            key = "#categoryId"
+    )
     public List<ProductResponseDTO> findAllByCategoryId(Long categoryId) {
         return ProductMapper.toDTOList(productRepository.findAllProductsByCategory(categoryId));
     }
 
     @Override
     @Transactional
+    @Caching(
+            put = @CachePut(value = CacheNames.products, key = "#productId"),
+            evict = {
+                    @CacheEvict(value = CacheNames.productList, allEntries = true)
+            }
+    )
+
     public ProductResponseDTO updateProduct(Long productId, ProductRequestDTO dto) {
 
-        Product product = getProductOrThrow(productId);
+        Product product = getActiveProductOrThrow(productId);
         ensureCurrentUserIsProductOwner(product);
 
         product.setSku(dto.getSku());
@@ -150,6 +181,12 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = CacheNames.products, key = "#productId"),
+                    @CacheEvict(value = CacheNames.productList, allEntries = true)
+            }
+    )
     public String deleteProductImage(Long productId, Long imageId) throws IOException {
 
         ProductImage image = productImageRepository.findById(imageId)
@@ -172,13 +209,9 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     // -------------------------------------------------------------------------
-    // Helper Methods (Clean Code)
+    // Helper Methods
     // -------------------------------------------------------------------------
 
-    private Product getProductOrThrow(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-    }
 
     private Product getActiveProductOrThrow(Long id) {
         return productRepository.findByIdAndActiveTrue(id)

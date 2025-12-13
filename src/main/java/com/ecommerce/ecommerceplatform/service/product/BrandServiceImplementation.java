@@ -1,5 +1,6 @@
 package com.ecommerce.ecommerceplatform.service.product;
 
+import com.ecommerce.ecommerceplatform.configuration.cache.CacheNames;
 import com.ecommerce.ecommerceplatform.dto.mapper.BrandMapper;
 import com.ecommerce.ecommerceplatform.dto.requestdto.BrandRequestDTO;
 import com.ecommerce.ecommerceplatform.dto.responsedto.BrandResponseDTO;
@@ -10,6 +11,10 @@ import com.ecommerce.ecommerceplatform.repository.BrandRepository;
 import com.ecommerce.ecommerceplatform.utility.UserUtility;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,11 +45,13 @@ public class BrandServiceImplementation implements BrandService {
     }
 
     @Override
+    @Cacheable(value = CacheNames.brandList)
     public List<BrandResponseDTO> findAll() {
         return BrandMapper.toDTOList(brandRepository.findAll());
     }
 
     @Override
+    @Cacheable(value = CacheNames.brands, key = "#brandId")
     public BrandResponseDTO findById(Long brandId) {
         Brand brand = getBrandOrThrow(brandId);
         return BrandMapper.toDTO(brand);
@@ -52,6 +59,10 @@ public class BrandServiceImplementation implements BrandService {
 
     @Override
     @Transactional
+    @Caching(
+        put = @CachePut(value = CacheNames.brands, key = "#result.id"),
+        evict = @CacheEvict(value = CacheNames.brandList, allEntries = true)
+    )
     public BrandResponseDTO createBrand(BrandRequestDTO brandRequestDTO) throws AccessDeniedException {
         ensureCurrentUserIsAdmin();
 
@@ -64,6 +75,10 @@ public class BrandServiceImplementation implements BrandService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.brands, key = "#brandId"),
+            @CacheEvict(value = CacheNames.brandList, allEntries = true)
+    })
     public String addBrandImage(MultipartFile image, Long brandId) throws IOException {
         ensureCurrentUserIsAdmin();
 

@@ -15,5 +15,4 @@ public interface OrderService {
     ShipmentResponseDTO createShipment(Long addressId, Order order);
     OrderResponseDTO findById(Long orderId);
     void markOrderPaid(Long id,String PaymentId);
-    OrderResponseDTO getOrderById(Long orderId);
 }
