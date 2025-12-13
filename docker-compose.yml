@@ -42,6 +42,15 @@ services:
     volumes:
       - redis_data:/data
 
+  redis-monitor:
+    image: redis
+    container_name: redis_monitor
+    depends_on:
+      - redis
+    command: >
+      sh -c "sleep 3 && redis-cli -h redis MONITOR"
+
+
 volumes:
   mysql_data:
   redis_data:

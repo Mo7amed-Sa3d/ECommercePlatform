@@ -70,7 +70,7 @@ public class OrderServiceImplementation implements OrderService {
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = CacheNames.orderList, key = "#userUtility.getCurrentUser().id")
+            @CacheEvict(value = CacheNames.orderList, key = "@userUtility.getCurrentUser().id")
     })
     public OrderSummaryDTO checkout(Long addressId) {
         User user = userUtility.getCurrentUser();
@@ -90,7 +90,7 @@ public class OrderServiceImplementation implements OrderService {
     // ================================================================
 
     @Override
-    @Cacheable(value = CacheNames.orders, key = "#userUtility.getCurrentUser().id")
+    @Cacheable(value = CacheNames.orders, key = "@userUtility.getCurrentUser().id")
     public List<OrderResponseDTO> getAllOrdersById() {
         User user = userUtility.getCurrentUser();
         return OrderMapper.toDtoList(orderRepository.findAllByUserId(user.getId()));
@@ -133,7 +133,7 @@ public class OrderServiceImplementation implements OrderService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = CacheNames.orders, key = "#id"),
-            @CacheEvict(value = CacheNames.orderList, key = "#userUtility.currentUser.id")
+            @CacheEvict(value = CacheNames.orderList, key = "@userUtility.getCurrentUser().id")
     })
     public void markOrderPaid(Long id, String paymentId) {
         Order order = fetchOrderOrThrow(id);

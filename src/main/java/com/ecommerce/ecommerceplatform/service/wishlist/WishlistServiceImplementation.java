@@ -45,7 +45,7 @@ public class WishlistServiceImplementation implements WishlistService {
 
     @Override
     @Transactional
-    @CachePut(value = CacheNames.wishlists, key = "#userUtility.getCurrentUser().id")
+    @CachePut(value = CacheNames.wishlists, key = "@userUtility.getCurrentUser().id")
     public WishlistResponseDTO addItem(WishlistItemRequestDTO dto) {
         User user = userUtility.getCurrentUser();
         Product product = findProductByIdOrThrow(dto.getProductId());
@@ -61,7 +61,7 @@ public class WishlistServiceImplementation implements WishlistService {
     }
 
     @Override
-    @Cacheable(value = CacheNames.wishlists, key = "#userUtility.getCurrentUser().id")
+    @Cacheable(value = CacheNames.wishlists, key = "@userUtility.getCurrentUser().id")
     public WishlistResponseDTO getWishlist() {
         User user = userUtility.getCurrentUser();
         return WishlistMapper.toDTO(user.getWishlist());
@@ -69,7 +69,7 @@ public class WishlistServiceImplementation implements WishlistService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CacheNames.wishlists, key = "#userUtility.getCurrentUser().id")
+    @CacheEvict(value = CacheNames.wishlists, key = "@userUtility.getCurrentUser().id")
     public String deleteItem(Long itemId) {
         WishlistItem item = findWishlistItemByIdOrThrow(itemId);
         item.getWishlist().getWishlistItems().remove(item);
