@@ -156,64 +156,74 @@ Base URL: `http://localhost:8080`
 ### Get All Products
 **GET** `/api/products`  
 **Response:** `200 OK`  
-Returns a list of all products.
+Returns list of products.
+
+**Response Fields (ProductResponseDTO):**
+- `id` (integer)
+- `sku` (string)
+- `title` (string)
+- `description` (string)
+- `basePrice` (number)
+- `active` (boolean)
+- `attributes` (object)
+- `createdAt` (string, date-time)
+- `images` (array of ProductImageResponseDTO)
+    - `id` (integer)
+    - `url` (string)
+    - `altText` (string)
+    - `displayOrder` (integer)
 
 ### Get Product by ID
 **GET** `/api/products/{productId}`  
 **Parameters:**
-- `productId` (path, required, integer)
+- `productId` (path, integer, required)
 
-**Response:** `200 OK`  
-Returns product details.
+**Response:** `200 OK` (ProductResponseDTO)
 
 ### Create Product
 **POST** `/api/products`  
-**Request Body:** `ProductRequestDTO`  
-**Response:** `200 OK`  
-Returns created product.
+**Request Body (ProductRequestDTO):**
+- `sku` (string)
+- `title` (string)
+- `description` (string)
+- `basePrice` (number)
+- `active` (boolean)
+- `attributes` (object)
+- `createdAt` (string, date-time)
+- `brandId` (integer)
+- `categoryId` (integer)
+
+**Response:** `200 OK` (ProductResponseDTO)
 
 ### Update Product
 **PUT** `/api/products/{productId}`  
-**Parameters:**
-- `productId` (path, required, integer)
-
+**Parameters:** `productId` (integer, required)  
 **Request Body:** `ProductRequestDTO`  
-**Response:** `200 OK`  
-Returns updated product.
+**Response:** `200 OK` (ProductResponseDTO)
 
 ### Delete Product
 **DELETE** `/api/products/{productId}`  
-**Parameters:**
-- `productId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns confirmation string.
+**Parameters:** `productId` (integer, required)  
+**Response:** `200 OK` (string)
 
 ### Upload Product Images
 **POST** `/api/products/{productId}/images`  
 **Parameters:**
-- `productId` (path, required, integer)
-- `images` (query, required, array of binary files)
-
-**Response:** `200 OK`  
-Returns uploaded image URLs.
+- `productId` (path, integer, required)
+- `images` (query, array of binary files, required)  
+  **Response:** `200 OK` (array of string URLs)
 
 ### Delete Product Image
 **DELETE** `/api/products/{productId}/images/{imageId}`  
 **Parameters:**
-- `productId` (path, required, integer)
-- `imageId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns confirmation string.
+- `productId` (integer, required)
+- `imageId` (integer, required)  
+  **Response:** `200 OK` (string)
 
 ### Get Products by Category
 **GET** `/api/products/category/{categoryId}`  
-**Parameters:**
-- `categoryId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns products in the category.
+**Parameters:** `categoryId` (integer, required)  
+**Response:** `200 OK` (array of ProductResponseDTO)
 
 </details>
 
@@ -226,72 +236,89 @@ Returns products in the category.
 
 #### Get Wishlist
 **GET** `/api/users/wishlist`  
-**Response:** `200 OK`  
-Returns the user's wishlist.
+**Response:** `200 OK` (WishlistResponseDTO)
+- `wishlistItems` (array of WishlistItemResponseDTO)
+    - `productId` (integer)
+    - `variantId` (integer)
 
 #### Add Item to Wishlist
 **POST** `/api/users/wishlist`  
-**Request Body:** `WishlistItemRequestDTO`  
-**Response:** `200 OK`  
-Returns updated wishlist.
+**Request Body (WishlistItemRequestDTO):**
+- `productId` (integer)  
+  **Response:** `200 OK` (WishlistResponseDTO)
 
 #### Delete Item from Wishlist
 **DELETE** `/api/users/wishlist/{itemId}`  
-**Parameters:**
-- `itemId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns confirmation string.
+**Parameters:** `itemId` (integer, required)  
+**Response:** `200 OK` (string)
 
 ### Cart
 
 #### Get Cart
 **GET** `/api/users/cart`  
-**Response:** `200 OK`  
-Returns the user's cart.
+**Response:** `200 OK` (CartResponseDTO)
+- `id` (integer)
+- `updatedAt` (string, date-time)
+- `userID` (integer)
+- `cartItemResponseDTOList` (array of CartItemResponseDTO)
+    - `id` (integer)
+    - `cartId` (integer)
+    - `productId` (integer)
+    - `quantity` (integer)
 
 #### Add Item to Cart
 **POST** `/api/users/cart`  
-**Request Body:** `CartItemRequestDTO`  
-**Response:** `200 OK`  
-Returns updated cart.
+**Request Body (CartItemRequestDTO):**
+- `productId` (integer)
+- `quantity` (integer)  
+  **Response:** `200 OK` (CartResponseDTO)
 
 #### Remove Item from Cart
 **DELETE** `/api/users/cart/{itemId}`  
-**Parameters:**
-- `itemId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns updated cart.
+**Parameters:** `itemId` (integer, required)  
+**Response:** `200 OK` (CartResponseDTO)
 
 ### Addresses
 
 #### Get Addresses
 **GET** `/api/users/addresses`  
-**Response:** `200 OK`  
-Returns user's addresses.
+**Response:** `200 OK` (array of AddressResponseDTO)
+- `id` (integer)
+- `fullName` (string)
+- `line1` (string)
+- `line2` (string)
+- `city` (string)
+- `region` (string)
+- `postalCode` (string)
+- `country` (string)
+- `phone` (string)
+- `longitude` (double)
+- `latitude` (double)
 
 #### Add Address
 **POST** `/api/users/addresses`  
-**Request Body:** `AddressRequestDTO`  
-**Response:** `200 OK`  
-Returns created address.
+**Request Body (AddressRequestDTO):**
+- `fullName` (string)
+- `line1` (string)
+- `line2` (string)
+- `city` (string)
+- `region` (string)
+- `postalCode` (string)
+- `country` (string)
+- `phone` (string)
+- `longitude` (double)
+- `latitude` (double)  
+  **Response:** `200 OK` (AddressResponseDTO)
 
 #### Delete Address
 **DELETE** `/api/users/addresses/{addressId}`  
-**Parameters:**
-- `addressId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns confirmation string.
+**Parameters:** `addressId` (integer, required)  
+**Response:** `200 OK` (string)
 
 ### Onboarding Link
 **GET** `/api/users/{sellerId}/onboarding-link`  
-**Parameters:**
-- `sellerId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns onboarding link object.
+**Parameters:** `sellerId` (integer, required)  
+**Response:** `200 OK` (object)
 
 </details>
 
@@ -302,35 +329,50 @@ Returns onboarding link object.
 
 ### Register User
 **POST** `/api/auth/register`  
-**Request Body:** `UserRequestDTO`  
-**Response:** `200 OK`  
-Returns created user.
+**Request Body (UserRequestDTO):**
+- `email` (string)
+- `password` (string)
+- `firstName` (string)
+- `lastName` (string)
+- `phone` (string)
+- `role` (string)  
+  **Response:** `200 OK` (UserResponseDTO)
+- `id` (integer)
+- `email` (string)
+- `firstName` (string)
+- `lastName` (string)
+- `phone` (string)
+- `createdAt` (string, date-time)
+- `lastLogin` (string, date-time)
+- `role` (string)
 
 ### Register Seller
 **POST** `/api/auth/registerSeller`  
-**Request Body:** `SellerRequestDTO`  
-**Response:** `200 OK`  
-Returns created seller.
+**Request Body (SellerRequestDTO):**
+- `email`, `password`, `firstName`, `lastName`, `phone`, `role` (string)
+- `userId` (integer)
+- `sellerName` (string)
+- `verified` (boolean)
+- `createdAt` (string, date-time)  
+  **Response:** `200 OK` (UserResponseDTO)
 
 ### Register Admin
 **POST** `/api/auth/registerAdmin`  
 **Request Body:** `UserRequestDTO`  
-**Response:** `200 OK`  
-Returns created admin.
+**Response:** `200 OK` (UserResponseDTO)
 
 ### Login
 **POST** `/api/auth/login`  
-**Request Body:** `AuthRequestDto`  
-**Response:** `200 OK`  
-Returns auth token.
+**Request Body (AuthRequestDto):**
+- `email` (string)
+- `password` (string)  
+  **Response:** `200 OK` (AuthResponseDto)
+- `token` (string)
 
 ### Logout
 **POST** `/api/auth/logout`  
-**Headers:**
-- `Authorization` (required, string)
-
-**Response:** `200 OK`  
-Returns confirmation string.
+**Headers:** `Authorization` (string, required)  
+**Response:** `200 OK` (string)
 
 </details>
 
@@ -342,35 +384,42 @@ Returns confirmation string.
 ### Checkout
 **POST** `/api/users/orders/checkout`  
 **Request Body:** `integer` (orderId)  
-**Response:** `200 OK`  
-Returns `OrderSummaryDTO`.
+**Response:** `200 OK` (OrderSummaryDTO)
+- `orderId` (integer)
+- `orderItemList` (array of OrderItemResponseDTO)
+    - `id` (integer)
+    - `quantity` (integer)
+    - `unitPrice` (number)
+    - `taxAmount` (number)
+- `finalTotal` (number)
+- `shipmentId` (integer)
 
 ### Get Orders
 **GET** `/api/users/orders`  
-**Response:** `200 OK`  
-Returns list of `OrderResponseDTO`.
+**Response:** `200 OK` (array of OrderResponseDTO)
+- `id`, `status`, `totalAmount`, `currency`, `createdAt`, `shipmentId`
+- `orderItemResponseDTOList` same as above
 
 ### Create Payment Intent
 **POST** `/api/payments/create-payment-intent`  
-**Request Body:** `PaymentRequest`  
-**Response:** `200 OK`  
-Returns payment intent object.
+**Request Body (PaymentRequest):**
+- `amount` (integer)
+- `orderId` (integer)
+- `currency` (string)  
+  **Response:** `200 OK` (object)
 
 ### Stripe Webhook
 **POST** `/api/stripe-webhook`  
-**Request Body:** `string` (raw event payload)  
-**Response:** `200 OK`  
-Returns confirmation string.
+**Request Body:** `string`  
+**Response:** `200 OK` (string)
 
-### Onboarding Link (Payment)
+### Onboarding Link
 **GET** `/api/payments/onboarding-link`  
-**Response:** `200 OK`  
-Returns onboarding link object.
+**Response:** `200 OK` (object)
 
 ### Account Requirements
 **GET** `/api/payments/acount-requirement`  
-**Response:** `200 OK`  
-Returns array of strings.
+**Response:** `200 OK` (array of strings)
 
 </details>
 
@@ -381,9 +430,12 @@ Returns array of strings.
 
 ### Send Mail
 **POST** `/api/mail/send`  
-**Request Body:** `MailRequestDTO`  
-**Response:** `200 OK`  
-Returns confirmation string.
+**Request Body (MailRequestDTO):**
+- `to` (string)
+- `subject` (string)
+- `text` (string)
+- `isHtml` (boolean)  
+  **Response:** `200 OK` (string)
 
 </details>
 
@@ -394,30 +446,27 @@ Returns confirmation string.
 
 ### Get All Categories
 **GET** `/api/categories`  
-**Response:** `200 OK`  
-Returns list of `CategoryResponseDTO`.
+**Response:** `200 OK` (array of CategoryResponseDTO)
+- `id` (integer)
+- `name` (string)
+- `parentId` (integer)
 
 ### Create Category
 **POST** `/api/categories`  
-**Request Body:** `CategoryRequestDTO`  
-**Response:** `200 OK`  
-Returns created category.
+**Request Body (CategoryRequestDTO):**
+- `name` (string)
+- `parentId` (integer)  
+  **Response:** `200 OK` (CategoryResponseDTO)
 
 ### Get Products by Category
 **GET** `/api/categories/{categoryId}/products`  
-**Parameters:**
-- `categoryId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns products in the category.
+**Parameters:** `categoryId` (integer, required)  
+**Response:** `200 OK` (array of ProductResponseDTO)
 
 ### Delete Category
 **DELETE** `/api/categories/{categoryId}`  
-**Parameters:**
-- `categoryId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns confirmation string.
+**Parameters:** `categoryId` (integer, required)  
+**Response:** `200 OK` (string)
 
 </details>
 
@@ -428,30 +477,26 @@ Returns confirmation string.
 
 ### Get All Brands
 **GET** `/api/brand`  
-**Response:** `200 OK`  
-Returns list of `BrandResponseDTO`.
+**Response:** `200 OK` (array of BrandResponseDTO)
+- `id`, `name`, `description`, `country`, `createdAt`, `imageUrl`
 
 ### Add Brand
 **POST** `/api/brand`  
-**Request Body:** `BrandRequestDTO`  
-**Response:** `200 OK`  
-Returns created brand.
+**Request Body (BrandRequestDTO):**
+- `name`, `description`, `country` (string)
+- `createdAt` (string, date-time)  
+  **Response:** `200 OK` (BrandResponseDTO)
 
 ### Get Brand by ID
 **GET** `/api/brand/{brandId}`  
-**Parameters:**
-- `brandId` (path, required, integer)
-
-**Response:** `200 OK`  
-Returns `BrandResponseDTO`.
+**Parameters:** `brandId` (integer, required)  
+**Response:** `200 OK` (BrandResponseDTO)
 
 ### Upload Brand Image
 **POST** `/api/brand/image/{brandId}`  
-**Parameters:**
-- `brandId` (path, required, integer)  
-  **Request Body:** `{ image: file }`  
-  **Response:** `200 OK`  
-  Returns confirmation string.
+**Parameters:** `brandId` (integer, required)  
+**Request Body:** `{ image: file }`  
+**Response:** `200 OK` (string)
 
 </details>
 
