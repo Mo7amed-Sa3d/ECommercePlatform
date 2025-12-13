@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class ReviewServiceImplementation implements ReviewService {
@@ -73,6 +74,12 @@ public class ReviewServiceImplementation implements ReviewService {
     public ReviewResponseDTO getReview(Long reviewId) {
         return ReviewMapper.toDTO(verifyOwnershipAndGetReview(reviewId));
     }
+
+    @Override
+    public List<ReviewResponseDTO> getAllReviews() {
+        return ReviewMapper.toDTOList(reviewRepository.findAll());
+    }
+
 
 
     //Helper functions
