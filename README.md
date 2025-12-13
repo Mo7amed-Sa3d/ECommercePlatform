@@ -138,368 +138,967 @@ docker run -p 6379:6379 --name redis -d redis
 ### **Caching Example**
 
 ```java
-@Cacheable(value = "product", key = "#id")
+import com.ecommerce.ecommerceplatform.configuration.cache.CacheNames;
+
+@Cacheable(value = CacheNames.products, key = "#id")
 public Product getProduct(Long id) {
-    /// Database call
+    /// Database call - Cache Miss
 }
 ```
-
-# E-Commerce Platform API Documentation
+# API Documentation
 
 Base URL: `http://localhost:8080`
 
----
-
 <details>
-<summary><strong>Product APIs</strong></summary>
-
-### Get All Products
-**GET** `/api/products`  
-**Response:** `200 OK`  
-Returns list of products.
-
-**Response Fields (ProductResponseDTO):**
-- `id` (integer)
-- `sku` (string)
-- `title` (string)
-- `description` (string)
-- `basePrice` (number)
-- `active` (boolean)
-- `attributes` (object)
-- `createdAt` (string, date-time)
-- `images` (array of ProductImageResponseDTO)
-    - `id` (integer)
-    - `url` (string)
-    - `altText` (string)
-    - `displayOrder` (integer)
-
-### Get Product by ID
-**GET** `/api/products/{productId}`  
-**Parameters:**
-- `productId` (path, integer, required)
-
-**Response:** `200 OK` (ProductResponseDTO)
-
-### Create Product
-**POST** `/api/products`  
-**Request Body (ProductRequestDTO):**
-- `sku` (string)
-- `title` (string)
-- `description` (string)
-- `basePrice` (number)
-- `active` (boolean)
-- `attributes` (object)
-- `createdAt` (string, date-time)
-- `brandId` (integer)
-- `categoryId` (integer)
-
-**Response:** `200 OK` (ProductResponseDTO)
-
-### Update Product
-**PUT** `/api/products/{productId}`  
-**Parameters:** `productId` (integer, required)  
-**Request Body:** `ProductRequestDTO`  
-**Response:** `200 OK` (ProductResponseDTO)
-
-### Delete Product
-**DELETE** `/api/products/{productId}`  
-**Parameters:** `productId` (integer, required)  
-**Response:** `200 OK` (string)
-
-### Upload Product Images
-**POST** `/api/products/{productId}/images`  
-**Parameters:**
-- `productId` (path, integer, required)
-- `images` (query, array of binary files, required)  
-  **Response:** `200 OK` (array of string URLs)
-
-### Delete Product Image
-**DELETE** `/api/products/{productId}/images/{imageId}`  
-**Parameters:**
-- `productId` (integer, required)
-- `imageId` (integer, required)  
-  **Response:** `200 OK` (string)
-
-### Get Products by Category
-**GET** `/api/products/category/{categoryId}`  
-**Parameters:** `categoryId` (integer, required)  
-**Response:** `200 OK` (array of ProductResponseDTO)
-
-</details>
-
----
-
-<details>
-<summary><strong>User APIs</strong></summary>
-
-### Wishlist
-
-#### Get Wishlist
-**GET** `/api/users/wishlist`  
-**Response:** `200 OK` (WishlistResponseDTO)
-- `wishlistItems` (array of WishlistItemResponseDTO)
-    - `productId` (integer)
-    - `variantId` (integer)
-
-#### Add Item to Wishlist
-**POST** `/api/users/wishlist`  
-**Request Body (WishlistItemRequestDTO):**
-- `productId` (integer)  
-  **Response:** `200 OK` (WishlistResponseDTO)
-
-#### Delete Item from Wishlist
-**DELETE** `/api/users/wishlist/{itemId}`  
-**Parameters:** `itemId` (integer, required)  
-**Response:** `200 OK` (string)
-
-### Cart
-
-#### Get Cart
-**GET** `/api/users/cart`  
-**Response:** `200 OK` (CartResponseDTO)
-- `id` (integer)
-- `updatedAt` (string, date-time)
-- `userID` (integer)
-- `cartItemResponseDTOList` (array of CartItemResponseDTO)
-    - `id` (integer)
-    - `cartId` (integer)
-    - `productId` (integer)
-    - `quantity` (integer)
-
-#### Add Item to Cart
-**POST** `/api/users/cart`  
-**Request Body (CartItemRequestDTO):**
-- `productId` (integer)
-- `quantity` (integer)  
-  **Response:** `200 OK` (CartResponseDTO)
-
-#### Remove Item from Cart
-**DELETE** `/api/users/cart/{itemId}`  
-**Parameters:** `itemId` (integer, required)  
-**Response:** `200 OK` (CartResponseDTO)
-
-### Addresses
-
-#### Get Addresses
-**GET** `/api/users/addresses`  
-**Response:** `200 OK` (array of AddressResponseDTO)
-- `id` (integer)
-- `fullName` (string)
-- `line1` (string)
-- `line2` (string)
-- `city` (string)
-- `region` (string)
-- `postalCode` (string)
-- `country` (string)
-- `phone` (string)
-- `longitude` (double)
-- `latitude` (double)
-
-#### Add Address
-**POST** `/api/users/addresses`  
-**Request Body (AddressRequestDTO):**
-- `fullName` (string)
-- `line1` (string)
-- `line2` (string)
-- `city` (string)
-- `region` (string)
-- `postalCode` (string)
-- `country` (string)
-- `phone` (string)
-- `longitude` (double)
-- `latitude` (double)  
-  **Response:** `200 OK` (AddressResponseDTO)
-
-#### Delete Address
-**DELETE** `/api/users/addresses/{addressId}`  
-**Parameters:** `addressId` (integer, required)  
-**Response:** `200 OK` (string)
-
-### Onboarding Link
-**GET** `/api/users/{sellerId}/onboarding-link`  
-**Parameters:** `sellerId` (integer, required)  
-**Response:** `200 OK` (object)
-
-</details>
-
----
-
-<details>
-<summary><strong>Authentication APIs</strong></summary>
+<summary><b>Authentication</b></summary>
 
 ### Register User
-**POST** `/api/auth/register`  
-**Request Body (UserRequestDTO):**
-- `email` (string)
-- `password` (string)
-- `firstName` (string)
-- `lastName` (string)
-- `phone` (string)
-- `role` (string)  
-  **Response:** `200 OK` (UserResponseDTO)
-- `id` (integer)
-- `email` (string)
-- `firstName` (string)
-- `lastName` (string)
-- `phone` (string)
-- `createdAt` (string, date-time)
-- `lastLogin` (string, date-time)
-- `role` (string)
+**POST** `/api/auth/register`
+
+Register a new user account.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phone": "+1234567890",
+  "role": "USER"
+}
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phone": "+1234567890",
+  "createdAt": "2024-05-14T10:30:00Z",
+  "lastLogin": "2024-05-14T10:30:00Z",
+  "role": "USER"
+}
+```
 
 ### Register Seller
-**POST** `/api/auth/registerSeller`  
-**Request Body (SellerRequestDTO):**
-- `email`, `password`, `firstName`, `lastName`, `phone`, `role` (string)
-- `userId` (integer)
-- `sellerName` (string)
-- `verified` (boolean)
-- `createdAt` (string, date-time)  
-  **Response:** `200 OK` (UserResponseDTO)
+**POST** `/api/auth/registerSeller`
+
+Register a new seller account.
+
+**Request Body:**
+```json
+{
+  "email": "seller@example.com",
+  "password": "securepassword123",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "phone": "+1234567891",
+  "role": "SELLER",
+  "userId": 2,
+  "sellerName": "Jane's Store",
+  "verified": false,
+  "createdAt": "2024-05-14T10:30:00Z"
+}
+```
+
+**Response:**
+```json
+{
+  "id": 2,
+  "email": "seller@example.com",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "phone": "+1234567891",
+  "createdAt": "2024-05-14T10:30:00Z",
+  "lastLogin": "2024-05-14T10:30:00Z",
+  "role": "SELLER"
+}
+```
 
 ### Register Admin
-**POST** `/api/auth/registerAdmin`  
-**Request Body:** `UserRequestDTO`  
-**Response:** `200 OK` (UserResponseDTO)
+**POST** `/api/auth/registerAdmin`
+
+Register a new admin account.
+
+**Request Body:**
+```json
+{
+  "email": "admin@example.com",
+  "password": "securepassword123",
+  "firstName": "Admin",
+  "lastName": "User",
+  "phone": "+1234567892",
+  "role": "ADMIN"
+}
+```
+
+**Response:**
+```json
+{
+  "id": 3,
+  "email": "admin@example.com",
+  "firstName": "Admin",
+  "lastName": "User",
+  "phone": "+1234567892",
+  "createdAt": "2024-05-14T10:30:00Z",
+  "lastLogin": "2024-05-14T10:30:00Z",
+  "role": "ADMIN"
+}
+```
 
 ### Login
-**POST** `/api/auth/login`  
-**Request Body (AuthRequestDto):**
-- `email` (string)
-- `password` (string)  
-  **Response:** `200 OK` (AuthResponseDto)
-- `token` (string)
+**POST** `/api/auth/login`
+
+Authenticate user and get access token.
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
 
 ### Logout
-**POST** `/api/auth/logout`  
-**Headers:** `Authorization` (string, required)  
-**Response:** `200 OK` (string)
+**POST** `/api/auth/logout`
 
+Logout user session.
+
+**Headers:**
+- `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+
+**Response:**
+```
+"Logged out successfully"
+```
 </details>
 
----
-
 <details>
-<summary><strong>Order & Payment APIs</strong></summary>
+<summary><b>Products</b></summary>
 
-### Checkout
-**POST** `/api/users/orders/checkout`  
-**Request Body:** `integer` (orderId)  
-**Response:** `200 OK` (OrderSummaryDTO)
-- `orderId` (integer)
-- `orderItemList` (array of OrderItemResponseDTO)
-    - `id` (integer)
-    - `quantity` (integer)
-    - `unitPrice` (number)
-    - `taxAmount` (number)
-- `finalTotal` (number)
-- `shipmentId` (integer)
+### Get All Products
+**GET** `/api/products`
 
-### Get Orders
-**GET** `/api/users/orders`  
-**Response:** `200 OK` (array of OrderResponseDTO)
-- `id`, `status`, `totalAmount`, `currency`, `createdAt`, `shipmentId`
-- `orderItemResponseDTOList` same as above
+Retrieve all products.
 
-### Create Payment Intent
-**POST** `/api/payments/create-payment-intent`  
-**Request Body (PaymentRequest):**
-- `amount` (integer)
-- `orderId` (integer)
-- `currency` (string)  
-  **Response:** `200 OK` (object)
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "sku": "PROD001",
+    "title": "Smartphone X",
+    "description": "Latest smartphone with advanced features",
+    "basePrice": 999.99,
+    "active": true,
+    "attributes": {
+      "color": "black",
+      "storage": "128GB"
+    },
+    "createdAt": "2024-05-14T10:30:00Z",
+    "images": [
+      {
+        "id": 1,
+        "url": "https://example.com/image1.jpg",
+        "altText": "Smartphone X front view",
+        "displayOrder": 1
+      }
+    ]
+  }
+]
+```
 
-### Stripe Webhook
-**POST** `/api/stripe-webhook`  
-**Request Body:** `string`  
-**Response:** `200 OK` (string)
+### Create Product
+**POST** `/api/products`
 
-### Onboarding Link
-**GET** `/api/payments/onboarding-link`  
-**Response:** `200 OK` (object)
+Create a new product.
 
-### Account Requirements
-**GET** `/api/payments/acount-requirement`  
-**Response:** `200 OK` (array of strings)
+**Request Body:**
+```json
+{
+  "sku": "PROD002",
+  "title": "Laptop Pro",
+  "description": "High-performance laptop",
+  "basePrice": 1499.99,
+  "active": true,
+  "attributes": {
+    "processor": "Intel i7",
+    "ram": "16GB",
+    "storage": "512GB SSD"
+  },
+  "createdAt": "2024-05-14T10:30:00Z",
+  "brandId": 1,
+  "categoryId": 2
+}
+```
 
-</details>
+**Response:**
+```json
+{
+  "id": 2,
+  "sku": "PROD002",
+  "title": "Laptop Pro",
+  "description": "High-performance laptop",
+  "basePrice": 1499.99,
+  "active": true,
+  "attributes": {
+    "processor": "Intel i7",
+    "ram": "16GB",
+    "storage": "512GB SSD"
+  },
+  "createdAt": "2024-05-14T10:30:00Z",
+  "images": []
+}
+```
 
----
+### Get Product by ID
+**GET** `/api/products/{productId}`
 
-<details>
-<summary><strong>Mailing API</strong></summary>
+Retrieve a specific product by ID.
 
-### Send Mail
-**POST** `/api/mail/send`  
-**Request Body (MailRequestDTO):**
-- `to` (string)
-- `subject` (string)
-- `text` (string)
-- `isHtml` (boolean)  
-  **Response:** `200 OK` (string)
+**Path Parameters:**
+- `productId` (integer): Product ID
 
-</details>
+**Response:**
+```json
+{
+  "id": 1,
+  "sku": "PROD001",
+  "title": "Smartphone X",
+  "description": "Latest smartphone with advanced features",
+  "basePrice": 999.99,
+  "active": true,
+  "attributes": {
+    "color": "black",
+    "storage": "128GB"
+  },
+  "createdAt": "2024-05-14T10:30:00Z",
+  "images": [
+    {
+      "id": 1,
+      "url": "https://example.com/image1.jpg",
+      "altText": "Smartphone X front view",
+      "displayOrder": 1
+    }
+  ]
+}
+```
 
----
+### Update Product
+**PUT** `/api/products/{productId}`
 
-<details>
-<summary><strong>Category APIs</strong></summary>
+Update an existing product.
 
-### Get All Categories
-**GET** `/api/categories`  
-**Response:** `200 OK` (array of CategoryResponseDTO)
-- `id` (integer)
-- `name` (string)
-- `parentId` (integer)
+**Path Parameters:**
+- `productId` (integer): Product ID
 
-### Create Category
-**POST** `/api/categories`  
-**Request Body (CategoryRequestDTO):**
-- `name` (string)
-- `parentId` (integer)  
-  **Response:** `200 OK` (CategoryResponseDTO)
+**Request Body:**
+```json
+{
+  "sku": "PROD001-UPDATED",
+  "title": "Smartphone X Pro",
+  "description": "Updated description",
+  "basePrice": 1099.99,
+  "active": true,
+  "attributes": {
+    "color": "black",
+    "storage": "256GB"
+  },
+  "createdAt": "2024-05-14T10:30:00Z",
+  "brandId": 1,
+  "categoryId": 1
+}
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "sku": "PROD001-UPDATED",
+  "title": "Smartphone X Pro",
+  "description": "Updated description",
+  "basePrice": 1099.99,
+  "active": true,
+  "attributes": {
+    "color": "black",
+    "storage": "256GB"
+  },
+  "createdAt": "2024-05-14T10:30:00Z",
+  "images": [
+    {
+      "id": 1,
+      "url": "https://example.com/image1.jpg",
+      "altText": "Smartphone X front view",
+      "displayOrder": 1
+    }
+  ]
+}
+```
+
+### Delete Product
+**DELETE** `/api/products/{productId}`
+
+Delete a product.
+
+**Path Parameters:**
+- `productId` (integer): Product ID
+
+**Response:**
+```
+"Product deleted successfully"
+```
 
 ### Get Products by Category
-**GET** `/api/categories/{categoryId}/products`  
-**Parameters:** `categoryId` (integer, required)  
-**Response:** `200 OK` (array of ProductResponseDTO)
+**GET** `/api/products/category/{categoryId}`
 
-### Delete Category
-**DELETE** `/api/categories/{categoryId}`  
-**Parameters:** `categoryId` (integer, required)  
-**Response:** `200 OK` (string)
+Retrieve products by category ID.
 
+**Path Parameters:**
+- `categoryId` (integer): Category ID
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "sku": "PROD001",
+    "title": "Smartphone X",
+    "description": "Latest smartphone with advanced features",
+    "basePrice": 999.99,
+    "active": true,
+    "attributes": {
+      "color": "black",
+      "storage": "128GB"
+    },
+    "createdAt": "2024-05-14T10:30:00Z",
+    "images": [
+      {
+        "id": 1,
+        "url": "https://example.com/image1.jpg",
+        "altText": "Smartphone X front view",
+        "displayOrder": 1
+      }
+    ]
+  }
+]
+```
+
+### Upload Product Images
+**POST** `/api/products/{productId}/images`
+
+Upload images for a product.
+
+**Path Parameters:**
+- `productId` (integer): Product ID
+
+**Query Parameters:**
+- `images` (array of files): Image files to upload
+
+**Response:**
+```json
+[
+  "https://example.com/image1.jpg",
+  "https://example.com/image2.jpg"
+]
+```
+
+### Delete Product Image
+**DELETE** `/api/products/{productId}/images/{imageId}`
+
+Delete a product image.
+
+**Path Parameters:**
+- `productId` (integer): Product ID
+- `imageId` (integer): Image ID
+
+**Response:**
+```
+"Image deleted successfully"
+```
 </details>
-
----
 
 <details>
-<summary><strong>Brand APIs</strong></summary>
+<summary><b>Categories</b></summary>
 
-### Get All Brands
-**GET** `/api/brand`  
-**Response:** `200 OK` (array of BrandResponseDTO)
-- `id`, `name`, `description`, `country`, `createdAt`, `imageUrl`
+### Get All Categories
+**GET** `/api/categories`
 
-### Add Brand
-**POST** `/api/brand`  
-**Request Body (BrandRequestDTO):**
-- `name`, `description`, `country` (string)
-- `createdAt` (string, date-time)  
-  **Response:** `200 OK` (BrandResponseDTO)
+Retrieve all categories.
 
-### Get Brand by ID
-**GET** `/api/brand/{brandId}`  
-**Parameters:** `brandId` (integer, required)  
-**Response:** `200 OK` (BrandResponseDTO)
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Electronics",
+    "parentId": null
+  },
+  {
+    "id": 2,
+    "name": "Smartphones",
+    "parentId": 1
+  }
+]
+```
 
-### Upload Brand Image
-**POST** `/api/brand/image/{brandId}`  
-**Parameters:** `brandId` (integer, required)  
-**Request Body:** `{ image: file }`  
-**Response:** `200 OK` (string)
+### Create Category
+**POST** `/api/categories`
 
+Create a new category.
+
+**Request Body:**
+```json
+{
+  "name": "Laptops",
+  "parentId": 1
+}
+```
+
+**Response:**
+```json
+{
+  "id": 3,
+  "name": "Laptops",
+  "parentId": 1
+}
+```
+
+### Get Products by Category
+**GET** `/api/categories/{categoryId}/products`
+
+Retrieve products by category ID.
+
+**Path Parameters:**
+- `categoryId` (integer): Category ID
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "sku": "PROD001",
+    "title": "Smartphone X",
+    "description": "Latest smartphone with advanced features",
+    "basePrice": 999.99,
+    "active": true,
+    "attributes": {
+      "color": "black",
+      "storage": "128GB"
+    },
+    "createdAt": "2024-05-14T10:30:00Z",
+    "images": [
+      {
+        "id": 1,
+        "url": "https://example.com/image1.jpg",
+        "altText": "Smartphone X front view",
+        "displayOrder": 1
+      }
+    ]
+  }
+]
+```
+
+### Delete Category
+**DELETE** `/api/categories/{categoryId}`
+
+Delete a category.
+
+**Path Parameters:**
+- `categoryId` (integer): Category ID
+
+**Response:**
+```
+"Category deleted successfully"
+```
 </details>
 
+<details>
+<summary><b>Brands</b></summary>
+
+### Get All Brands
+**GET** `/api/brand`
+
+Retrieve all brands.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Apple",
+    "description": "Technology company",
+    "country": "USA",
+    "createdAt": "2024-05-14T10:30:00Z",
+    "imageUrl": "https://example.com/apple-logo.jpg"
+  }
+]
+```
+
+### Create Brand
+**POST** `/api/brand`
+
+Create a new brand.
+
+**Request Body:**
+```json
+{
+  "name": "Samsung",
+  "description": "Electronics manufacturer",
+  "country": "South Korea",
+  "createdAt": "2024-05-14T10:30:00Z"
+}
+```
+
+**Response:**
+```json
+{
+  "id": 2,
+  "name": "Samsung",
+  "description": "Electronics manufacturer",
+  "country": "South Korea",
+  "createdAt": "2024-05-14T10:30:00Z",
+  "imageUrl": null
+}
+```
+
+### Get Brand by ID
+**GET** `/api/brand/{brandId}`
+
+Retrieve a specific brand by ID.
+
+**Path Parameters:**
+- `brandId` (integer): Brand ID
+
+**Response:**
+```json
+{
+  "id": 1,
+  "name": "Apple",
+  "description": "Technology company",
+  "country": "USA",
+  "createdAt": "2024-05-14T10:30:00Z",
+  "imageUrl": "https://example.com/apple-logo.jpg"
+}
+```
+
+### Upload Brand Image
+**POST** `/api/brand/image/{brandId}`
+
+Upload an image for a brand.
+
+**Path Parameters:**
+- `brandId` (integer): Brand ID
+
+**Request Body:**
+```json
+{
+  "image": "base64-encoded-image-data"
+}
+```
+
+**Response:**
+```
+"https://example.com/brand-image.jpg"
+```
+</details>
+
+<details>
+<summary><b>Cart</b></summary>
+
+### Get Cart
+**GET** `/api/users/cart`
+
+Retrieve the user's cart.
+
+**Response:**
+```json
+{
+  "id": 1,
+  "updatedAt": "2024-05-14T10:30:00Z",
+  "userID": 1,
+  "cartItemResponseDTOList": [
+    {
+      "id": 1,
+      "cartId": 1,
+      "productId": 1,
+      "quantity": 2
+    }
+  ]
+}
+```
+
+### Add Item to Cart
+**POST** `/api/users/cart`
+
+Add an item to the cart.
+
+**Request Body:**
+```json
+{
+  "productId": 1,
+  "quantity": 1
+}
+```
+
+**Response:**
+```json
+{
+  "id": 1,
+  "updatedAt": "2024-05-14T10:30:00Z",
+  "userID": 1,
+  "cartItemResponseDTOList": [
+    {
+      "id": 1,
+      "cartId": 1,
+      "productId": 1,
+      "quantity": 3
+    }
+  ]
+}
+```
+
+### Remove Item from Cart
+**DELETE** `/api/users/cart/{itemId}`
+
+Remove an item from the cart.
+
+**Path Parameters:**
+- `itemId` (integer): Cart item ID
+
+**Response:**
+```json
+{
+  "id": 1,
+  "updatedAt": "2024-05-14T10:30:00Z",
+  "userID": 1,
+  "cartItemResponseDTOList": []
+}
+```
+</details>
+
+<details>
+<summary><b>Wishlist</b></summary>
+
+### Get Wishlist
+**GET** `/api/users/wishlist`
+
+Retrieve the user's wishlist.
+
+**Response:**
+```json
+{
+  "wishlistItems": [
+    {
+      "productId": 1,
+      "variantId": 1
+    }
+  ]
+}
+```
+
+### Add to Wishlist
+**POST** `/api/users/wishlist`
+
+Add an item to the wishlist.
+
+**Request Body:**
+```json
+{
+  "productId": 2
+}
+```
+
+**Response:**
+```json
+{
+  "wishlistItems": [
+    {
+      "productId": 1,
+      "variantId": 1
+    },
+    {
+      "productId": 2,
+      "variantId": null
+    }
+  ]
+}
+```
+
+### Remove from Wishlist
+**DELETE** `/api/users/wishlist/{itemId}`
+
+Remove an item from the wishlist.
+
+**Path Parameters:**
+- `itemId` (integer): Wishlist item ID
+
+**Response:**
+```
+"Item removed from wishlist"
+```
+</details>
+
+<details>
+<summary><b>Orders</b></summary>
+
+### Get Orders
+**GET** `/api/users/orders`
+
+Retrieve user's orders.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "status": "PROCESSING",
+    "totalAmount": 1999.98,
+    "currency": "USD",
+    "createdAt": "2024-05-14T10:30:00Z",
+    "orderItemResponseDTOList": [
+      {
+        "id": 1,
+        "quantity": 2,
+        "unitPrice": 999.99,
+        "taxAmount": 159.99
+      }
+    ],
+    "shipmentId": 123
+  }
+]
+```
+
+### Checkout
+**POST** `/api/users/orders/checkout`
+
+Checkout cart and create an order.
+
+**Request Body:**
+```json
+123
+```
+*Note: The request body is just the cart ID as an integer.*
+
+**Response:**
+```json
+{
+  "orderId": 1,
+  "orderItemList": [
+    {
+      "id": 1,
+      "quantity": 2,
+      "unitPrice": 999.99,
+      "taxAmount": 159.99
+    }
+  ],
+  "finalTotal": 2159.97,
+  "shipmentId": 123
+}
+```
+</details>
+
+<details>
+<summary><b>User Management</b></summary>
+
+### Get Addresses
+**GET** `/api/users/addresses`
+
+Retrieve user's addresses.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "fullName": "John Doe",
+    "line1": "123 Main St",
+    "line2": "Apt 4B",
+    "city": "New York",
+    "region": "NY",
+    "postalCode": "10001",
+    "country": "USA",
+    "phone": "+1234567890",
+    "longitude": -74.006,
+    "latitude": 40.7128
+  }
+]
+```
+
+### Add Address
+**POST** `/api/users/addresses`
+
+Add a new address.
+
+**Request Body:**
+```json
+{
+  "fullName": "Jane Smith",
+  "line1": "456 Oak Ave",
+  "line2": "",
+  "city": "Los Angeles",
+  "region": "CA",
+  "postalCode": "90001",
+  "country": "USA",
+  "phone": "+1234567891",
+  "longitude": -118.2437,
+  "latitude": 34.0522
+}
+```
+
+**Response:**
+```json
+{
+  "id": 2,
+  "fullName": "Jane Smith",
+  "line1": "456 Oak Ave",
+  "line2": "",
+  "city": "Los Angeles",
+  "region": "CA",
+  "postalCode": "90001",
+  "country": "USA",
+  "phone": "+1234567891",
+  "longitude": -118.2437,
+  "latitude": 34.0522
+}
+```
+
+### Delete Address
+**DELETE** `/api/users/addresses/{addressId}`
+
+Delete an address.
+
+**Path Parameters:**
+- `addressId` (integer): Address ID
+
+**Response:**
+```
+"Address deleted successfully"
+```
+
+### Get Seller Onboarding Link
+**GET** `/api/users/{sellerId}/onboarding-link`
+
+Get Stripe onboarding link for seller.
+
+**Path Parameters:**
+- `sellerId` (integer): Seller ID
+
+**Response:**
+```json
+{
+  "url": "https://connect.stripe.com/setup/e/acct_123..."
+}
+```
+</details>
+
+<details>
+<summary><b>Payments</b></summary>
+
+### Create Payment Intent
+**POST** `/api/payments/create-payment-intent`
+
+Create a Stripe payment intent.
+
+**Request Body:**
+```json
+{
+  "amount": 215997,
+  "orderId": 1,
+  "currency": "usd"
+}
+```
+
+**Response:**
+```json
+{
+  "clientSecret": "pi_3Nt6z9LkdIwHu7ix0pJ...",
+  "id": "pi_3Nt6z9LkdIwHu7ix0pJ..."
+}
+```
+
+### Get Onboarding Link
+**GET** `/api/payments/onboarding-link`
+
+Get Stripe onboarding link.
+
+**Response:**
+```json
+{
+  "url": "https://connect.stripe.com/setup/e/acct_123..."
+}
+```
+
+### Get Account Requirements
+**GET** `/api/payments/acount-requirement`
+
+Get Stripe account requirements.
+
+**Response:**
+```json
+[
+  "individual.first_name",
+  "individual.last_name",
+  "individual.email"
+]
+```
+</details>
+
+<details>
+<summary><b>Other</b></summary>
+
+### Send Email
+**POST** `/api/mail/send`
+
+Send an email.
+
+**Request Body:**
+```json
+{
+  "to": "recipient@example.com",
+  "subject": "Welcome to Our Store",
+  "text": "Thank you for registering!",
+  "isHtml": false
+}
+```
+
+**Response:**
+```
+"Email sent successfully"
+```
+
+### Stripe Webhook
+**POST** `/api/stripe-webhook`
+
+Handle Stripe webhook events.
+
+**Request Body:**
+```json
+{
+  "id": "evt_1Nt7...",
+  "object": "event",
+  "api_version": "2023-10-16",
+  "created": 1699876543,
+  "livemode": false,
+  "pending_webhooks": 1,
+  "type": "payment_intent.succeeded"
+}
+```
+
+**Response:**
+```
+"Webhook received"
+```
+</details>
 
 ## 🔧 Installation & Setup
 
