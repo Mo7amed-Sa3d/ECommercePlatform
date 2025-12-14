@@ -30,7 +30,7 @@ public class SellerPayoutService {
         this.mailService = mailService;
     }
 
-    @Scheduled(cron = "0 22 18 * * *")
+    @Scheduled(cron = "0 33 15 * * *")
     @Transactional
     public void payout() {
         System.err.println("Entered PayoutService");

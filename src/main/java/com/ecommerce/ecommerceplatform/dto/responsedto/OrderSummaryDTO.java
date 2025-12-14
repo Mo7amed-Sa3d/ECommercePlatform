@@ -19,6 +19,6 @@ public class OrderSummaryDTO {
         orderId = order.getId();
         finalTotal = order.getTotalAmount();
         orderItemList = OrderItemMapper.toDtoList(order.getOrderItems());
-        shipmentId = order.getShipment().getId();
+//        shipmentId = order.getShipment().getId();
     }
 }

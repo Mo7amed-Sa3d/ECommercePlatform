@@ -133,7 +133,7 @@ public class OrderServiceImplementation implements OrderService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = CacheNames.orders, key = "#id"),
-            @CacheEvict(value = CacheNames.orderList, key = "@userUtility.getCurrentUser().id")
+          //  @CacheEvict(value = CacheNames.orderList, key = "@userUtility.getCurrentUser().id")
     })
     public void markOrderPaid(Long id, String paymentId) {
         Order order = fetchOrderOrThrow(id);
