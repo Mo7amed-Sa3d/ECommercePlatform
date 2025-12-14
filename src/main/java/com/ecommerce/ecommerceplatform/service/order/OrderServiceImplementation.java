@@ -77,7 +77,7 @@ public class OrderServiceImplementation implements OrderService {
 
         Order order = createOrder(user);
 
-        createShipment(addressId, order);
+//        createShipment(addressId, order);
 
         sendOrderConfirmationEmail(user, order);
 
@@ -109,20 +109,20 @@ public class OrderServiceImplementation implements OrderService {
     // Shipment creation
     // ================================================================
 
-    @Override
-    @Transactional
-    public ShipmentResponseDTO createShipment(Long addressId, Order order) {
-        Address address = fetchAddressOrThrow(addressId);
-
-        Shipment shipment = new Shipment();
-        shipment.setOrder(order);
-        shipment.setAddress(address);
-        shipment.setTrackingNumber("123456");
-        shipment.setCarrier("Ahmed");
-        order.setShipment(shipment);
-
-        return ShipmentMapper.toDto(shipment);
-    }
+//    @Override
+//    @Transactional
+//    public ShipmentResponseDTO createShipment(Long addressId, Order order) {
+//        Address address = fetchAddressOrThrow(addressId);
+//
+//        Shipment shipment = new Shipment();
+//        shipment.setOrder(order);
+//        shipment.setAddress(address);
+//        shipment.setTrackingNumber("123456");
+//        shipment.setCarrier("Ahmed");
+//        order.setShipment(shipment);
+//
+//        return ShipmentMapper.toDto(shipment);
+//    }
 
 
     // ================================================================

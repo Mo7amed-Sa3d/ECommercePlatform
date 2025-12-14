@@ -77,6 +77,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/products/*/images").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.PUT,"/api/products/*").hasAnyRole("ADMIN","SELLER")
                         .requestMatchers(HttpMethod.DELETE,"/api/products/*").hasAnyRole("ADMIN","SELLER")
+
+                        .requestMatchers("/api/shipment/**").hasAnyRole("ADMIN","SELLER")
                         //other endpoints
                         .requestMatchers("/api/stripe-webhook").permitAll()
                         .anyRequest().authenticated()                // all other endpoints require auth

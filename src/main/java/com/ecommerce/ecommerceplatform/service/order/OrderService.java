@@ -12,7 +12,7 @@ public interface OrderService {
     Order createOrder(User user);
     OrderSummaryDTO checkout(Long addressId);
     List<OrderResponseDTO> getAllOrdersById();
-    ShipmentResponseDTO createShipment(Long addressId, Order order);
+//    ShipmentResponseDTO createShipment(Long addressId, Order order);
     OrderResponseDTO findById(Long orderId);
     void markOrderPaid(Long id,String PaymentId);
 }

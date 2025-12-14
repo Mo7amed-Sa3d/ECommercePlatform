@@ -10,11 +10,8 @@ import java.time.Instant;
 @Getter
 @Setter
 public class ShipmentResponseDTO {
-    private Long id;
-    private String carrier;
     private String trackingNumber;
-    private String status;
-    private Instant shoppedAt;
-    private Instant deliveryAt;
-    private Long addressId;
+    public ShipmentResponseDTO(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
+    }
 }
