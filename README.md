@@ -145,6 +145,85 @@ public Product getProduct(Long id) {
     /// Database call - Cache Miss
 }
 ```
+
+# 📦 FedEx Shipping Integration
+
+This module provides comprehensive FedEx shipping integration for your Spring Boot application, including shipment creation, label generation, and real-time tracking.
+
+## ✨ Features
+
+- **Shipment Creation**: Create FedEx shipments with automatic label generation
+- **Real-time Tracking**: Track shipments with detailed status updates
+- **Authentication**: Automatic OAuth2 token management with refresh
+- **Comprehensive Logging**: Detailed logging for debugging and monitoring
+
+
+### 1. Configuration
+
+
+```properties
+fedex.base-url=https://apis-sandbox.fedex.com
+fedex.shipmentUrl=/ship/v1/shipments
+fedex.api-key=l736afb028ddb14df7b4d45263a91ca6a6
+fedex.secret-key=258dd8851b5642048360ed3e2d9a2135
+fedex.account-number=740561073
+
+```
+
+### 2. Dependencies
+
+Ensure you have these dependencies in your `pom.xml`:
+
+```xml
+<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Authentication Failed**
+    - Verify credentials are set in environment variables
+    - Check FedEx account status
+    - Ensure correct environment (sandbox vs production)
+
+2. **Invalid Address Errors**
+    - Use FedEx Address Validation API before creating shipments
+    - Ensure address format matches FedEx requirements
+
+3. **Rate Limiting**
+    - Implement exponential backoff for retries
+    - Cache frequently accessed tracking information
+
+
+## 📈 Monitoring
+
+Key metrics to monitor:
+
+- API call success rates
+- Authentication token refresh frequency
+- Average response times
+- Webhook delivery success rates
+
+## 🔒 Security Considerations
+
+1. **Never commit credentials** to version control
+2. **Validate webhook signatures** to prevent spoofing
+3. **Implement rate limiting** on public endpoints
+4. **Use HTTPS** for all API communications
+5. **Regularly rotate** API credentials
+
+## 📚 Additional Resources
+
+- [FedEx Developer Portal](https://developer.fedex.com/)
+- [FedEx API Documentation](https://developer.fedex.com/api/en-us/home.html)
+- [Spring Retry Documentation](https://docs.spring.io/spring-retry/docs/api/current/)
+- [FedEx API Status Page](https://www.fedex.com/en-us/developer/status.html)
+
+
 # API Documentation
 
 Base URL: `http://localhost:8080`
@@ -1097,6 +1176,62 @@ Handle Stripe webhook events.
 **Response:**
 ```
 "Webhook received"
+```
+</details>
+
+
+<details>
+<summary><b>🔧 FedEx Endpoints</b></summary>
+
+### Create Shipment
+```http
+POST /api/shipments
+Content-Type: application/json
+
+{
+  "orderId": "ORD-12345",
+  "serviceType": "FEDEX_2_DAY",
+  "fromAddress": {
+    "street": "123 Warehouse St",
+    "city": "Memphis",
+    "state": "TN",
+    "postalCode": "38115",
+    "country": "US"
+  },
+  "toAddress": {
+    "street": "456 Customer Ave",
+    "city": "Boston",
+    "state": "MA",
+    "postalCode": "02101",
+    "country": "US"
+  },
+  "package": {
+    "weight": 5.0,
+    "weightUnit": "LB",
+    "dimensions": {
+      "length": 10,
+      "width": 8,
+      "height": 6,
+      "unit": "IN"
+    }
+  }
+}
+Get Tracking Information
+http
+GET /api/shipments/{trackingNumber}/track
+Webhook Endpoint
+http
+POST /api/shipments/webhook
+X-FedEx-Signature: {signature}
+
+{
+  "notification": {
+    "transactionId": "trx_123",
+    "trackingNumber": "123456789012",
+    "status": "DELIVERED",
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+}
 ```
 </details>
 
